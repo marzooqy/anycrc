@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools", "cython"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cyrc"
+version = "0.1.1"
+description = "Python CRC Calculation Library"
+readme = "README.md"
+requires-python = ">=3.7"
+
+[project.urls]
+"Homepage" = "https://github.com/marzooqy/cyrc"
