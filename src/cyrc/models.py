@@ -1,6 +1,6 @@
 #  Copyright (c) 2024  Hussain Al Marzooq
 
-# The original pycrc library had the following license:
+# The original pycrc library has the following license:
 
 #  pycrc -- parameterisable CRC calculation utility and C source code generator
 #
