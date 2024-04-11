@@ -21,7 +21,7 @@ Use an existing model:
 472456355
 ```
 
-You can also read the data in chunks:
+Read the data in chunks:
 
 ```python
 >>> from cyrc.models import crc32
@@ -32,7 +32,7 @@ You can also read the data in chunks:
 472456355
 ```
 
-You can specify your own CRC parameters:
+Specify your own CRC parameters:
 
 ```python
 >>> import cyrc
@@ -50,7 +50,7 @@ You can specify your own CRC parameters:
 35
 ```
 
-If your input is a string, then it will be assumed to be utf-8 encoded. If your string has another encoding, then you should decode it first before passing it to the update method:
+If your input is a string, then it will be assumed to be utf-8 encoded. If your string has another encoding, then you well need to decode it first before passing it to the update method:
 
 ```python
 string = 'Hello World!'
