@@ -58,7 +58,7 @@ b = string.encode('ascii')
 
 ## Benchmarks
 
-Calculating the CRC32 for lorem impsum 10 million times:
+Calculating the CRC32 for lorem ipsum 10 million times:
 
 ```
 cyrc
