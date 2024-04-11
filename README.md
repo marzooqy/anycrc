@@ -35,6 +35,7 @@ You can also read the data in chunks:
 You can specify your own CRC parameters:
 
 ```python
+>>> import cyrc
 >>> my_crc = cyrc.Model(
 	width = 10,
 	poly = 0b0101010101,
