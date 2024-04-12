@@ -1,60 +1,42 @@
-## Cyrc
+## crcany
 
-Python CRC Calculation Library.
+The fastest Python CRC computation library available.
 
-This an optimized Cython module based on the [pycrc](https://github.com/tpircher/pycrc) library. It supports calculating CRC hashes of arbitary sizes as well as updating a crc hash over time.
+This is a Cython module with bindings to the [crcany](https://github.com/madler/crcany) library. It supports calculating CRC hashes of arbitary sizes as well as updating a crc hash over time.
 
 ## Installation
 
-`pip install cyrc`
+`pip install crcany`
 
 ## Usage
 
 Use an existing model:
 
 ```python
->>> from cyrc.models import crc32
+>>> import crcany
 >>> data = b'Hello World!'
->>> val = crc32.init()
->>> val = crc32.update(val, data)
->>> crc32.finalize(val)
+>>> crc32 = crcany.Model('CRC32/ISO-HDLC')
+>>> crc32.calc(data)
 472456355
 ```
 
 Read the data in chunks:
 
 ```python
->>> from cyrc.models import crc32
->>> val = crc32.init()
->>> val = crc32.update(val, b'Hello ')
->>> val = crc32.update(val, b'World!')
->>> val.finalize(val)
+>>> crc32.reset() #set to the initial value
+>>> crc32.calc(b'Hello ')
+3928882368
+>>> crc32.calc(b'World!')
 472456355
 ```
 
 Specify your own CRC parameters:
 
 ```python
->>> import cyrc
->>> my_crc = cyrc.Model(
-	width = 10,
-	poly = 0b0101010101,
-	reflect_in = True,
-	xor_in = 0x3ff,
-	reflect_out = False,
-	xor_out = 0
-	)
->>> val = my_crc.init()
->>> val = my_crc.update(val, data)
->>> my_crc.finalize(val)
+>>> # width, poly, init, refin, refout, xorout
+>>> my_crc = crcany.CRC(10, 0b0101010101, 0x3ff, True, False, 0)
+>>> my_crc.calc('Hello World!')
 35
-```
-
-If your input is a string, then it will be assumed to be utf-8 encoded. If your string has another encoding, then you well need to decode it first before passing it to the update method:
-
-```python
-string = 'Hello World!'
-b = string.encode('ascii')
 ```
 
 ## Benchmarks
@@ -62,31 +44,23 @@ b = string.encode('ascii')
 Calculating the CRC32 for lorem ipsum 10 million times:
 
 ```
-cyrc
-Time Elapsed: 27.403s
-Average: 2.740 us/run
+crcany
+Time Elapsed: 7.732s
+Average: 0.773 us/run
 Relative: 1.000
 
 binascii
-Time Elapsed: 7.469s
-Average: 0.747 us/run
-Relative: 0.273
+Time Elapsed: 7.612s
+Average: 0.761 us/run
+Relative: 0.984
 
 fastcrc
-Time Elapsed: 16.235s
-Average: 1.624 us/run
-Relative: 0.592
+Time Elapsed: 16.483s
+Average: 1.648 us/run
+Relative: 2.132
 
 crcmod-plus
-Time Elapsed: 19.285s
-Average: 1.928 us/run
-Relative: 0.704
+Time Elapsed: 18.259s
+Average: 1.826 us/run
+Relative: 2.361
 ```
-
-1- The standard library module [binascii](https://docs.python.org/3/library/binascii.html) is the fastest, however it only provides two CRC functions.
-
-2- [fastcrc](https://github.com/overcat/fastcrc) is the fastest library, however it's limited to a specific number of pre-built functions and doesn't allow you to specify your own parameters.
-
-3- [crcmod-plus](https://github.com/ntamas/crcmod-plus) offers a good balance between performance and customizability.
-
-4- cyrc is the slowest of the four, however it's the most customizable.

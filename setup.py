@@ -1,7 +1,7 @@
 from setuptools import setup, Extension
 
 setup(
-    name = 'cyrc',
-    version = '0.1.1',
-    ext_modules = [Extension(name='cyrc.cyrc', sources=['src/cyrc/cyrc.pyx'])]
+    name = 'crcany',
+    version = '0.2.0',
+    ext_modules = [Extension(name='crcany.crcany', sources=['src/crcany/crcany.pyx', 'lib/crcany/model.c', 'lib/crcany/crc.c'])]
 )
