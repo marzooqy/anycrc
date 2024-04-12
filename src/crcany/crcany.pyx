@@ -1,4 +1,4 @@
-#  Copyright (c) 2024 Hussain Al Marzooq
+# Copyright (c) 2024 Hussain Al Marzooq
 
 from libc.stdint cimport uintmax_t
 from .models import models
