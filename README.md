@@ -41,24 +41,9 @@ Specify your own CRC parameters:
 
 Calculating the CRC32 for lorem ipsum 10 million times:
 
-```
-crcany
-Time Elapsed: 7.732s
-Average: 0.773 us/run
-Relative: 1.000
-
-binascii
-Time Elapsed: 7.612s
-Average: 0.761 us/run
-Relative: 0.984
-
-fastcrc
-Time Elapsed: 16.483s
-Average: 1.648 us/run
-Relative: 2.132
-
-crcmod-plus
-Time Elapsed: 18.259s
-Average: 1.826 us/run
-Relative: 2.361
-```
+| Module | Time Elapsed | Average | Relative |
+|---|:-:|:-:|:-:|
+| crcany | 7.732s | 0.773 us/run | 1.000 |
+| binascii | 7.612s | 0.761 us/run | 0.984 |
+| fastcrc | 16.483s | 1.648 us/run | 2.132 |
+| crcmod-plus | 18.259s | 1.826 us/run | 2.361 |
