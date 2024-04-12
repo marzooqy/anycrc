@@ -40,7 +40,7 @@ word_t crc_zeros(model_t *model, word_t crc, uintmax_t n);
    and the CRC width is less than 8, then the CRC is pre-shifted left to the
    high end of the low 8 bits so that the incoming byte can be exclusive-ored
    directly into a shifted CRC. */
-void __declspec(dllexport) crc_table_bytewise(model_t *model);
+void crc_table_bytewise(model_t *model);
 
 /* Equivalent to crc_bitwise(), but use a faster byte-wise table-based
    approach. This assumes that model->table_byte has been initialized using
@@ -65,12 +65,12 @@ word_t crc_bytewise(model_t *model, word_t crc, void const *dat, size_t len);
    is the same as table_byte.  In that case, the two could be combined,
    reducing the total size of the tables.  This is also true if model->ref is
    false, the request is big-endian, and model->width is equal to word bits. */
-void __declspec(dllexport) crc_table_wordwise(model_t *model, unsigned little, unsigned bits);
+void crc_table_wordwise(model_t *model, unsigned little, unsigned bits);
 
 /* Equivalent to crc_bitwise(), but use an even faster word-wise table-based
    approach.  This assumes that model->table_byte and model->table_word have
    been initialized using crc_table_bytewise() and crc_table_wordwise(). */
-word_t __declspec(dllexport) crc_wordwise(model_t *model, word_t crc, void const *dat, size_t len);
+word_t crc_wordwise(model_t *model, word_t crc, void const *dat, size_t len);
 
 /* Fill in model->table_comb[n] for combining CRCs. Each entry is x raised to
    the 2 to the n power, modulo the CRC polynomial. Set model->cycle to the

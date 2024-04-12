@@ -139,7 +139,7 @@ typedef struct {
 
       w=16 p=4129 r=t c=8585 n=KERMIT
  */
-int __declspec(dllexport) read_model(model_t *model, char *str, int lenient);
+int read_model(model_t *model, char *str, int lenient);
 
 /* Return the reversal of the low n-bits of x.  1 <= n <= WORDBITS.  The high
    WORDBITS - n bits in x are ignored, and are set to zero in the returned
@@ -157,7 +157,7 @@ void reverse_dbl(word_t *hi, word_t *lo, unsigned n);
    polynomial and init values for ready use in the crc routines if necessary,
    changes the meaning of init, and replaces refin and refout with the
    different meanings reflect and reverse (reverse is very rarely used) */
-void __declspec(dllexport) process_model(model_t *model);
+void process_model(model_t *model);
 
 /* Read a newline-terminated or EOF-terminated line from in.  The trailing
    newline and any other trailing space characters are removed, and any
