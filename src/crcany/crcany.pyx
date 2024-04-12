@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Hussain Al Marzooq
+#  Copyright (c) 2024 Hussain Al Marzooq
 
 from libc.stdint cimport uintmax_t
 from .models import models
@@ -37,11 +37,11 @@ cdef class CRC:
     cdef model_t model
     cdef word_t register
     
-    def __init__(self, unsigned short width, word_t poly, word_t init, char ref_in, char ref_out, word_t xor_out, word_t check=0, word_t residue=0, name=''):
+    def __init__(self, unsigned short width, word_t poly, word_t init, char ref_in, char ref_out, word_t xor_out, word_t check=0, word_t residue=0):
         refin = 'true' if ref_in else 'false'
         refout = 'true' if ref_out else 'false'
         
-        string = f'width={width} poly={poly} init={init} refin={refin} refout={refout} xorout={xor_out} check={check} residue={residue} name="{name}"'.encode('utf-8')
+        string = f'width={width} poly={poly} init={init} refin={refin} refout={refout} xorout={xor_out} check={check} residue={residue} name=""'.encode('utf-8')
         cdef int error_code = read_model(&self.model, string, 0)
         
         if error_code != 0:
