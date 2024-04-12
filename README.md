@@ -37,6 +37,8 @@ Specify your own CRC parameters:
 35
 ```
 
+For a list of pre-built models, check [models.py](https://github.com/marzooqy/crcany/blob/main/src/crcany/models.py)
+
 ## Benchmarks
 
 Calculating the CRC32 for lorem ipsum 10 million times:
