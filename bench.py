@@ -13,7 +13,7 @@ print()
 
 #anycrc
 t = time.perf_counter()
-model = anycrc.Model('CRC32/ISO-HDLC')
+model = anycrc.Model('CRC32-ISO-HDLC')
 
 for i in range(n):
     model.calc(test_data)

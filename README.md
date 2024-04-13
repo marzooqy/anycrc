@@ -12,8 +12,9 @@ Use an existing model:
 
 ```python
 >>> import anycrc
->>> crc32 = anycrc.Model('CRC32/ISO-HDLC')
->>> crc32.calc(b'Hello World!')
+>>> data = b'Hello World!'
+>>> crc32 = anycrc.Model('CRC32-ISO-HDLC')
+>>> crc32.calc(data)
 472456355
 ```
 
