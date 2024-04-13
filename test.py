@@ -1,9 +1,9 @@
-from src import crcany
+from src import anycrc
 
 test_data = b'123456789'
 
-for model, params in crcany.models.items():
-    crc = crcany.Model(model)
+for model, params in anycrc.models.items():
+    crc = anycrc.Model(model)
     check = params.check
     
     #read all at once

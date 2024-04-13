@@ -1,4 +1,4 @@
-from src import crcany
+from src import anycrc
 import binascii
 import crcmod
 import crcmod.predefined
@@ -11,19 +11,19 @@ n = 10 ** 7
 
 print()
 
-#crcany
+#anycrc
 t = time.perf_counter()
-model = crcany.Model('CRC32/ISO-HDLC')
+model = anycrc.Model('CRC32/ISO-HDLC')
 
 for i in range(n):
     model.calc(test_data)
     model.reset()
 
-crcany_time_elapsed = time.perf_counter() - t
-avg_time = crcany_time_elapsed / n
+anycrc_time_elapsed = time.perf_counter() - t
+avg_time = anycrc_time_elapsed / n
 
 print('cyrc')
-print('Time Elapsed: {:.3f}s'.format(crcany_time_elapsed))
+print('Time Elapsed: {:.3f}s'.format(anycrc_time_elapsed))
 print('Average: {:.3f} us/run'.format(avg_time * 10 ** 6))
 print('Relative: {:.3f}'.format(1))
 print()
@@ -40,7 +40,7 @@ avg_time = time_elapsed / n
 print('binascii')
 print('Time Elapsed: {:.3f}s'.format(time_elapsed))
 print('Average: {:.3f} us/run'.format(avg_time * 10 ** 6))
-print('Relative: {:.3f}'.format(time_elapsed / crcany_time_elapsed))
+print('Relative: {:.3f}'.format(time_elapsed / anycrc_time_elapsed))
 print()
 
 #fastcrc
@@ -55,7 +55,7 @@ avg_time = time_elapsed / n
 print('fastcrc')
 print('Time Elapsed: {:.3f}s'.format(time_elapsed))
 print('Average: {:.3f} us/run'.format(avg_time * 10 ** 6))
-print('Relative: {:.3f}'.format(time_elapsed / crcany_time_elapsed))
+print('Relative: {:.3f}'.format(time_elapsed / anycrc_time_elapsed))
 print()
 
 #crcmod
@@ -71,5 +71,5 @@ avg_time = time_elapsed / n
 print('crcmod-plus')
 print('Time Elapsed: {:.3f}s'.format(time_elapsed))
 print('Average: {:.3f} us/run'.format(avg_time * 10 ** 6))
-print('Relative: {:.3f}'.format(time_elapsed / crcany_time_elapsed))
+print('Relative: {:.3f}'.format(time_elapsed / anycrc_time_elapsed))
 print()
