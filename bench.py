@@ -22,7 +22,7 @@ for i in range(n):
 anycrc_time_elapsed = time.perf_counter() - t
 avg_time = anycrc_time_elapsed / n
 
-print('cyrc')
+print('anycrc')
 print('Time Elapsed: {:.3f}s'.format(anycrc_time_elapsed))
 print('Average: {:.3f} us/run'.format(avg_time * 10 ** 6))
 print('Relative: {:.3f}'.format(1))
