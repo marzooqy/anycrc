@@ -60,8 +60,8 @@ cdef class CRC:
         if isinstance(data, str):
             data = (<unicode> data).encode('utf-8')
             
-        cdef unsigned char* dat = data
-        cdef crc = crc_wordwise(&self.model, self.register, dat, len(data))
+        cdef const unsigned char* data_p = data
+        cdef word_t crc = crc_wordwise(&self.model, self.register, data_p, len(data))
         self.register = crc
         return crc
         
