@@ -37,7 +37,7 @@ cdef class CRC:
     cdef model_t model
     cdef word_t register
     
-    def __init__(self, unsigned short width, word_t poly, word_t init, char ref_in, char ref_out, word_t xor_out, word_t check=0, word_t residue=0):
+    def __init__(self, unsigned char width, word_t poly, word_t init, char ref_in, char ref_out, word_t xor_out, word_t check=0, word_t residue=0):
         refin = 'true' if ref_in else 'false'
         refout = 'true' if ref_out else 'false'
         
