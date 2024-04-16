@@ -1,5 +1,3 @@
-The fastest Python CRC library available.
-
 This is a Cython module with bindings to the [crcany](https://github.com/madler/crcany) library. It supports calculating CRC hashes of arbitary sizes as well as updating a crc hash over time.
 
 ## Installation
