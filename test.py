@@ -19,6 +19,6 @@ for model, params in anycrc.models.items():
     crc.reset()
     
     for c in test_data:
-        value = crc.calc(c.to_bytes(1))
+        value = crc.calc(c.to_bytes(1, 'little'))
     
     assert value == check
