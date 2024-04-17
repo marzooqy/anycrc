@@ -2,6 +2,10 @@
  * Copyright (C) 2014, 2016, 2017, 2020, 2021 Mark Adler
  * For conditions of distribution and use, see copyright notice in crcany.c.
  */
+ 
+/*
+* Edited by Hussain Al Marzooq to add support for the slice-by-16 algorithm
+*/
 
 /*
   Define a generic model for a CRC and interpret a description of CRC model
@@ -85,7 +89,7 @@ typedef struct {
     word_t res, res_hi;         /* Residue of the CRC */
     word_t table_comb[67];              /* table for CRC combination */
     word_t table_byte[256];             /* table for byte-wise calculation */
-    word_t table_word[WORDCHARS][256];  /* tables for word-wise calculation */
+    word_t table_word[16][256];  /* tables for word-wise calculation */
 } model_t;
 
 /* Read and verify a CRC model description from the string str, returning the

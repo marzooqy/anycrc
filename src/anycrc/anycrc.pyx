@@ -23,19 +23,22 @@ cdef extern from '../../lib/crcany/model.h':
         word_t res, res_hi
         word_t table_comb[67]
         word_t table_byte[256]
-        word_t table_word[WORDCHARS][256]
+        word_t table_word[16][256]
         
     cdef int read_model(model_t *model, char *str, int lenient)
     cdef void process_model(model_t *model)
     
 cdef extern from '../../lib/crcany/crc.h':
     cdef void crc_table_bytewise(model_t *model)
-    cdef void crc_table_wordwise(model_t *model, unsigned little, unsigned bits)
-    cdef word_t crc_wordwise(model_t *model, word_t crc, const void* dat, size_t len)
-
+    cdef word_t crc_bytewise(model_t *model, word_t crc, const void* dat, size_t len); #for testing
+    cdef void crc_table_slice16(model_t *model, unsigned little, unsigned bits)
+    cdef word_t crc_slice16_32(model_t *model, word_t crc, const void* dat, size_t len)
+    cdef word_t crc_slice16_64(model_t *model, word_t crc, const void* dat, size_t len)
+    
 cdef class CRC:
     cdef model_t model
     cdef word_t register
+    cdef word_size
     
     def __init__(self, unsigned char width, word_t poly, word_t init, char ref_in, char ref_out, word_t xor_out, word_t check=0, word_t residue=0):
         refin = 'true' if ref_in else 'false'
@@ -51,9 +54,9 @@ cdef class CRC:
         crc_table_bytewise(&self.model)
         
         cdef unsigned endian = 1 if sys.byteorder == 'little' else 0
-        cdef unsigned word_size = 64 if sys.maxsize > 2 ** 32 else 32
+        self.word_size = 64 if sys.maxsize > 2 ** 32 else 32
         
-        crc_table_wordwise(&self.model, endian , word_size)
+        crc_table_slice16(&self.model, endian, self.word_size)
         self.register = self.model.init
         
     def calc(self, data):
@@ -61,9 +64,21 @@ cdef class CRC:
             data = (<unicode> data).encode('utf-8')
             
         cdef const unsigned char* data_p = data
-        cdef word_t crc = crc_wordwise(&self.model, self.register, data_p, len(data))
-        self.register = crc
-        return crc
+        
+        if self.word_size == 64:
+            self.register = crc_slice16_64(&self.model, self.register, data_p, len(data))
+        else:
+            self.register = crc_slice16_32(&self.model, self.register, data_p, len(data))
+            
+        return self.register
+        
+    def _calc(self, data):
+        if isinstance(data, str):
+            data = (<unicode> data).encode('utf-8')
+            
+        cdef const unsigned char* data_p = data
+        self.register = crc_bytewise(&self.model, self.register, data_p, len(data))
+        return self.register
         
     def reset(self):
         self.register = self.model.init

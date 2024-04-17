@@ -2,6 +2,10 @@
  * Copyright (C) 2014, 2016, 2017, 2020 Mark Adler
  * For conditions of distribution and use, see copyright notice in crcany.c.
  */
+ 
+/*
+* Edited by Hussain Al Marzooq to add support for the slice-by-16 algorithm
+*/
 
 #include "model.h"
 
