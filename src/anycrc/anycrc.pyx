@@ -32,8 +32,7 @@ cdef extern from '../../lib/crcany/crc.h':
     cdef void crc_table_bytewise(model_t *model)
     cdef word_t crc_bytewise(model_t *model, word_t crc, const void* dat, size_t len); #for testing
     cdef void crc_table_slice16(model_t *model, unsigned little, unsigned bits)
-    cdef word_t crc_slice16_32(model_t *model, word_t crc, const void* dat, size_t len)
-    cdef word_t crc_slice16_64(model_t *model, word_t crc, const void* dat, size_t len)
+    cdef word_t crc_slice16(model_t *model, word_t crc, const void* dat, size_t len)
     
 cdef class CRC:
     cdef model_t model
@@ -64,12 +63,7 @@ cdef class CRC:
             data = (<unicode> data).encode('utf-8')
             
         cdef const unsigned char* data_p = data
-        
-        if self.word_size == 64:
-            self.register = crc_slice16_64(&self.model, self.register, data_p, len(data))
-        else:
-            self.register = crc_slice16_32(&self.model, self.register, data_p, len(data))
-            
+        self.register = crc_slice16(&self.model, self.register, data_p, len(data))
         return self.register
         
     def _calc(self, data):

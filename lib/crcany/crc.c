@@ -336,7 +336,7 @@ void crc_table_slice16(model_t *model, unsigned little, unsigned word_bits) {
     }
 }
 
-word_t crc_slice16_32(model_t *model, word_t crc, void const *dat, size_t len) {
+word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
     unsigned char const *buf = dat;
 
     // If requested, return the initial CRC.
@@ -383,27 +383,32 @@ word_t crc_slice16_32(model_t *model, word_t crc, void const *dat, size_t len) {
             if (!model->ref)
                 crc = swap(crc);
             do {
-                crc ^= *(uint32_t const *)buf;
-				uint32_t crc2 = *(uint32_t const *)(buf + 4);
-				uint32_t crc3 = *(uint32_t const *)(buf + 8);
-				uint32_t crc4 = *(uint32_t const *)(buf + 12);
+				uint32_t crc_hi = crc >> 32;
+				uint32_t crc_lo = crc & 0xffffffff;
+				uint32_t i1 = *(uint32_t const *)buf;
+				uint32_t i2 = *(uint32_t const *)(buf + 4);
+				uint32_t i3 = *(uint32_t const *)(buf + 8);
+				uint32_t i4 = *(uint32_t const *)(buf + 12);
 				
-                crc = model->table_word[15][crc & 0xff]
-                    ^ model->table_word[14][(crc >> 8) & 0xff]
-                    ^ model->table_word[13][(crc >> 16) & 0xff]
-                    ^ model->table_word[12][(crc >> 24) & 0xff]
-                    ^ model->table_word[11][crc2 & 0xff]
-                    ^ model->table_word[10][(crc2 >> 8) & 0xff]
-                    ^ model->table_word[9][(crc2 >> 16) & 0xff]
-                    ^ model->table_word[8][crc2 >> 24]
-					^ model->table_word[7][crc3 & 0xff]
-                    ^ model->table_word[6][(crc3 >> 8) & 0xff]
-                    ^ model->table_word[5][(crc3 >> 16) & 0xff]
-                    ^ model->table_word[4][crc3 >> 24]
-                    ^ model->table_word[3][crc4 & 0xff]
-                    ^ model->table_word[2][(crc4 >> 8) & 0xff]
-                    ^ model->table_word[1][(crc4 >> 16) & 0xff]
-                    ^ model->table_word[0][crc4 >> 24];
+				crc_hi ^= i2;
+				crc_lo ^= i1;
+				
+                crc = model->table_word[15][crc_lo & 0xff]
+                    ^ model->table_word[14][(crc_lo >> 8) & 0xff]
+                    ^ model->table_word[13][(crc_lo >> 16) & 0xff]
+                    ^ model->table_word[12][(crc_lo >> 24) & 0xff]
+                    ^ model->table_word[11][crc_hi & 0xff]
+                    ^ model->table_word[10][(crc_hi >> 8) & 0xff]
+                    ^ model->table_word[9][(crc_hi >> 16) & 0xff]
+                    ^ model->table_word[8][crc_hi >> 24]
+					^ model->table_word[7][i3 & 0xff]
+                    ^ model->table_word[6][(i3 >> 8) & 0xff]
+                    ^ model->table_word[5][(i3 >> 16) & 0xff]
+                    ^ model->table_word[4][i3 >> 24]
+                    ^ model->table_word[3][i4 & 0xff]
+                    ^ model->table_word[2][(i4 >> 8) & 0xff]
+                    ^ model->table_word[1][(i4 >> 16) & 0xff]
+                    ^ model->table_word[0][i4 >> 24];
 					
                 buf += 16;
                 len -= 16;
@@ -415,155 +420,32 @@ word_t crc_slice16_32(model_t *model, word_t crc, void const *dat, size_t len) {
             if (model->ref)
                 crc = swap(crc);
             do {
-                crc ^= *(uint32_t const *)buf;
-				uint32_t crc2 = *(uint32_t const *)(buf + 4);
-				uint32_t crc3 = *(uint32_t const *)(buf + 8);
-				uint32_t crc4 = *(uint32_t const *)(buf + 12);
+				uint32_t crc_hi = crc >> 32;
+				uint32_t crc_lo = crc & 0xffffffff;
+				uint32_t i1 = *(uint32_t const *)buf;
+				uint32_t i2 = *(uint32_t const *)(buf + 4);
+				uint32_t i3 = *(uint32_t const *)(buf + 8);
+				uint32_t i4 = *(uint32_t const *)(buf + 12);
 				
-                crc = model->table_word[0][crc4 & 0xff]
-                    ^ model->table_word[1][(crc4 >> 8) & 0xff]
-                    ^ model->table_word[2][(crc4 >> 16) & 0xff]
-                    ^ model->table_word[3][(crc4 >> 24) & 0xff]
-                    ^ model->table_word[4][crc3 & 0xff]
-                    ^ model->table_word[5][(crc3 >> 8) & 0xff]
-                    ^ model->table_word[6][(crc3 >> 16) & 0xff]
-                    ^ model->table_word[7][crc3 >> 24]
-                    ^ model->table_word[8][crc2 & 0xff]
-                    ^ model->table_word[9][(crc2 >> 8) & 0xff]
-                    ^ model->table_word[10][(crc2 >> 16) & 0xff]
-                    ^ model->table_word[11][crc2 >> 24]
-                    ^ model->table_word[12][crc & 0xff]
-                    ^ model->table_word[13][(crc >> 8) & 0xff]
-                    ^ model->table_word[14][(crc >> 16) & 0xff]
-                    ^ model->table_word[15][(crc >> 24) & 0xff];
-					
-                buf += 16;
-                len -= 16;
-            } while (len >= 16);
-            if (model->ref)
-                crc = swap(crc);
-        }
-        crc >>= top;
-    }
-
-    // Process any remaining bytes after the last 16 byte chunk.
-    if (model->ref)
-        while (len--)
-            crc = (crc >> 8) ^ model->table_byte[(crc ^ *buf++) & 0xff];
-    else if (model->width <= 8) {
-        while (len--)
-            crc = model->table_byte[(crc ^ *buf++) & 0xff];
-        crc >>= shift;
-    }
-    else {
-        while (len--)
-            crc = (crc << 8) ^
-                  model->table_byte[((crc >> shift) ^ *buf++) & 0xff];
-        crc &= ONES(model->width);
-    }
-
-    // Post-process and return the CRC.
-    if (model->rev)
-        crc = reverse(crc, model->width);
-    return crc;
-}
-
-word_t crc_slice16_64(model_t *model, word_t crc, void const *dat, size_t len) {
-    unsigned char const *buf = dat;
-
-    // If requested, return the initial CRC.
-    if (buf == NULL)
-        return model->init;
-
-    // Prepare common constants.
-    unsigned little = 1;
-    little = *((unsigned char *)(&little));
-    unsigned top = model->ref ? 0 :
-                   WORDBITS - (model->width > 8 ? model->width : 8);
-    unsigned shift = model->width <= 8 ? 8 - model->width : model->width - 8;
-
-    // Pre-process the CRC.
-    if (model->rev)
-        crc = reverse(crc, model->width);
-
-    // Process the first few bytes up to a word_t boundary, if any.
-    if (model->ref) {
-        crc &= ONES(model->width);
-        while (len && ((ptrdiff_t)buf & (WORDCHARS - 1))) {
-            crc = (crc >> 8) ^ model->table_byte[(crc ^ *buf++) & 0xff];
-            len--;
-        }
-    }
-    else if (model->width <= 8) {
-        crc <<= shift;
-        while (len && ((ptrdiff_t)buf & (WORDCHARS - 1))) {
-            crc = model->table_byte[(crc ^ *buf++) & 0xff];
-            len--;
-        }
-    }
-    else
-        while (len && ((ptrdiff_t)buf & (WORDCHARS - 1))) {
-            crc = (crc << 8) ^
-                  model->table_byte[((crc >> shift) ^ *buf++) & 0xff];
-            len--;
-        }
-
-    // Process as many 16 byte chunks as are available.
-    if (len >= 16) {
-        crc <<= top;
-        if (little) {
-            if (!model->ref)
-                crc = swap(crc);
-            do {
-                crc ^= *(uint64_t const *)buf;
-				uint64_t crc2 = *(uint64_t const *)(buf + 8);
+				crc_hi ^= i1;
+				crc_lo ^= i2;
 				
-                crc = model->table_word[15][crc & 0xff]
-                    ^ model->table_word[14][(crc >> 8) & 0xff]
-                    ^ model->table_word[13][(crc >> 16) & 0xff]
-                    ^ model->table_word[12][(crc >> 24) & 0xff]
-                    ^ model->table_word[11][(crc >> 32) & 0xff]
-                    ^ model->table_word[10][(crc >> 40) & 0xff]
-                    ^ model->table_word[9][(crc >> 48) & 0xff]
-                    ^ model->table_word[8][crc >> 56]
-					^ model->table_word[7][crc2 & 0xff]
-                    ^ model->table_word[6][(crc2 >> 8) & 0xff]
-                    ^ model->table_word[5][(crc2 >> 16) & 0xff]
-                    ^ model->table_word[4][(crc2 >> 24) & 0xff]
-                    ^ model->table_word[3][(crc2 >> 32) & 0xff]
-                    ^ model->table_word[2][(crc2 >> 40) & 0xff]
-                    ^ model->table_word[1][(crc2 >> 48) & 0xff]
-                    ^ model->table_word[0][crc2 >> 56];
-					
-                buf += 16;
-                len -= 16;
-            } while (len >= 16);
-            if (!model->ref)
-                crc = swap(crc);
-        }
-        else {
-            if (model->ref)
-                crc = swap(crc);
-            do {
-                crc ^= *(uint64_t const *)buf;
-				uint64_t crc2 = *(uint64_t const *)(buf + 8);
-				
-                crc = model->table_word[0][crc2 & 0xff]
-                    ^ model->table_word[1][(crc2 >> 8) & 0xff]
-                    ^ model->table_word[2][(crc2 >> 16) & 0xff]
-                    ^ model->table_word[3][(crc2 >> 24) & 0xff]
-                    ^ model->table_word[4][(crc2 >> 32) & 0xff]
-                    ^ model->table_word[5][(crc2 >> 40) & 0xff]
-                    ^ model->table_word[6][(crc2 >> 48) & 0xff]
-                    ^ model->table_word[7][crc2 >> 56]
-                    ^ model->table_word[8][crc & 0xff]
-                    ^ model->table_word[9][(crc >> 8) & 0xff]
-                    ^ model->table_word[10][(crc >> 16) & 0xff]
-                    ^ model->table_word[11][(crc >> 24) & 0xff]
-                    ^ model->table_word[12][(crc >> 32) & 0xff]
-                    ^ model->table_word[13][(crc >> 40) & 0xff]
-                    ^ model->table_word[14][(crc >> 48) & 0xff]
-                    ^ model->table_word[15][crc >> 56];
+                crc = model->table_word[0][i4 & 0xff]
+                    ^ model->table_word[1][(i4 >> 8) & 0xff]
+                    ^ model->table_word[2][(i4 >> 16) & 0xff]
+                    ^ model->table_word[3][(i4 >> 24) & 0xff]
+                    ^ model->table_word[4][i3 & 0xff]
+                    ^ model->table_word[5][(i3 >> 8) & 0xff]
+                    ^ model->table_word[6][(i3 >> 16) & 0xff]
+                    ^ model->table_word[7][i3 >> 24]
+                    ^ model->table_word[8][crc_lo & 0xff]
+                    ^ model->table_word[9][(crc_lo >> 8) & 0xff]
+                    ^ model->table_word[10][(crc_lo >> 16) & 0xff]
+                    ^ model->table_word[11][crc_lo >> 24]
+                    ^ model->table_word[12][crc_hi & 0xff]
+                    ^ model->table_word[13][(crc_hi >> 8) & 0xff]
+                    ^ model->table_word[14][(crc_hi >> 16) & 0xff]
+                    ^ model->table_word[15][(crc_hi >> 24) & 0xff];
 					
                 buf += 16;
                 len -= 16;
