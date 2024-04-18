@@ -21,6 +21,13 @@ jobs:
         # macos-13 is an intel runner, macos-14 is apple silicon
         os: [ubuntu-latest, windows-latest, macos-13, macos-14]
         python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.12-32"]
+        exclude:
+          - os: ubuntu-latest
+            python-version: "3.12-32"
+          - os: macos-13
+            python-version: "3.12-32"
+          - os: macos-14
+            python-version: "3.12-32"
 
     steps:
     - uses: actions/checkout@v3
