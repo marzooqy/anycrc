@@ -1,9 +1,15 @@
 from src import anycrc
+import sys
 
-#The standard test data b'123456789' doesn't when testing slice-by-16 because data length < 16
+word_size = 64 if sys.maxsize > 2 ** 32 else 32
+
+#The standard test data b'123456789' isn't good enough when testing slice-by-16 because the data length is < 16
 test_data = b'abcdefghijklmnopqrstuvwxyz'
 
 for model, params in anycrc.models.items():
+    if word_size == 32 and params.width > 32:
+        break
+        
     crc = anycrc.Model(model)
     crc2 = anycrc.Model(model)
     
