@@ -49,7 +49,7 @@ Calculating the CRC32 for lorem ipsum 10 million times:
 | fastcrc | 17.508 | 242.39 | 2.629 |
 | crcmod-plus | 19.619 | 216.32 | 2.946 |
 
-Calculating the CRC32 for lorem ipsum repeated 1 million times in a single pass:
+Calculating the CRC32 for the text of lorem ipsum repeated 1 million times in a single pass:
 
 | Module | Time Elapsed (s) | Speed (MiB/s) | Relative |
 |---|:-:|:-:|:-:|
