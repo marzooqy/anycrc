@@ -42,7 +42,12 @@ cdef class CRC:
     def __init__(self, unsigned char width, word_t poly, word_t init, char ref_in, char ref_out, word_t xor_out, word_t check=0, word_t residue=0):
         refin = 'true' if ref_in else 'false'
         refout = 'true' if ref_out else 'false'
+        cdef unsigned endian = 1 if sys.byteorder == 'little' else 0
+        self.word_size = 64 if sys.maxsize > 2 ** 32 else 32
         
+        if width > self.word_size:
+            raise ValueError('CRC width is larger than the system\'s (or python\'s) maximum integer size')
+            
         string = f'width={width} poly={poly} init={init} refin={refin} refout={refout} xorout={xor_out} check={check} residue={residue} name=""'.encode('utf-8')
         cdef int error_code = read_model(&self.model, string, 0)
         
@@ -51,9 +56,6 @@ cdef class CRC:
             
         process_model(&self.model)
         crc_table_bytewise(&self.model)
-        
-        cdef unsigned endian = 1 if sys.byteorder == 'little' else 0
-        self.word_size = 64 if sys.maxsize > 2 ** 32 else 32
         
         crc_table_slice16(&self.model, endian, self.word_size)
         self.register = self.model.init

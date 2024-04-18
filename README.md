@@ -34,15 +34,17 @@ Specify your own CRC parameters:
 35
 ```
 
-For a list of pre-built models, check [models.py](https://github.com/marzooqy/anycrc/blob/main/src/anycrc/models.py)
+The CRC's width cannot exceed the system's maximum integer width.
+
+For a list of pre-built models, check [models.py](https://github.com/marzooqy/anycrc/blob/main/src/anycrc/models.py).
 
 ## Benchmarks
 
 Calculating the CRC32 for lorem ipsum 10 million times:
 
-| Module | Time Elapsed | Average Time | Relative |
+| Module | Time Elapsed (s) | Average Time (MiB/s) | Relative |
 |---|:-:|:-:|:-:|
-| anycrc | 7.732s | 0.773 us/run | 1.000 |
-| binascii | 7.612s | 0.761 us/run | 0.984 |
-| fastcrc | 16.483s | 1.648 us/run | 2.132 |
-| crcmod-plus | 18.259s | 1.826 us/run | 2.361 |
+| anycrc | 6.660s | 637.26 | 1.000 |
+| binascii | 7.567s | 560.86 | 1.136 |
+| fastcrc | 17.508s | 242.39 us/run | 2.629 |
+| crcmod-plus | 19.619s | 216.32 us/run | 2.946 |
