@@ -42,7 +42,7 @@ For a list of pre-built models, check [models.py](https://github.com/marzooqy/an
 
 Calculating the CRC32 for lorem ipsum 10 million times:
 
-| Module | Time Elapsed (s) | Average Time (MiB/s) | Relative |
+| Module | Time Elapsed (s) | Throughput (MiB/s) | Relative |
 |---|:-:|:-:|:-:|
 | anycrc | 6.660 | 637.26 | 1.000 |
 | binascii | 7.567 | 560.86 | 1.136 |
