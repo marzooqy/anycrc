@@ -31,21 +31,21 @@ cdef extern from '../../lib/crcany/model.h':
 cdef extern from '../../lib/crcany/crc.h':
     cdef void crc_table_bytewise(model_t *model)
     cdef word_t crc_bytewise(model_t *model, word_t crc, const void* dat, size_t len); #for testing
-    cdef void crc_table_slice16(model_t *model, unsigned little, unsigned bits)
+    cdef void crc_table_slice16(model_t *model, unsigned little, unsigned word_bits)
     cdef word_t crc_slice16(model_t *model, word_t crc, const void* dat, size_t len)
     
 cdef class CRC:
     cdef model_t model
     cdef word_t register
-    cdef word_size
+    cdef unsigned word_width
     
     def __init__(self, unsigned char width, word_t poly, word_t init, char ref_in, char ref_out, word_t xor_out, word_t check=0, word_t residue=0):
+        cdef unsigned endian = 1 if sys.byteorder == 'little' else 0
+        self.word_width = 64 if sys.maxsize > 2 ** 32 else 32
         refin = 'true' if ref_in else 'false'
         refout = 'true' if ref_out else 'false'
-        cdef unsigned endian = 1 if sys.byteorder == 'little' else 0
-        self.word_size = 64 if sys.maxsize > 2 ** 32 else 32
         
-        if width > self.word_size:
+        if width > self.word_width:
             raise ValueError('CRC width is larger than the system\'s (or python\'s) maximum integer size')
             
         string = f'width={width} poly={poly} init={init} refin={refin} refout={refout} xorout={xor_out} check={check} residue={residue} name=""'.encode('utf-8')
@@ -57,9 +57,10 @@ cdef class CRC:
         process_model(&self.model)
         crc_table_bytewise(&self.model)
         
-        crc_table_slice16(&self.model, endian, self.word_size)
+        crc_table_slice16(&self.model, endian, self.word_width)
         self.register = self.model.init
         
+    #slice-by-16
     def calc(self, data):
         if isinstance(data, str):
             data = (<unicode> data).encode('utf-8')
@@ -68,6 +69,7 @@ cdef class CRC:
         self.register = crc_slice16(&self.model, self.register, data_p, len(data))
         return self.register
         
+    #byte-by-byte
     def _calc(self, data):
         if isinstance(data, str):
             data = (<unicode> data).encode('utf-8')
