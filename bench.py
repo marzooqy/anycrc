@@ -1,71 +1,118 @@
 from src import anycrc
-import binascii
 import crcmod
 import crcmod.predefined
 import fastcrc
+
 import time
+import sys
+import zlib
 
 test_data = b"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 
-n = 10 ** 7
+def benchmark(data, n):
+    modules = ['anycrc', 'zlib', 'fastcrc', 'crcmod-plus']
+    duration = [0] * len(modules)
+    speed = [0] * len(modules)
+    relative = [0] * len(modules)
+    
+    print()
+    
+    test_n = 0
+    
+    #anycrc
+    t = time.perf_counter()
+    model = anycrc.Model('CRC32-ISO-HDLC')
 
-print()
+    for i in range(n):
+        model.calc(data)
+        model.reset()
 
-#anycrc
-t = time.perf_counter()
-model = anycrc.Model('CRC32-ISO-HDLC')
+    anycrc_time_elapsed = time.perf_counter() - t
+    
+    duration[test_n] = anycrc_time_elapsed
+    speed[test_n] = len(data) * n / (1024 ** 2) / anycrc_time_elapsed
+    relative[test_n] = 1
+    
+    print(modules[test_n])
+    print('Time Elapsed: {:.3f}s'.format(duration[test_n]))
+    print('Speed: {:.2f} MiB/s'.format(speed[test_n]))
+    print('Relative: {:.3f}'.format(relative[test_n]))
+    print()
+    
+    test_n += 1
+    
+    #zlib
+    t = time.perf_counter()
 
-for i in range(n):
-    model.calc(test_data)
-    model.reset()
+    for i in range(n):
+        zlib.crc32(data)
 
-anycrc_time_elapsed = time.perf_counter() - t
+    time_elapsed = time.perf_counter() - t
 
-print('anycrc')
-print('Time Elapsed: {:.3f}s'.format(anycrc_time_elapsed))
-print('Speed: {:.2f} MiB/s'.format(len(test_data) * n / (1024 ** 2) / anycrc_time_elapsed))
-print('Relative: {:.3f}'.format(1))
-print()
+    duration[test_n] = time_elapsed
+    speed[test_n] = len(data) * n / (1024 ** 2) / time_elapsed
+    relative[test_n] = time_elapsed / anycrc_time_elapsed
+    
+    print(modules[test_n])
+    print('Time Elapsed: {:.3f}s'.format(duration[test_n]))
+    print('Speed: {:.2f} MiB/s'.format(speed[test_n]))
+    print('Relative: {:.3f}'.format(relative[test_n]))
+    print()
+    
+    test_n += 1
+    
+    #fastcrc
+    t = time.perf_counter()
 
-#binascii
-t = time.perf_counter()
+    for i in range(n):
+        fastcrc.crc32.iso_hdlc(data)
 
-for i in range(n):
-    binascii.crc32(test_data)
+    time_elapsed = time.perf_counter() - t
 
-time_elapsed = time.perf_counter() - t
+    duration[test_n] = time_elapsed
+    speed[test_n] = len(data) * n / (1024 ** 2) / time_elapsed
+    relative[test_n] = time_elapsed / anycrc_time_elapsed
+    
+    print(modules[test_n])
+    print('Time Elapsed: {:.3f}s'.format(duration[test_n]))
+    print('Speed: {:.2f} MiB/s'.format(speed[test_n]))
+    print('Relative: {:.3f}'.format(relative[test_n]))
+    print()
+    
+    test_n += 1
+    
+    #crcmod
+    t = time.perf_counter()
 
-print('binascii')
-print('Time Elapsed: {:.3f}s'.format(time_elapsed))
-print('Speed: {:.2f} MiB/s'.format(len(test_data) * n / (1024 ** 2) / time_elapsed))
-print('Relative: {:.3f}'.format(time_elapsed / anycrc_time_elapsed))
-print()
+    calc = crcmod.predefined.mkPredefinedCrcFun('crc-32')
+    for i in range(n):
+        calc(data)
 
-#fastcrc
-t = time.perf_counter()
+    time_elapsed = time.perf_counter() - t
 
-for i in range(n):
-    fastcrc.crc32.iso_hdlc(test_data)
-
-time_elapsed = time.perf_counter() - t
-
-print('fastcrc')
-print('Time Elapsed: {:.3f}s'.format(time_elapsed))
-print('Speed: {:.2f} MiB/s'.format(len(test_data) * n / (1024 ** 2) / time_elapsed))
-print('Relative: {:.3f}'.format(time_elapsed / anycrc_time_elapsed))
-print()
-
-#crcmod
-t = time.perf_counter()
-
-calc = crcmod.predefined.mkPredefinedCrcFun('crc-32')
-for i in range(n):
-    calc(test_data)
-
-time_elapsed = time.perf_counter() - t
-
-print('crcmod-plus')
-print('Time Elapsed: {:.3f}s'.format(time_elapsed))
-print('Speed: {:.2f} MiB/s'.format(len(test_data) * n / (1024 ** 2) / time_elapsed))
-print('Relative: {:.3f}'.format(time_elapsed / anycrc_time_elapsed))
-print()
+    duration[test_n] = time_elapsed
+    speed[test_n] = len(data) * n / (1024 ** 2) / time_elapsed
+    relative[test_n] = time_elapsed / anycrc_time_elapsed
+    
+    print(modules[test_n])
+    print('Time Elapsed: {:.3f}s'.format(duration[test_n]))
+    print('Speed: {:.2f} MiB/s'.format(speed[test_n]))
+    print('Relative: {:.3f}'.format(relative[test_n]))
+    print()
+    
+    print("| Module | Time Elapsed (s) | Speed (MiB/s) | Relative |")
+    print("|---|:-:|:-:|:-:|")
+    
+    for i in range(len(modules)):
+        print('| {} | {:.3f} | {:.2f} | {:.3f} |'.format(modules[i], duration[i], speed[i], relative[i]))
+        
+    print()
+    
+if len(sys.argv) == 1:
+    print('Enter the number of the test as a parameter\n')
+    
+elif sys.argv[1] == '1':
+    benchmark(test_data, 10 ** 7)
+    
+elif sys.argv[1] == '2':
+    benchmark(test_data * 10 ** 6, 1)
