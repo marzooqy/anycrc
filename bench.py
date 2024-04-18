@@ -20,11 +20,10 @@ for i in range(n):
     model.reset()
 
 anycrc_time_elapsed = time.perf_counter() - t
-avg_time = anycrc_time_elapsed / n
 
 print('anycrc')
 print('Time Elapsed: {:.3f}s'.format(anycrc_time_elapsed))
-print('Average: {:.3f} us/run'.format(avg_time * 10 ** 6))
+print('Speed: {:.2f} MiB/s'.format(len(test_data) * n / (1024 ** 2) / anycrc_time_elapsed))
 print('Relative: {:.3f}'.format(1))
 print()
 
@@ -35,11 +34,10 @@ for i in range(n):
     binascii.crc32(test_data)
 
 time_elapsed = time.perf_counter() - t
-avg_time = time_elapsed / n
 
 print('binascii')
 print('Time Elapsed: {:.3f}s'.format(time_elapsed))
-print('Average: {:.3f} us/run'.format(avg_time * 10 ** 6))
+print('Speed: {:.2f} MiB/s'.format(len(test_data) * n / (1024 ** 2) / time_elapsed))
 print('Relative: {:.3f}'.format(time_elapsed / anycrc_time_elapsed))
 print()
 
@@ -50,11 +48,10 @@ for i in range(n):
     fastcrc.crc32.iso_hdlc(test_data)
 
 time_elapsed = time.perf_counter() - t
-avg_time = time_elapsed / n
 
 print('fastcrc')
 print('Time Elapsed: {:.3f}s'.format(time_elapsed))
-print('Average: {:.3f} us/run'.format(avg_time * 10 ** 6))
+print('Speed: {:.2f} MiB/s'.format(len(test_data) * n / (1024 ** 2) / time_elapsed))
 print('Relative: {:.3f}'.format(time_elapsed / anycrc_time_elapsed))
 print()
 
@@ -66,10 +63,9 @@ for i in range(n):
     calc(test_data)
 
 time_elapsed = time.perf_counter() - t
-avg_time = time_elapsed / n
 
 print('crcmod-plus')
 print('Time Elapsed: {:.3f}s'.format(time_elapsed))
-print('Average: {:.3f} us/run'.format(avg_time * 10 ** 6))
+print('Speed: {:.2f} MiB/s'.format(len(test_data) * n / (1024 ** 2) / time_elapsed))
 print('Relative: {:.3f}'.format(time_elapsed / anycrc_time_elapsed))
 print()
