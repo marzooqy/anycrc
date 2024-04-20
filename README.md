@@ -28,7 +28,7 @@ Read the data in chunks:
 Specify the starting CRC value:
 
 ```python
->>> crc32.set_to(3928882368)
+>>> crc32.set(3928882368)
 >>> crc32.calc('World!')
 472456355
 ```

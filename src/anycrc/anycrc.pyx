@@ -78,7 +78,7 @@ cdef class CRC:
         self.register = crc_bytewise(&self.model, self.register, data_p, len(data))
         return self.register
         
-    def set_to(self, word_t crc):
+    def set(self, word_t crc):
         self.register = crc
         
     def reset(self):
