@@ -56,8 +56,8 @@ cdef class CRC:
             
         process_model(&self.model)
         crc_table_bytewise(&self.model)
-        
         crc_table_slice16(&self.model, endian, self.word_width)
+        
         self.register = self.model.init
         
     #slice-by-16
@@ -77,6 +77,9 @@ cdef class CRC:
         cdef const unsigned char* data_p = data
         self.register = crc_bytewise(&self.model, self.register, data_p, len(data))
         return self.register
+        
+    def set_to(self, word_t crc):
+        self.register = crc
         
     def reset(self):
         self.register = self.model.init

@@ -18,10 +18,18 @@ Use an existing model:
 Read the data in chunks:
 
 ```python
->>> crc32.reset() #set to the initial value
+>>> crc32.reset()
 >>> crc32.calc(b'Hello ')
 3928882368
 >>> crc32.calc(b'World!')
+472456355
+```
+
+Specify the starting CRC value:
+
+```python
+>>> crc32.set_to(3928882368)
+>>> crc32.calc('World!')
 472456355
 ```
 
@@ -34,9 +42,11 @@ Specify your own CRC parameters:
 35
 ```
 
-The CRC's width cannot exceed the system's maximum integer width.
+The CRC's width cannot exceed your system's maximum integer width.
 
-For a list of pre-built models, check [models.py](https://github.com/marzooqy/anycrc/blob/main/src/anycrc/models.py).
+For a list of pre-built models, check [models.py](https://github.com/marzooqy/anycrc/blob/main/src/anycrc/models.py). To get a list of the models at any time, use the following command:
+
+`python -m anycrc models`
 
 ## Benchmarks
 

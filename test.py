@@ -37,9 +37,7 @@ for model, params in anycrc.models.items():
     
     print('1 byte partial:   ' + fmt_str.format(value, check))
     assert value == check
-    
     crc.reset()
-    crc2.reset()
     
     #read all at once
     value = crc.calc(test_data2)
