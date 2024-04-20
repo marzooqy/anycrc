@@ -54,16 +54,18 @@ Calculating the CRC32 for lorem ipsum 10 million times:
 
 | Module | Time Elapsed (s) | Speed (MiB/s) | Relative |
 |---|:-:|:-:|:-:|
-| anycrc | 6.660 | 637.26 | 1.000 |
-| zlib | 7.567 | 560.86 | 1.136 |
-| fastcrc | 17.508 | 242.39 | 2.629 |
-| crcmod-plus | 19.619 | 216.32 | 2.946 |
+| anycrc | 2.342 | 1812.18 | 1.000 |
+| zlib | 2.779 | 1527.24 | 1.187 |
+| fastcrc | 7.757 | 547.12 | 3.312 |
+| crcmod-plus | 8.821 | 481.11 | 3.767 |
 
 Calculating the CRC32 for the text of lorem ipsum repeated 1 million times in a single pass:
 
 | Module | Time Elapsed (s) | Speed (MiB/s) | Relative |
 |---|:-:|:-:|:-:|
-| anycrc | 0.293 | 1447.36 | 1.000 |
-| zlib | 0.496 | 856.06 | 1.691 |
-| fastcrc | 1.310 | 323.88 | 4.469 |
-| crcmod-plus | 1.280 | 331.44 | 4.367 |
+| anycrc | 0.157 | 2704.32 | 1.000 |
+| zlib | 0.214 | 1983.29 | 1.364 |
+| fastcrc | 0.670 | 633.29 | 4.270 |
+| crcmod-plus | 0.669 | 634.25 | 4.264 |
+
+Tested on a 12th generation Intel i7 processor.
