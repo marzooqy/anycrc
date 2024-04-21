@@ -396,7 +396,7 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
                 crc = model->table_word[15][crc_lo & 0xff]
                     ^ model->table_word[14][(crc_lo >> 8) & 0xff]
                     ^ model->table_word[13][(crc_lo >> 16) & 0xff]
-                    ^ model->table_word[12][(crc_lo >> 24) & 0xff]
+                    ^ model->table_word[12][crc_lo >> 24]
                     ^ model->table_word[11][crc_hi & 0xff]
                     ^ model->table_word[10][(crc_hi >> 8) & 0xff]
                     ^ model->table_word[9][(crc_hi >> 16) & 0xff]
@@ -433,7 +433,7 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
                 crc = model->table_word[0][i4 & 0xff]
                     ^ model->table_word[1][(i4 >> 8) & 0xff]
                     ^ model->table_word[2][(i4 >> 16) & 0xff]
-                    ^ model->table_word[3][(i4 >> 24) & 0xff]
+                    ^ model->table_word[3][i4 >> 24]
                     ^ model->table_word[4][i3 & 0xff]
                     ^ model->table_word[5][(i3 >> 8) & 0xff]
                     ^ model->table_word[6][(i3 >> 16) & 0xff]
@@ -445,7 +445,7 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
                     ^ model->table_word[12][crc_hi & 0xff]
                     ^ model->table_word[13][(crc_hi >> 8) & 0xff]
                     ^ model->table_word[14][(crc_hi >> 16) & 0xff]
-                    ^ model->table_word[15][(crc_hi >> 24) & 0xff];
+                    ^ model->table_word[15][crc_hi >> 24];
 					
                 buf += 16;
                 len -= 16;
