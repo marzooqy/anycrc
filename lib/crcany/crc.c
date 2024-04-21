@@ -383,16 +383,16 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
             if (!model->ref)
                 crc = swap(crc);
             do {
-				uint32_t crc_hi = crc >> 32;
-				uint32_t crc_lo = crc & 0xffffffff;
-				uint32_t i1 = *(uint32_t const *)buf;
-				uint32_t i2 = *(uint32_t const *)(buf + 4);
-				uint32_t i3 = *(uint32_t const *)(buf + 8);
-				uint32_t i4 = *(uint32_t const *)(buf + 12);
-				
-				crc_hi ^= i2;
-				crc_lo ^= i1;
-				
+		uint32_t crc_hi = crc >> 32;
+		uint32_t crc_lo = crc & 0xffffffff;
+		uint32_t i1 = *(uint32_t const *)buf;
+		uint32_t i2 = *(uint32_t const *)(buf + 4);
+		uint32_t i3 = *(uint32_t const *)(buf + 8);
+		uint32_t i4 = *(uint32_t const *)(buf + 12);
+		
+		crc_hi ^= i2;
+		crc_lo ^= i1;
+		
                 crc = model->table_word[15][crc_lo & 0xff]
                     ^ model->table_word[14][(crc_lo >> 8) & 0xff]
                     ^ model->table_word[13][(crc_lo >> 16) & 0xff]
@@ -401,7 +401,7 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
                     ^ model->table_word[10][(crc_hi >> 8) & 0xff]
                     ^ model->table_word[9][(crc_hi >> 16) & 0xff]
                     ^ model->table_word[8][crc_hi >> 24]
-					^ model->table_word[7][i3 & 0xff]
+                    ^ model->table_word[7][i3 & 0xff]
                     ^ model->table_word[6][(i3 >> 8) & 0xff]
                     ^ model->table_word[5][(i3 >> 16) & 0xff]
                     ^ model->table_word[4][i3 >> 24]
@@ -420,16 +420,16 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
             if (model->ref)
                 crc = swap(crc);
             do {
-				uint32_t crc_hi = crc >> 32;
-				uint32_t crc_lo = crc & 0xffffffff;
-				uint32_t i1 = *(uint32_t const *)buf;
-				uint32_t i2 = *(uint32_t const *)(buf + 4);
-				uint32_t i3 = *(uint32_t const *)(buf + 8);
-				uint32_t i4 = *(uint32_t const *)(buf + 12);
-				
-				crc_hi ^= i1;
-				crc_lo ^= i2;
-				
+		uint32_t crc_hi = crc >> 32;
+		uint32_t crc_lo = crc & 0xffffffff;
+		uint32_t i1 = *(uint32_t const *)buf;
+		uint32_t i2 = *(uint32_t const *)(buf + 4);
+		uint32_t i3 = *(uint32_t const *)(buf + 8);
+		uint32_t i4 = *(uint32_t const *)(buf + 12);
+		
+		crc_hi ^= i1;
+		crc_lo ^= i2;
+		
                 crc = model->table_word[0][i4 & 0xff]
                     ^ model->table_word[1][(i4 >> 8) & 0xff]
                     ^ model->table_word[2][(i4 >> 16) & 0xff]
