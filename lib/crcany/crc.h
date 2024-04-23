@@ -80,6 +80,9 @@ word_t crc_wordwise(model_t *model, word_t crc, void const *dat, size_t len);
 void crc_table_slice16(model_t *model, unsigned little, unsigned bits);
 word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len);
 
+/* Attempt at a parallel implementation using crc_combine and openmp */
+word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len);
+
 /* Fill in model->table_comb[n] for combining CRCs. Each entry is x raised to
    the 2 to the n power, modulo the CRC polynomial. Set model->cycle to the
    cycle length and model->back to the index to cycle back to. If the CRC did

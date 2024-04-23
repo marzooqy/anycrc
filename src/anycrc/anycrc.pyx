@@ -1,10 +1,12 @@
 # Copyright (c) 2024 Hussain Al Marzooq
 
 from libc.stdint cimport uintmax_t
-from .models import models
+from cython.parallel import prange
+from .models import models, aliases
 import sys
 
 ctypedef uintmax_t word_t
+cdef bint parallel = True
 
 cdef extern from '../../lib/crcany/model.h':
     cdef const unsigned char WORDCHARS
@@ -30,9 +32,15 @@ cdef extern from '../../lib/crcany/model.h':
     
 cdef extern from '../../lib/crcany/crc.h':
     cdef void crc_table_bytewise(model_t *model)
-    cdef word_t crc_bytewise(model_t *model, word_t crc, const void* dat, size_t len); #for testing
+    cdef word_t crc_bytewise(model_t *model, word_t crc, const void* dat, size_t len);
+    
     cdef void crc_table_slice16(model_t *model, unsigned little, unsigned word_bits)
     cdef word_t crc_slice16(model_t *model, word_t crc, const void* dat, size_t len)
+    
+    cdef word_t crc_parallel(model_t *model, word_t crc, const void *dat, size_t len)
+    
+    cdef void crc_table_combine(model_t *model)
+    cdef word_t crc_combine(model_t *model, word_t crc1, word_t crc2, uintmax_t len2);
     
 cdef class CRC:
     cdef model_t model
@@ -57,23 +65,38 @@ cdef class CRC:
         process_model(&self.model)
         crc_table_bytewise(&self.model)
         crc_table_slice16(&self.model, endian, self.word_width)
+        crc_table_combine(&self.model)
         
         self.register = self.model.init
         
-    #slice-by-16
     def calc(self, data):
         if isinstance(data, str):
             data = (<unicode> data).encode('utf-8')
             
         cdef const unsigned char* data_p = data
+        cdef word_t length = len(data)
+        
+        if parallel and length > 20000:
+            self.register = crc_parallel(&self.model, self.register, data_p, length)
+        else:
+            self.register = crc_slice16(&self.model, self.register, data_p, length)
+            
+        return self.register
+        
+    #parallel
+    def _calc_p(self, data):
+        cdef const unsigned char* data_p = data
+        self.register = crc_parallel(&self.model, self.register, data_p, len(data))
+        return self.register
+        
+    #slice-by-16
+    def _calc_16(self, data):
+        cdef const unsigned char* data_p = data
         self.register = crc_slice16(&self.model, self.register, data_p, len(data))
         return self.register
         
     #byte-by-byte
-    def _calc(self, data):
-        if isinstance(data, str):
-            data = (<unicode> data).encode('utf-8')
-            
+    def _calc_b(self, data):
         cdef const unsigned char* data_p = data
         self.register = crc_bytewise(&self.model, self.register, data_p, len(data))
         return self.register
@@ -84,5 +107,14 @@ cdef class CRC:
     def reset(self):
         self.register = self.model.init
         
+def set_parallel(bint is_parallel):
+    global parallel
+    parallel = is_parallel
+    
 def Model(name):
-    return CRC(*models[name])
+    if name in models:
+        return CRC(*models[name])
+    elif name in aliases:
+        return CRC(*models[aliases[name]])
+    else:
+        raise ValueError('CRC model not found')

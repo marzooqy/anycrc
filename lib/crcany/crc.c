@@ -8,7 +8,10 @@
 */
   
 #include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
+#include "omp.h"
 #include "crc.h"
 
 word_t crc_bitwise(model_t *model, word_t crc, void const *dat, size_t len) {
@@ -376,23 +379,23 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
             len--;
         }
 
-    // Process as many 16 byte chunks as are available.
+    // Process as many 16 byte block as are available.
     if (len >= 16) {
         crc <<= top;
         if (little) {
             if (!model->ref)
                 crc = swap(crc);
             do {
-		uint32_t crc_hi = crc >> 32;
-		uint32_t crc_lo = crc & 0xffffffff;
-		uint32_t i1 = *(uint32_t const *)buf;
-		uint32_t i2 = *(uint32_t const *)(buf + 4);
-		uint32_t i3 = *(uint32_t const *)(buf + 8);
-		uint32_t i4 = *(uint32_t const *)(buf + 12);
-		
-		crc_hi ^= i2;
-		crc_lo ^= i1;
-		
+                uint32_t crc_hi = crc >> 32;
+                uint32_t crc_lo = crc & 0xffffffff;
+                uint32_t i1 = *(uint32_t const *)buf;
+                uint32_t i2 = *(uint32_t const *)(buf + 4);
+                uint32_t i3 = *(uint32_t const *)(buf + 8);
+                uint32_t i4 = *(uint32_t const *)(buf + 12);
+
+                crc_hi ^= i2;
+                crc_lo ^= i1;
+
                 crc = model->table_word[15][crc_lo & 0xff]
                     ^ model->table_word[14][(crc_lo >> 8) & 0xff]
                     ^ model->table_word[13][(crc_lo >> 16) & 0xff]
@@ -409,7 +412,7 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
                     ^ model->table_word[2][(i4 >> 8) & 0xff]
                     ^ model->table_word[1][(i4 >> 16) & 0xff]
                     ^ model->table_word[0][i4 >> 24];
-					
+                    
                 buf += 16;
                 len -= 16;
             } while (len >= 16);
@@ -420,15 +423,15 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
             if (model->ref)
                 crc = swap(crc);
             do {
-		uint32_t crc_hi = crc >> 32;
-		uint32_t crc_lo = crc & 0xffffffff;
-		uint32_t i1 = *(uint32_t const *)buf;
-		uint32_t i2 = *(uint32_t const *)(buf + 4);
-		uint32_t i3 = *(uint32_t const *)(buf + 8);
-		uint32_t i4 = *(uint32_t const *)(buf + 12);
-		
-		crc_hi ^= i1;
-		crc_lo ^= i2;
+                uint32_t crc_hi = crc >> 32;
+                uint32_t crc_lo = crc & 0xffffffff;
+                uint32_t i1 = *(uint32_t const *)buf;
+                uint32_t i2 = *(uint32_t const *)(buf + 4);
+                uint32_t i3 = *(uint32_t const *)(buf + 8);
+                uint32_t i4 = *(uint32_t const *)(buf + 12);
+
+                crc_hi ^= i1;
+                crc_lo ^= i2;
 		
                 crc = model->table_word[0][i4 & 0xff]
                     ^ model->table_word[1][(i4 >> 8) & 0xff]
@@ -446,7 +449,7 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
                     ^ model->table_word[13][(crc_hi >> 8) & 0xff]
                     ^ model->table_word[14][(crc_hi >> 16) & 0xff]
                     ^ model->table_word[15][crc_hi >> 24];
-					
+                    
                 buf += 16;
                 len -= 16;
             } while (len >= 16);
@@ -456,7 +459,7 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
         crc >>= top;
     }
 
-    // Process any remaining bytes after the last 16 byte chunk.
+    // Process any remaining bytes after the last 16 byte block.
     if (model->ref)
         while (len--)
             crc = (crc >> 8) ^ model->table_byte[(crc ^ *buf++) & 0xff];
@@ -476,6 +479,39 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
     if (model->rev)
         crc = reverse(crc, model->width);
     return crc;
+}
+
+word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len) {
+    char nthreads = omp_get_max_threads();
+	word_t* crc_p = (word_t*)malloc(nthreads * sizeof(word_t));
+	size_t block_len = len / nthreads;
+    
+    // This way all of the later blocks will have the same size
+    size_t first_block_len = block_len + (len - nthreads * block_len);
+    void const *offset = (unsigned char*)dat + first_block_len;
+    
+    char i;
+    
+    // Split the data into a number of blocks equal to the system's number of threads and compute the CRC for each in parallel
+	#pragma omp parallel for
+	for(i = 0; i < nthreads; i++) {
+        // First block goes directly into the initial CRC
+        if(i == 0) {
+            crc = crc_slice16(model, crc, (unsigned char*)dat, first_block_len);
+        } else {
+            crc_p[i] = crc_slice16(model, model->init, (unsigned char*)offset + ((i - 1) * block_len), block_len);
+        }
+	}
+	
+    // Combine the CRCs
+    // Not much could be done to parallelize this, so just do it serially
+    for(i = 1; i < nthreads; i++) {
+        crc = crc_combine(model, crc, crc_p[i], block_len);
+    }
+    
+    free(crc_p);
+    
+	return crc;
 }
 
 // Return a(x) multiplied by b(x) modulo p(x), where p(x) is the CRC

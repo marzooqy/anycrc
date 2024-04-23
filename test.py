@@ -24,7 +24,7 @@ for model, params in anycrc.models.items():
     crc2 = anycrc.Model(model)
     
     #read all at once
-    value = crc._calc(test_data)
+    value = crc.calc(test_data)
     check = params.check
     
     print('1 byte whole:     ' + fmt_str.format(value, check))
@@ -33,7 +33,7 @@ for model, params in anycrc.models.items():
     
     #read one char at a time
     for c in test_data:
-        value = crc._calc(c.to_bytes(1, 'little'))
+        value = crc.calc(c.to_bytes(1, 'little'))
     
     print('1 byte partial:   ' + fmt_str.format(value, check))
     assert value == check
@@ -41,7 +41,7 @@ for model, params in anycrc.models.items():
     
     #read all at once
     value = crc.calc(test_data2)
-    value2 = crc2._calc(test_data2)
+    value2 = crc2._calc_b(test_data2)
 
     print('16 bytes whole:   ' + fmt_str.format(value, value2))
     assert value == value2
@@ -53,4 +53,17 @@ for model, params in anycrc.models.items():
 
     print('16 bytes partial: ' + fmt_str.format(value, value2))
     assert value == value2
+    
+    crc.reset()
+    value = crc._calc_p(test_data2)
+    print('parallel whole:   ' + fmt_str.format(value, value2))
+    assert value == value2
     print()
+    
+#check that all of the aliases are valid
+print('Aliases:')
+for alias, name in anycrc.aliases.items():
+    assert name in anycrc.models
+    print(alias + ' OK')
+    
+print()
