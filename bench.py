@@ -31,13 +31,13 @@ def benchmark(data, n):
     anycrc_time_elapsed = time.perf_counter() - t
     
     duration[test_n] = anycrc_time_elapsed
-    speed[test_n] = len(data) * n / (1024 ** 2) / anycrc_time_elapsed
+    speed[test_n] = len(data) * n / (1024 ** 3) / anycrc_time_elapsed
     relative[test_n] = 1
     
     print(modules[test_n])
     print('Time Elapsed: {:.3f}s'.format(duration[test_n]))
-    print('Speed: {:.2f} MiB/s'.format(speed[test_n]))
-    print('Relative: {:.3f}'.format(relative[test_n]))
+    print('Speed: {:.2f} GiB/s'.format(speed[test_n]))
+    print('Relative: {:.2f}'.format(relative[test_n]))
     print()
     
     test_n += 1
@@ -46,7 +46,7 @@ def benchmark(data, n):
     t = time.perf_counter()
     
     anycrc.set_parallel(False)
-    model = anycrc.Model('CRC32-ISO-HDLC')
+    model = anycrc.Model('CRC32')
 
     for i in range(n):
         model.calc(data)
@@ -55,13 +55,13 @@ def benchmark(data, n):
     time_elapsed = time.perf_counter() - t
     
     duration[test_n] = time_elapsed
-    speed[test_n] = len(data) * n / (1024 ** 2) / time_elapsed
+    speed[test_n] = len(data) * n / (1024 ** 3) / time_elapsed
     relative[test_n] = time_elapsed / anycrc_time_elapsed
     
     print(modules[test_n])
     print('Time Elapsed: {:.3f}s'.format(duration[test_n]))
-    print('Speed: {:.2f} MiB/s'.format(speed[test_n]))
-    print('Relative: {:.3f}'.format(relative[test_n]))
+    print('Speed: {:.2f} GiB/s'.format(speed[test_n]))
+    print('Relative: {:.2f}'.format(relative[test_n]))
     print()
     
     test_n += 1
@@ -75,13 +75,13 @@ def benchmark(data, n):
     time_elapsed = time.perf_counter() - t
 
     duration[test_n] = time_elapsed
-    speed[test_n] = len(data) * n / (1024 ** 2) / time_elapsed
+    speed[test_n] = len(data) * n / (1024 ** 3) / time_elapsed
     relative[test_n] = time_elapsed / anycrc_time_elapsed
     
     print(modules[test_n])
     print('Time Elapsed: {:.3f}s'.format(duration[test_n]))
-    print('Speed: {:.2f} MiB/s'.format(speed[test_n]))
-    print('Relative: {:.3f}'.format(relative[test_n]))
+    print('Speed: {:.2f} GiB/s'.format(speed[test_n]))
+    print('Relative: {:.2f}'.format(relative[test_n]))
     print()
     
     test_n += 1
@@ -95,13 +95,13 @@ def benchmark(data, n):
     time_elapsed = time.perf_counter() - t
 
     duration[test_n] = time_elapsed
-    speed[test_n] = len(data) * n / (1024 ** 2) / time_elapsed
+    speed[test_n] = len(data) * n / (1024 ** 3) / time_elapsed
     relative[test_n] = time_elapsed / anycrc_time_elapsed
     
     print(modules[test_n])
     print('Time Elapsed: {:.3f}s'.format(duration[test_n]))
-    print('Speed: {:.2f} MiB/s'.format(speed[test_n]))
-    print('Relative: {:.3f}'.format(relative[test_n]))
+    print('Speed: {:.2f} GiB/s'.format(speed[test_n]))
+    print('Relative: {:.2f}'.format(relative[test_n]))
     print()
     
     test_n += 1
@@ -116,16 +116,16 @@ def benchmark(data, n):
     time_elapsed = time.perf_counter() - t
 
     duration[test_n] = time_elapsed
-    speed[test_n] = len(data) * n / (1024 ** 2) / time_elapsed
+    speed[test_n] = len(data) * n / (1024 ** 3) / time_elapsed
     relative[test_n] = time_elapsed / anycrc_time_elapsed
     
     print(modules[test_n])
     print('Time Elapsed: {:.3f}s'.format(duration[test_n]))
-    print('Speed: {:.2f} MiB/s'.format(speed[test_n]))
-    print('Relative: {:.3f}'.format(relative[test_n]))
+    print('Speed: {:.2f} GiB/s'.format(speed[test_n]))
+    print('Relative: {:.2f}'.format(relative[test_n]))
     print()
     
-    print("| Module | Time Elapsed (s) | Speed (MiB/s) | Relative |")
+    print("| Module | Time Elapsed (s) | Speed (GiB/s) | Relative |")
     print("|---|:-:|:-:|:-:|")
     
     for i in range(len(modules)):
@@ -144,7 +144,7 @@ elif sys.argv[1] == '2':
     
 #find the point at which the parallel version becomes faster than the serial version
 elif sys.argv[1] == '3':
-    model = anycrc.Model('CRC32-ISO-HDLC')
+    model = anycrc.Model('CRC32')
     n = 100000
     
     for i in range(4):
