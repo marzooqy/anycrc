@@ -8,8 +8,8 @@ if sys.platform == 'win32':
     compile_args = ['-openmp']
     
 elif sys.platform == 'darwin':
-    compile_args = ['-openmp']
-    link_args = ['-openmp']
+    compile_args = ['-Xpreprocessor -fopenmp']
+    link_args = ['--Xpreprocessor -fopenmp']
     
 else:
     compile_args = ['-openmp']
