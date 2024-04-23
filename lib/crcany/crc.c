@@ -11,7 +11,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+
+#if defined(_OPENMP)
 #include "omp.h"
+#endif
+
 #include "crc.h"
 
 word_t crc_bitwise(model_t *model, word_t crc, void const *dat, size_t len) {
@@ -482,7 +486,12 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
 }
 
 word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len) {
+    #if defined(_OPENMP)
     char nthreads = omp_get_max_threads();
+    #else
+    char nthreads = 1;
+    #endif
+    
 	word_t* crc_p = (word_t*)malloc(nthreads * sizeof(word_t));
 	size_t block_len = len / nthreads;
     

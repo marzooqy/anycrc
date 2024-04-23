@@ -5,15 +5,15 @@ compile_args = []
 link_args = []
 
 if sys.platform == 'win32':
-    compile_args = ['-openmp']
+    compile_args = ['/openmp']
     
-elif sys.platform == 'darwin':
-    compile_args = ['-Xpreprocessor -fopenmp']
-    link_args = ['--Xpreprocessor -fopenmp']
+elif sys.platform == 'linux':
+    compile_args = ['-fopenmp']
+    link_args = ['-fopenmp']
     
 else:
-    compile_args = ['-openmp']
-    link_args = ['-openmp']
+    compile_args = []
+    link_args = []
     
 setup(
     name = 'anycrc',
