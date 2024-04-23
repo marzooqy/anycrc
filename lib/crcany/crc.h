@@ -4,7 +4,7 @@
  */
 
 /*
-* Edited by Hussain Al Marzooq to add support for the slice-by-16 algorithm
+* Edited by Hussain Al Marzooq to add the slice-by-16 algorithm and the parallel implementation
 */
   
 #ifndef _CRC_H_
