@@ -42,11 +42,11 @@ Specify your own CRC parameters:
 35
 ```
 
-This module will sometimes compute the CRC in parallel using multiple processors. To disable parallelism write:
+This module will sometimes compute the CRC in parallel using multiple processors. To disable parallelism, use:
 
-`python
-anycrc.set_parallel(False)
-`
+```python
+>>> anycrc.set_parallel(False)
+```
 
 The CRC's width cannot exceed your system's maximum integer width.
 
@@ -75,4 +75,10 @@ Calculating the CRC32 for the text of lorem ipsum repeated 1 million times in a 
 | fastcrc | 0.670 | 633.75 | 38.234 |
 | crcmod-plus | 0.668 | 635.19 | 38.148 |
 
-Tested on a 12th generation Intel i7 processor. Parallel performance will depend on your system. Note that parallelism is disabled when the length of the input data is under 20k, as the serial method is faster in that case.
+Tested on a 12th generation Intel i7 processor. Parallel performance will depend on your system.
+
+#### Notes
+
+\- Parallelism is disabled when the length of the input data is under 20k, as the serial method is faster in that case.
+
+\- The macOS build only supports the serial version.
