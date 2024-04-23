@@ -499,7 +499,7 @@ word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len) {
         if(i == 0) {
             crc = crc_slice16(model, crc, (unsigned char*)dat, first_block_len);
         } else {
-            crc_p[i] = crc_slice16(model, model->init, (unsigned char*)offset + ((i - 1) * block_len), block_len);
+            crc_p[(unsigned char)i] = crc_slice16(model, model->init, (unsigned char*)offset + ((i - 1) * block_len), block_len);
         }
 	}
 	
