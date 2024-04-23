@@ -1,12 +1,14 @@
 from setuptools import setup, Extension
 import sys
 
-compile_args = [] 
+compile_args = []
+link_args = []
 
 if sys.platform == 'win32':
     compile_args = ['-openmp']
 else:
     compile_args = ['-fopenmp']
+    link_args = ['-fopenmp']
     
 setup(
     name = 'anycrc',
@@ -17,6 +19,7 @@ setup(
         Extension(
             name='anycrc.anycrc',
             extra_compile_args=compile_args,
+            extra_link_args = link_args,
             sources=['src/anycrc/anycrc.pyx', 'lib/crcany/model.c', 'lib/crcany/crc.c']
         )
     ]
