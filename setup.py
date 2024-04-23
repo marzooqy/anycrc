@@ -6,6 +6,11 @@ link_args = []
 
 if sys.platform == 'win32':
     compile_args = ['-openmp']
+    
+elif sys.platform == 'darwin':
+    compile_args = ['-fopenmp']
+    link_args = ['-fopenmp']
+    
 else:
     compile_args = ['-fopenmp']
     link_args = ['-fopenmp']
