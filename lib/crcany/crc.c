@@ -505,7 +505,7 @@ word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len) {
 	
     // Combine the CRCs
     // Not much could be done to parallelize this, so just do it serially
-    for(i = 1; i < nthreads; i++) {
+    for(unsigned char i = 1; i < nthreads; i++) {
         crc = crc_combine(model, crc, crc_p[i], block_len);
     }
     
