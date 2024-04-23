@@ -42,7 +42,7 @@ Specify your own CRC parameters:
 35
 ```
 
-This module will sometimes compute the CRC in parallel using multiple processors. To disable parallelism, use:
+This module will compute the CRC in parallel if the data is large enough. If you want to disable parallelism use:
 
 ```python
 >>> anycrc.set_parallel(False)
