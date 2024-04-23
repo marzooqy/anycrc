@@ -490,7 +490,7 @@ word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len) {
     size_t first_block_len = block_len + (len - nthreads * block_len);
     void const *offset = (unsigned char*)dat + first_block_len;
     
-    char i;
+    unsigned short i;
     
     // Split the data into a number of blocks equal to the system's number of threads and compute the CRC for each in parallel
 	#pragma omp parallel for
