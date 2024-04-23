@@ -8,12 +8,12 @@ if sys.platform == 'win32':
     compile_args = ['-openmp']
     
 elif sys.platform == 'darwin':
-    compile_args = ['-fopenmp']
-    link_args = ['-fopenmp']
+    compile_args = ['-openmp']
+    link_args = ['-openmp']
     
 else:
-    compile_args = ['-fopenmp']
-    link_args = ['-fopenmp']
+    compile_args = ['-openmp']
+    link_args = ['-openmp']
     
 setup(
     name = 'anycrc',
