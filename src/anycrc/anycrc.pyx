@@ -69,6 +69,12 @@ cdef class CRC:
         
         self.register = self.model.init
         
+    def set(self, word_t crc):
+        self.register = crc
+        
+    def reset(self):
+        self.register = self.model.init
+        
     def calc(self, data):
         if isinstance(data, str):
             data = (<unicode> data).encode('utf-8')
@@ -100,12 +106,6 @@ cdef class CRC:
         cdef const unsigned char* data_p = data
         self.register = crc_bytewise(&self.model, self.register, data_p, len(data))
         return self.register
-        
-    def set(self, word_t crc):
-        self.register = crc
-        
-    def reset(self):
-        self.register = self.model.init
         
 def set_parallel(bint is_parallel):
     global parallel
