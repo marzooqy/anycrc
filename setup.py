@@ -11,13 +11,9 @@ elif sys.platform == 'linux':
     compile_args = ['-fopenmp']
     link_args = ['-fopenmp']
     
-else:
-    compile_args = []
-    link_args = []
-    
 setup(
     name = 'anycrc',
-    version = '0.4.0',
+    version = '0.4.1',
     package_dir = {"": "src"},
     
     ext_modules = [
