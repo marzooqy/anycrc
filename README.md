@@ -18,11 +18,16 @@ Use an existing model:
 Read the data in chunks:
 
 ```python
->>> crc32.reset()
->>> crc32.calc(b'Hello ')
+>>> crc32.update(b'Hello ')
 3928882368
->>> crc32.calc(b'World!')
+>>> crc32.update(b'World!')
 472456355
+```
+
+The update method changes the internally stored CRC value, while calc doesn't. To go back to the initial value, use:
+
+```python
+>>> crc32.reset()
 ```
 
 Specify the starting CRC value:
@@ -42,7 +47,7 @@ Specify your own CRC parameters:
 35
 ```
 
-The CRC will be computed in parallel if the input is large enough. If you want to disable parallelism, use:
+The CRC will be computed in parallel when the input is large enough. If you want to disable parallelism, use:
 
 ```python
 >>> anycrc.set_parallel(False)

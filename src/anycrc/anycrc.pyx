@@ -1,7 +1,6 @@
 # Copyright (c) 2024 Hussain Al Marzooq
 
 from libc.stdint cimport uintmax_t
-from cython.parallel import prange
 from .models import models, aliases
 import sys
 
@@ -47,7 +46,7 @@ cdef class CRC:
     cdef word_t register
     cdef unsigned word_width
     
-    def __init__(self, unsigned char width, word_t poly, word_t init, char ref_in, char ref_out, word_t xor_out, word_t check=0, word_t residue=0):
+    def __init__(self, width, poly, init, ref_in, ref_out, xor_out, check=0, residue=0):
         cdef unsigned endian = 1 if sys.byteorder == 'little' else 0
         self.word_width = 64 if sys.maxsize > 2 ** 32 else 32
         refin = 'true' if ref_in else 'false'
@@ -75,39 +74,41 @@ cdef class CRC:
     def reset(self):
         self.register = self.model.init
         
+    cdef word_t _calc(self, const unsigned char *data, word_t length):
+        if parallel and length > 20000:
+            return crc_parallel(&self.model, self.register, data, length)
+        else:
+            return crc_slice16(&self.model, self.register, data, length)
+            
     def calc(self, data):
         if isinstance(data, str):
             data = (<unicode> data).encode('utf-8')
             
-        cdef const unsigned char* data_p = data
-        cdef word_t length = len(data)
+        return self._calc(data, len(data))
         
-        if parallel and length > 20000:
-            self.register = crc_parallel(&self.model, self.register, data_p, length)
-        else:
-            self.register = crc_slice16(&self.model, self.register, data_p, length)
+    def update(self, data):
+        if isinstance(data, str):
+            data = (<unicode> data).encode('utf-8')
             
+        self.register = self._calc(data, len(data))
         return self.register
         
     #parallel
     def _calc_p(self, data):
         cdef const unsigned char* data_p = data
-        self.register = crc_parallel(&self.model, self.register, data_p, len(data))
-        return self.register
+        return crc_parallel(&self.model, self.register, data_p, len(data))
         
     #slice-by-16
     def _calc_16(self, data):
         cdef const unsigned char* data_p = data
-        self.register = crc_slice16(&self.model, self.register, data_p, len(data))
-        return self.register
+        return crc_slice16(&self.model, self.register, data_p, len(data))
         
     #byte-by-byte
     def _calc_b(self, data):
         cdef const unsigned char* data_p = data
-        self.register = crc_bytewise(&self.model, self.register, data_p, len(data))
-        return self.register
+        return crc_bytewise(&self.model, self.register, data_p, len(data))
         
-def set_parallel(bint is_parallel):
+def set_parallel(is_parallel):
     global parallel
     parallel = is_parallel
     

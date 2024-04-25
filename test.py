@@ -29,11 +29,10 @@ for model, params in anycrc.models.items():
     
     print('1 byte whole:     ' + fmt_str.format(value, check))
     assert value == check
-    crc.reset()
     
     #read one char at a time
     for c in test_data:
-        value = crc.calc(c.to_bytes(1, 'little'))
+        value = crc.update(c.to_bytes(1, 'little'))
     
     print('1 byte partial:   ' + fmt_str.format(value, check))
     assert value == check
@@ -45,11 +44,10 @@ for model, params in anycrc.models.items():
 
     print('16 bytes whole:   ' + fmt_str.format(value, value2))
     assert value == value2
-    crc.reset()
     
     #read one char at a time
     for c in test_data2:
-        value = crc.calc(c.to_bytes(1, 'little'))
+        value = crc.update(c.to_bytes(1, 'little'))
 
     print('16 bytes partial: ' + fmt_str.format(value, value2))
     assert value == value2

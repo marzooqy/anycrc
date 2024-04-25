@@ -13,7 +13,7 @@ elif sys.platform == 'linux':
     
 setup(
     name = 'anycrc',
-    version = '0.4.1',
+    version = '0.4.2',
     package_dir = {"": "src"},
     
     ext_modules = [

@@ -26,8 +26,7 @@ def benchmark(data, n):
 
     for i in range(n):
         model.calc(data)
-        model.reset()
-
+        
     anycrc_time_elapsed = time.perf_counter() - t
     
     duration[test_n] = anycrc_time_elapsed
@@ -35,7 +34,7 @@ def benchmark(data, n):
     relative[test_n] = 1
     
     print(modules[test_n])
-    print('Time Elapsed: {:.3f}s'.format(duration[test_n]))
+    print('Time Elapsed: {:.2f}s'.format(duration[test_n]))
     print('Speed: {:.2f} GiB/s'.format(speed[test_n]))
     print('Relative: {:.2f}'.format(relative[test_n]))
     print()
@@ -50,8 +49,7 @@ def benchmark(data, n):
 
     for i in range(n):
         model.calc(data)
-        model.reset()
-
+        
     time_elapsed = time.perf_counter() - t
     
     duration[test_n] = time_elapsed
@@ -59,7 +57,7 @@ def benchmark(data, n):
     relative[test_n] = time_elapsed / anycrc_time_elapsed
     
     print(modules[test_n])
-    print('Time Elapsed: {:.3f}s'.format(duration[test_n]))
+    print('Time Elapsed: {:.2f}s'.format(duration[test_n]))
     print('Speed: {:.2f} GiB/s'.format(speed[test_n]))
     print('Relative: {:.2f}'.format(relative[test_n]))
     print()
@@ -79,7 +77,7 @@ def benchmark(data, n):
     relative[test_n] = time_elapsed / anycrc_time_elapsed
     
     print(modules[test_n])
-    print('Time Elapsed: {:.3f}s'.format(duration[test_n]))
+    print('Time Elapsed: {:.2f}s'.format(duration[test_n]))
     print('Speed: {:.2f} GiB/s'.format(speed[test_n]))
     print('Relative: {:.2f}'.format(relative[test_n]))
     print()
@@ -99,7 +97,7 @@ def benchmark(data, n):
     relative[test_n] = time_elapsed / anycrc_time_elapsed
     
     print(modules[test_n])
-    print('Time Elapsed: {:.3f}s'.format(duration[test_n]))
+    print('Time Elapsed: {:.2f}s'.format(duration[test_n]))
     print('Speed: {:.2f} GiB/s'.format(speed[test_n]))
     print('Relative: {:.2f}'.format(relative[test_n]))
     print()
@@ -120,7 +118,7 @@ def benchmark(data, n):
     relative[test_n] = time_elapsed / anycrc_time_elapsed
     
     print(modules[test_n])
-    print('Time Elapsed: {:.3f}s'.format(duration[test_n]))
+    print('Time Elapsed: {:.2f}s'.format(duration[test_n]))
     print('Speed: {:.2f} GiB/s'.format(speed[test_n]))
     print('Relative: {:.2f}'.format(relative[test_n]))
     print()
@@ -129,7 +127,7 @@ def benchmark(data, n):
     print("|---|:-:|:-:|:-:|")
     
     for i in range(len(modules)):
-        print('| {} | {:.3f} | {:.2f} | {:.3f} |'.format(modules[i], duration[i], speed[i], relative[i]))
+        print('| {} | {:.2f} | {:.2f} | {:.2f} |'.format(modules[i], duration[i], speed[i], relative[i]))
         
     print()
     
@@ -137,7 +135,7 @@ if len(sys.argv) == 1:
     print('Enter the number of the test as a parameter\n')
     
 elif sys.argv[1] == '1':
-    benchmark(test_data, 10 ** 7)
+    benchmark(test_data, 10 ** 6)
     
 elif sys.argv[1] == '2':
     benchmark(test_data * 10 ** 6, 1)
