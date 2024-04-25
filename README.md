@@ -24,7 +24,7 @@ Read the data in chunks:
 472456355
 ```
 
-The update method changes the internally stored CRC value, while calc doesn't. To go back to the initial value, use:
+The `update` method changes the internally stored CRC value, while `calc` doesn't. To go back to the initial value, use:
 
 ```python
 >>> crc32.reset()
