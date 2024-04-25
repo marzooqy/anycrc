@@ -61,24 +61,25 @@ For a list of pre-built models, check [models.py](https://github.com/marzooqy/an
 
 ## Benchmarks
 
-Calculating the CRC32 for lorem ipsum 10 million times:
+Calculating the CRC32 for lorem ipsum 1 million times:
 
 | Module | Time Elapsed (s) | Speed (GiB/s) | Relative |
 |---|:-:|:-:|:-:|
-| anycrc | 2.397 | 1.73 | 1.00 |
-| zlib | 2.791 | 1.49 | 1.17 |
-| fastcrc | 7.782 | 0.53 | 3.25 |
-| crcmod-plus | 8.891 | 0.47 | 3.71 |
+| anycrc | 0.22 | 1.91 | 1.00 |
+| zlib | 0.28 | 1.47 | 1.28 |
+| fastcrc | 0.80 | 0.52 | 3.66 |
+| crcmod-plus | 0.91 | 0.46 | 4.13 |
+
 
 Calculating the CRC32 for the text of lorem ipsum repeated 1 million times in a single pass:
 
 | Module | Time Elapsed (s) | Speed (GiB/s) | Relative |
 |---|:-:|:-:|:-:|
-| anycrc (parallel) | 0.018 | 23.66 | 1.00 |
-| anycrc (serial) | 0.202 | 2.05 | 11.54 |
-| zlib | 0.215 | 1.93 | 12.25 |
-| fastcrc | 0.670 | 0.62 | 38.23 |
-| crcmod-plus | 0.668 | 0.62 | 38.15 |
+| anycrc (parallel) | 0.02 | 23.16 | 1.00 |
+| anycrc (serial) | 0.20 | 2.08 | 11.15 |
+| zlib | 0.22 | 1.92 | 12.05 |
+| fastcrc | 0.68 | 0.61 | 37.89 |
+| crcmod-plus | 0.67 | 0.62 | 37.40 |
 
 Tested on a 12th generation Intel i7 processor. Parallel performance will depend on your system.
 
