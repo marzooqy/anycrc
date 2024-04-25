@@ -1,3 +1,5 @@
+# taken from Greg Cook's list of CRCs: https://reveng.sourceforge.io/crc-catalogue/
+
 from collections import namedtuple
 
 model = namedtuple('model', ['width', 'poly', 'init', 'refin', 'refout', 'xorout', 'check', 'residue'], defaults=(0, 0))
