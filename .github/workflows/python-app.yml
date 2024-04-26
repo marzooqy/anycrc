@@ -41,8 +41,9 @@ jobs:
       matrix:
         os: [macos-13, macos-14]
     steps:
-    - run: brew install gcc@13
-    
+    - name: Install gcc
+      run: brew install gcc@13
+      
   mac_intel_test:
     name: Test on macos-13 python ${{ matrix.python-version }}
     runs-on: macos-13
@@ -88,7 +89,7 @@ jobs:
       run: python test.py
       
   linux_test:
-    name: Test on ${{ matrix.os }} python ${{ matrix.python-version }}
+    name: Test on ubuntu-latest python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
