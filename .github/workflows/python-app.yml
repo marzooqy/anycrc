@@ -51,7 +51,7 @@ jobs:
       run: |
             export CC=gcc-13
             python -m pip install --upgrade pip
-            python -m pip install . --config-settings compiler=gcc
+            python -m pip install .
     - name: Run test
       run: python test.py
       
@@ -72,7 +72,7 @@ jobs:
       run: |
             export CC=gcc-13
             python -m pip install --upgrade pip
-            python -m pip install . --config-settings compiler=gcc
+            python -m pip install .
     - name: Run test
       run: python test.py
       
