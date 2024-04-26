@@ -37,7 +37,6 @@ jobs:
   mac_intel_test:
     name: Test on macos-13 python ${{ matrix.python-version }}
     runs-on: macos-13
-    needs: mac_install_gcc
     strategy:
       matrix:
         python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
@@ -61,7 +60,6 @@ jobs:
   mac_silicon_test:
     name: Test on macos-14 python ${{ matrix.python-version }}
     runs-on: macos-14
-    needs: mac_install_gcc
     strategy:
       matrix:
         python-version: ["3.11", "3.12"]
