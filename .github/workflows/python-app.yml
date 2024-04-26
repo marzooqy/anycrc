@@ -13,37 +13,6 @@ permissions:
   contents: read
 
 jobs:
-  mac_linux_test:
-    name: Test on ${{ matrix.os }} python ${{ matrix.python-version }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        # macos-13 is an intel runner, macos-14 is apple silicon
-        os: [ubuntu-latest, macos-13, macos-14]
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
-        exclude:
-          - os: macos-14
-            python-version: "3.7"
-          - os: macos-14
-            python-version: "3.8"
-          - os: macos-14
-            python-version: "3.9"
-          - os: macos-14
-            python-version: "3.10"
-    steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-        architecture: ${{ matrix.architecture }}
-    - name: Install dependencies
-      run: |
-            python -m pip install --upgrade pip
-            python -m pip install .
-    - name: Run test
-      run: python test.py
-    
   windows_test:
     name: Test on windows-latest python ${{ matrix.python-version }} ${{ matrix.architecture }}
     runs-on: windows-latest
@@ -62,6 +31,79 @@ jobs:
       run: |
             python -m pip install --upgrade pip
             python -m pip install . --config-settings compiler=mingw32
+    - name: Run test
+      run: python test.py
+      
+  mac_install_gcc:
+    name: Install gcc
+    runs-on: = ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-13, macos-14]
+    steps:
+    - run: brew install gcc@13
+    
+  mac_intel_test:
+    name: Test on macos-13 python ${{ matrix.python-version }}
+    runs-on: macos-13
+    needs: mac_install_gcc
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+        architecture: ${{ matrix.architecture }}
+    - name: Install dependencies
+      run: |
+            CC=gcc-13
+            python -m pip install --upgrade pip
+            python -m pip install .
+    - name: Run test
+      run: python test.py
+      
+  mac_silicon_test:
+    name: Test on macos-14 python ${{ matrix.python-version }}
+    runs-on: macos-14
+    needs: mac_install_gcc
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+        architecture: ${{ matrix.architecture }}
+    - name: Install dependencies
+      run: |
+            CC=gcc-13
+            python -m pip install --upgrade pip
+            python -m pip install .
+    - name: Run test
+      run: python test.py
+      
+  linux_test:
+    name: Test on ${{ matrix.os }} python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+        architecture: ${{ matrix.architecture }}
+    - name: Install dependencies
+      run: |
+            python -m pip install --upgrade pip
+            python -m pip install .
     - name: Run test
       run: python test.py
     
