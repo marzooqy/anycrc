@@ -42,8 +42,6 @@ jobs:
         python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
     steps:
     - uses: actions/checkout@v3
-    - name: Install gcc
-      run: brew install gcc@13
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
@@ -51,9 +49,8 @@ jobs:
         architecture: ${{ matrix.architecture }}
     - name: Install dependencies
       run: |
-            CC=gcc-13
             python -m pip install --upgrade pip
-            python -m pip install .
+            python -m pip install . --config-settings compiler=gcc
     - name: Run test
       run: python test.py
       
@@ -65,8 +62,6 @@ jobs:
         python-version: ["3.11", "3.12"]
     steps:
     - uses: actions/checkout@v3
-    - name: Install gcc
-      run: brew install gcc@13
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
@@ -76,7 +71,7 @@ jobs:
       run: |
             CC=gcc-13
             python -m pip install --upgrade pip
-            python -m pip install .
+            python -m pip install . --config-settings compiler=gcc
     - name: Run test
       run: python test.py
       
