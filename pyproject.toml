@@ -18,4 +18,4 @@ build-frontend = "pip"
 
 # gcc optimizes the slice-by-16 algorithm better
 [tool.cibuildwheel.windows.config-settings]
---build-option = "--compiler=mingw32"
+compiler = "mingw32"
