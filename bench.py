@@ -1,4 +1,4 @@
-from src import anycrc
+import anycrc
 import crcmod
 import crcmod.predefined
 import fastcrc
