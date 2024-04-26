@@ -14,7 +14,8 @@ requires-python = ">=3.7"
 
 [tool.cibuildwheel]
 skip = "pp*"
+build-frontend = "pip"
 
 # gcc optimizes the slice-by-16 algorithm better
-[tool.cibuildwheel.windows]
-enviroment = "compiler=mingw32"
+[tool.cibuildwheel.windows.config-settings]
+--build-option = "--compiler=mingw32"
