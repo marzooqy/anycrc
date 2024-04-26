@@ -38,10 +38,6 @@ jobs:
           - os: macos-14
             python-version: "3.10"
     steps:
-    - if: matrix.os == 'windows-latest'
-      name: Set up MinGW
-      uses: egor-tensin/setup-mingw@v2
-      
     - uses: actions/checkout@v3
     - name: Set up Python
       uses: actions/setup-python@v3
@@ -49,12 +45,11 @@ jobs:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.architecture }}
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        if [ "$RUNNER_OS" == "Windows" ]; then
-            python -m pip install . --config-settings compiler=mingw32
-        else
-            python -m pip install .
+      run: python -m pip install --upgrade pip
+      if: matrix.os == 'windows-latest'
+        run: python -m pip install . --config-settings compiler=mingw32
+      else:
+        run: python -m pip install .
     - name: Run test
       run: |
         python test.py

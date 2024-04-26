@@ -15,10 +15,6 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-13, macos-14]
 
     steps:
-      - if: matrix.os == 'windows-latest'
-        name: Set up MinGW
-        uses: egor-tensin/setup-mingw@v2
-        
       - uses: actions/checkout@v4
       
       - name: Build wheels
