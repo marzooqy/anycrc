@@ -12,10 +12,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#if defined(_OPENMP)
 #include "omp.h"
-#endif
-
 #include "crc.h"
 
 word_t crc_bitwise(model_t *model, word_t crc, void const *dat, size_t len) {
@@ -390,16 +387,11 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
             if (!model->ref)
                 crc = swap(crc);
             do {
-                uint32_t crc_hi = crc >> 32;
-                uint32_t crc_lo = crc & 0xffffffff;
-                uint32_t i1 = *(uint32_t const *)buf;
-                uint32_t i2 = *(uint32_t const *)(buf + 4);
+                uint32_t crc_hi = (crc >> 32) ^ *(uint32_t const *)(buf + 4);
+                uint32_t crc_lo = (crc & 0xffffffff) ^ *(uint32_t const *)buf;
                 uint32_t i3 = *(uint32_t const *)(buf + 8);
                 uint32_t i4 = *(uint32_t const *)(buf + 12);
-
-                crc_hi ^= i2;
-                crc_lo ^= i1;
-
+                
                 crc = model->table_word[15][crc_lo & 0xff]
                     ^ model->table_word[14][(crc_lo >> 8) & 0xff]
                     ^ model->table_word[13][(crc_lo >> 16) & 0xff]
@@ -427,16 +419,11 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
             if (model->ref)
                 crc = swap(crc);
             do {
-                uint32_t crc_hi = crc >> 32;
-                uint32_t crc_lo = crc & 0xffffffff;
-                uint32_t i1 = *(uint32_t const *)buf;
-                uint32_t i2 = *(uint32_t const *)(buf + 4);
+                uint32_t crc_hi = (crc >> 32) ^ *(uint32_t const *)buf;
+                uint32_t crc_lo = (crc & 0xffffffff) ^ *(uint32_t const *)(buf + 4);
                 uint32_t i3 = *(uint32_t const *)(buf + 8);
                 uint32_t i4 = *(uint32_t const *)(buf + 12);
-
-                crc_hi ^= i1;
-                crc_lo ^= i2;
-		
+                
                 crc = model->table_word[0][i4 & 0xff]
                     ^ model->table_word[1][(i4 >> 8) & 0xff]
                     ^ model->table_word[2][(i4 >> 16) & 0xff]
@@ -486,11 +473,7 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
 }
 
 word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len) {
-    #if defined(_OPENMP)
     short nthreads = omp_get_max_threads();
-    #else
-    short nthreads = 1;
-    #endif
     
 	word_t* crc_p = (word_t*)malloc((nthreads - 1) * sizeof(word_t));
 	size_t block_len = len / nthreads;
