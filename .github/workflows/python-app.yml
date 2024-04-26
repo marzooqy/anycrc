@@ -34,16 +34,6 @@ jobs:
     - name: Run test
       run: python test.py
       
-  mac_install_gcc:
-    name: Install gcc
-    runs-on: = ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-13, macos-14]
-    steps:
-    - name: Install gcc
-      run: brew install gcc@13
-      
   mac_intel_test:
     name: Test on macos-13 python ${{ matrix.python-version }}
     runs-on: macos-13
@@ -53,6 +43,8 @@ jobs:
         python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
     steps:
     - uses: actions/checkout@v3
+    - name: Install gcc
+      run: brew install gcc@13
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
@@ -75,6 +67,8 @@ jobs:
         python-version: ["3.11", "3.12"]
     steps:
     - uses: actions/checkout@v3
+    - name: Install gcc
+      run: brew install gcc@13
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
