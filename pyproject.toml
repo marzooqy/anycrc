@@ -21,5 +21,5 @@ skip = "pp*"
 compiler = "mingw32"
 
 # clang doesn't come with openmp by default
-[tool.cibuildwheel.config-settings]
-compiler = "gcc"
+[tool.cibuildwheel.macos.enviroment]
+CC = "gcc-13"
