@@ -68,6 +68,9 @@ cdef class CRC:
         
         self.register = self.model.init
         
+    def get(self):
+        return self.register
+        
     def set(self, word_t crc):
         self.register = crc
         

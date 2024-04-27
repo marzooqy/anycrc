@@ -20,6 +20,6 @@ skip = "pp*"
 [tool.cibuildwheel.windows.config-settings]
 compiler = "mingw32"
 
-# clang doesn't come with openmp by default
+# Apple's clang doesn't come with openmp by default
 [tool.cibuildwheel.macos.enviroment]
 CC = "gcc-13"

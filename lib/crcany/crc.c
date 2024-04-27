@@ -482,7 +482,7 @@ word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len) {
     size_t first_block_len = block_len + (len - nthreads * block_len);
     unsigned char* offset = (unsigned char*)dat + first_block_len;
     
-    // Use signed variable to handle OpenMP compiler error
+    // Use signed variable to handle OpenMP compiler error (MSVC)
     short i;
     
     // Split the data into a number of blocks equal to the system's number of threads and compute the CRC for each in parallel
@@ -493,13 +493,13 @@ word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len) {
             crc = crc_slice16(model, crc, (unsigned char*)dat, first_block_len);
         } else {
             // Cast index to unsigned to handle gcc compiler error
-            crc_p[(unsigned char)i] = crc_slice16(model, model->init, offset + i * block_len, block_len);
+            crc_p[(unsigned short)i] = crc_slice16(model, model->init, offset + i * block_len, block_len);
         }
 	}
 	
     // Combine the CRCs
     // Not much could be done to parallelize this, so just do it serially
-    for(unsigned char i = 0; i < nthreads - 1; i++) {
+    for(i = 0; i < nthreads - 1; i++) {
         crc = crc_combine(model, crc, crc_p[i], block_len);
     }
     
