@@ -24,7 +24,7 @@ Read the data in chunks:
 472456355
 ```
 
-The `update` method changes the internally stored CRC value, while `calc` doesn't. Use `get` to retrieve the CRC value stored within the object:
+The `update` method changes the internally stored CRC value, while `calc` doesn't. You can use `get` to retrieve the CRC value stored within the object:
 
 ```python
 >>> crc32.get()
