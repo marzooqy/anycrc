@@ -475,8 +475,8 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
 word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len) {
     short nthreads = omp_get_max_threads();
     
-	word_t* crc_p = (word_t*)malloc((nthreads - 1) * sizeof(word_t));
-	size_t block_len = len / nthreads;
+    word_t* crc_p = (word_t*)malloc((nthreads - 1) * sizeof(word_t));
+    size_t block_len = len / nthreads;
     
     // This way all of the later blocks will have the same size
     size_t first_block_len = block_len + (len - nthreads * block_len);
@@ -486,8 +486,8 @@ word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len) {
     short i;
     
     // Split the data into a number of blocks equal to the system's number of threads and compute the CRC for each in parallel
-	#pragma omp parallel for
-	for(i = -1; i < nthreads - 1; i++) {
+    #pragma omp parallel for
+    for(i = -1; i < nthreads - 1; i++) {
         // First block goes directly into the initial CRC
         if(i == -1) {
             crc = crc_slice16(model, crc, (unsigned char*)dat, first_block_len);
@@ -495,8 +495,8 @@ word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len) {
             // Cast index to unsigned to handle gcc compiler error
             crc_p[(unsigned short)i] = crc_slice16(model, model->init, offset + i * block_len, block_len);
         }
-	}
-	
+    }
+    
     // Combine the CRCs
     // Not much could be done to parallelize this, so just do it serially
     for(i = 0; i < nthreads - 1; i++) {
@@ -505,7 +505,7 @@ word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len) {
     
     free(crc_p);
     
-	return crc;
+    return crc;
 }
 
 // Return a(x) multiplied by b(x) modulo p(x), where p(x) is the CRC
