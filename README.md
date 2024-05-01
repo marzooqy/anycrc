@@ -31,18 +31,18 @@ The `update` method changes the internally stored CRC value, while `calc` doesn'
 472456355
 ```
 
-To go back to the initial value, use:
-
-```python
->>> crc32.reset()
-```
-
-Specify the starting CRC value:
+To specify the starting CRC value:
 
 ```python
 >>> crc32.set(3928882368)
 >>> crc32.calc('World!')
 472456355
+```
+
+To go back to the initial value, use:
+
+```python
+>>> crc32.reset()
 ```
 
 Specify your own CRC parameters:
