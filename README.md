@@ -87,7 +87,7 @@ Calculating the CRC32 for the text of lorem ipsum repeated 1 million times in a 
 | fastcrc | 0.67 | 0.62 | 39.75 |
 | crcmod-plus | 0.67 | 0.62 | 39.73 |
 
-Tested on a 12th generation Intel i7 processor. Parallel performance will depend on your system.
+Tested on a 10th generation Intel i7 processor. Parallel performance will depend on your system.
 
 #### Notes
 
