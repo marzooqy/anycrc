@@ -153,7 +153,6 @@ elif sys.argv[1] == '3':
         
         for i in range(n):
             model._calc_16(data)
-            model.reset()
 
         s_time_elapsed = time.perf_counter() - t
         
@@ -163,7 +162,6 @@ elif sys.argv[1] == '3':
         
         for i in range(n):
             model._calc_p(data)
-            model.reset()
 
         p_time_elapsed = time.perf_counter() - t
         
