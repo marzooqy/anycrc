@@ -23,11 +23,7 @@ if sys.platform == 'win32':
                  '-O2']
                  
     if sys.maxsize > 2 ** 32:
-        compile_args.append('-DSIZEOF_VOID_P=8')
-        link_args.append('-DSIZEOF_VOID_P=8')
-    else:
-        compile_args.append('-DSIZEOF_VOID_P=4')
-        link_args.append('-DSIZEOF_VOID_P=')
+        compile_args.append('-DMS_WIN64')
         
 setup(
     name = 'anycrc',
