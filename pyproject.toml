@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "anycrc"
-version = "0.6.0"
+version = "0.6.1"
 description = "Python CRC Computation Library"
 readme = "README.md"
 requires-python = ">=3.7"
@@ -16,10 +16,6 @@ requires-python = ">=3.7"
 build-frontend = "pip"
 skip = "pp*"
 
-# gcc optimizes the slice-by-16 algorithm better
-[tool.cibuildwheel.windows.config-settings]
-compiler = "mingw32"
-
-# Apple's clang doesn't come with openmp by default
+#Apple's clang doesn't come with openmp by default
 [tool.cibuildwheel.macos.environment]
 CC = "gcc-13"
