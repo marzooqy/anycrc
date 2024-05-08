@@ -25,6 +25,7 @@ if sys.platform == 'win32':
                      '-DMS_WIN64']
                      
     else:
+        #github actions and python make it difficult to compile with 32-bit mingw, so just use msvc
         compile_args = ['/openmp']
         link_args = ['/openmp']
         
