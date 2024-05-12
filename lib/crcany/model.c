@@ -4,7 +4,7 @@
  */
  
 /*
-* Edited by Hussain Al Marzooq to add the slice-by-16 algorithm and the parallel implementation
+* Edited by Hussain Al Marzooq
 */
 
 #include "model.h"
@@ -517,6 +517,18 @@ void process_model(model_t *model) {
     model->init ^= model->xorout;
     model->init_hi ^= model->xorout_hi;
     model->rev ^= model->ref;
+    model->table_comb = NULL;
+    model->table_byte = NULL;
+    model->table_word = NULL;
+    model->table_slice16 = NULL;
+}
+
+// See model.h.
+void free_model(model_t *model) {
+    free(model->table_comb);
+    free(model->table_byte);
+    free(model->table_word);
+    free(model->table_slice16);
 }
 
 // Like POSIX getline().

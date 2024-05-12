@@ -4,7 +4,7 @@
  */
 
 /*
-* Edited by Hussain Al Marzooq to add the slice-by-16 algorithm and the parallel implementation
+* Edited by Hussain Al Marzooq
 */
   
 #ifndef _CRC_H_
@@ -44,7 +44,7 @@ word_t crc_zeros(model_t *model, word_t crc, uintmax_t n);
    and the CRC width is less than 8, then the CRC is pre-shifted left to the
    high end of the low 8 bits so that the incoming byte can be exclusive-ored
    directly into a shifted CRC. */
-void crc_table_bytewise(model_t *model);
+int crc_table_bytewise(model_t *model);
 
 /* Equivalent to crc_bitwise(), but use a faster byte-wise table-based
    approach. This assumes that model->table_byte has been initialized using
@@ -69,7 +69,7 @@ word_t crc_bytewise(model_t *model, word_t crc, void const *dat, size_t len);
    is the same as table_byte.  In that case, the two could be combined,
    reducing the total size of the tables.  This is also true if model->ref is
    false, the request is big-endian, and model->width is equal to word bits. */
-void crc_table_wordwise(model_t *model, unsigned little, unsigned bits);
+int crc_table_wordwise(model_t *model, unsigned little, unsigned bits);
 
 /* Equivalent to crc_bitwise(), but use an even faster word-wise table-based
    approach.  This assumes that model->table_byte and model->table_word have
@@ -77,18 +77,18 @@ void crc_table_wordwise(model_t *model, unsigned little, unsigned bits);
 word_t crc_wordwise(model_t *model, word_t crc, void const *dat, size_t len);
 
 /* Hackish implementation of the slice-by-16 algorithm. */
-void crc_table_slice16(model_t *model, unsigned little, unsigned bits);
+int crc_table_slice16(model_t *model, unsigned little, unsigned bits);
 word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len);
 
 /* Attempt at a parallel implementation using crc_combine and openmp */
-word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len);
+word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len, int *error);
 
 /* Fill in model->table_comb[n] for combining CRCs. Each entry is x raised to
    the 2 to the n power, modulo the CRC polynomial. Set model->cycle to the
    cycle length and model->back to the index to cycle back to. If the CRC did
    not cycle, then model->back is -1. In either case, model->cycle entries of
    model->table_comb[] are filled in. */
-void crc_table_combine(model_t *model);
+int crc_table_combine(model_t *model);
 
 /* Combine the CRC of the first portion of a message, crc1, with the CRC of the
    second portion, crc2, returning the CRC of the two concatenated. len2 is the

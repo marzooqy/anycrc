@@ -4,7 +4,7 @@
  */
  
 /*
-* Edited by Hussain Al Marzooq to add the slice-by-16 algorithm and the parallel implementation
+* Edited by Hussain Al Marzooq
 */
 
 /*
@@ -75,8 +75,7 @@ typedef uintmax_t word_t;
    defined in the structure. table_comb[] is filled in by crc_table_combine().
  */
 typedef struct {
-    unsigned short width;       /* number of bits in the CRC (the degree of the
-                                   polynomial) */
+    unsigned short width;       /* number of bits in the CRC (the degree of the polynomial) */
     short cycle;                /* length of the table_comb[] cycle */
     short back;                 /* index of table_comb[] to cycle back to */
     char ref;                   /* if true, reflect input and output */
@@ -87,9 +86,10 @@ typedef struct {
     word_t xorout, xorout_hi;   /* final CRC is exclusive-or'ed with this */
     word_t check, check_hi;     /* CRC of the nine ASCII bytes "123456789" */
     word_t res, res_hi;         /* Residue of the CRC */
-    word_t table_comb[67];              /* table for CRC combination */
-    word_t table_byte[256];             /* table for byte-wise calculation */
-    word_t table_word[16][256];  /* tables for word-wise calculation */
+    word_t *table_comb;         /* table for CRC combination */
+    word_t *table_byte;         /* table for byte-wise calculation */
+    word_t *table_word;         /* tables for word-wise calculation */
+    word_t *table_slice16;      /* tables for the slice16 calculation */
 } model_t;
 
 /* Read and verify a CRC model description from the string str, returning the
@@ -162,6 +162,9 @@ void reverse_dbl(word_t *hi, word_t *lo, unsigned n);
    changes the meaning of init, and replaces refin and refout with the
    different meanings reflect and reverse (reverse is very rarely used) */
 void process_model(model_t *model);
+
+/* Deallocate the model's tables */
+void free_model(model_t *model);
 
 /* Read a newline-terminated or EOF-terminated line from in.  The trailing
    newline and any other trailing space characters are removed, and any

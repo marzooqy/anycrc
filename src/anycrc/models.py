@@ -1,4 +1,4 @@
-# taken from Greg Cook's list of CRCs: https://reveng.sourceforge.io/crc-catalogue/
+# taken from Greg Cook's CRC catalogue: https://reveng.sourceforge.io/crc-catalogue/
 
 from collections import namedtuple
 
