@@ -58,7 +58,8 @@ cdef class CRC:
             raise ValueError('CRC width is larger than the system\'s (or python\'s) maximum integer size')
             
         string = f'width={width} poly={poly} init={init} refin={refin} refout={refout} xorout={xor_out} check={check} residue={residue} name=""'.encode('utf-8')
-        cdef int error = read_model(&self.model, string, 0)
+        
+        cdef int error_code = read_model(&self.model, string, 0)
         
         if error_code != 0:
             raise ValueError('An error occurred while retrieving the model, check the arguments passed to the CRC class')
