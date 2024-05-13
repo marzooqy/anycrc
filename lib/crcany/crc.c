@@ -147,8 +147,10 @@ static inline word_t swap(word_t x) {
 }
 
 int crc_table_wordwise(model_t *model, unsigned little, unsigned word_bits) {
+    unsigned word_bytes = word_bits >> 3;
+    
     if(model->table_word == NULL) {
-        model->table_word = (word_t*) malloc(WORDCHARS * 256);
+        model->table_word = (word_t*) malloc(WORDCHARS * word_bytes * 256);
         
         if(model->table_word == NULL) {
             return 1;
@@ -162,7 +164,7 @@ int crc_table_wordwise(model_t *model, unsigned little, unsigned word_bits) {
     word_t xor = model->xorout;
     if (model->width < 8 && !model->ref)
         xor <<= 8 - model->width;
-    unsigned word_bytes = word_bits >> 3;
+    
     for (unsigned k = 0; k < 256; k++) {
         word_t crc = model->table_byte[k];
         model->table_word[k] = opp ? swaplow(crc << top, word_bytes) :
@@ -505,7 +507,7 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
 word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len, int *error) {
     short nthreads = omp_get_max_threads();
     
-    word_t* crc_p = (word_t*)malloc((nthreads - 1) * sizeof(word_t));
+    word_t* crc_p = (word_t*)malloc((nthreads - 1) * WORDCHARS);
     
     if(crc_p == NULL) {
         error = 1;

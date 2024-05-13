@@ -5,11 +5,8 @@ from .models import models, aliases
 import sys
 
 ctypedef uintmax_t word_t
-cdef bint parallel = True
 
 cdef extern from '../../lib/crcany/model.h':
-    cdef const unsigned char WORDCHARS
-    
     ctypedef struct model_t:
         unsigned short width
         short cycle
@@ -43,6 +40,9 @@ cdef extern from '../../lib/crcany/crc.h':
     cdef int crc_table_combine(model_t *model)
     cdef word_t crc_combine(model_t *model, word_t crc1, word_t crc2, uintmax_t len2);
     
+cdef bint parallel = True
+word_width = 64 if sys.maxsize > 2 ** 32 else 32
+
 cdef class CRC:
     cdef model_t model
     cdef word_t register
@@ -50,11 +50,10 @@ cdef class CRC:
     
     def __init__(self, width, poly, init, ref_in, ref_out, xor_out, check=0, residue=0):
         cdef unsigned endian = 1 if sys.byteorder == 'little' else 0
-        self.word_width = 64 if sys.maxsize > 2 ** 32 else 32
         refin = 'true' if ref_in else 'false'
         refout = 'true' if ref_out else 'false'
         
-        if width > self.word_width:
+        if width > word_width:
             raise ValueError('CRC width is larger than the system\'s (or python\'s) maximum integer size')
             
         string = f'width={width} poly={poly} init={init} refin={refin} refout={refout} xorout={xor_out} check={check} residue={residue} name=""'.encode('utf-8')
