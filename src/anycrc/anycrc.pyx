@@ -46,7 +46,6 @@ word_width = 64 if sys.maxsize > 2 ** 32 else 32
 cdef class CRC:
     cdef model_t model
     cdef word_t register
-    cdef unsigned word_width
     
     def __init__(self, width, poly, init, ref_in, ref_out, xor_out, check=0, residue=0):
         cdef unsigned endian = 1 if sys.byteorder == 'little' else 0
@@ -70,7 +69,7 @@ cdef class CRC:
         if error_code == 1:
             raise MemoryError('Out of memory error')
             
-        error_code = crc_table_slice16(&self.model, endian, self.word_width)
+        error_code = crc_table_slice16(&self.model, endian, word_width)
         
         if error_code == 1:
             raise MemoryError('Out of memory error')

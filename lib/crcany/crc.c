@@ -254,11 +254,11 @@ word_t crc_wordwise(model_t *model, word_t crc, void const *dat, size_t len) {
                     ^ model->table_word[(WORDCHARS - 9) * 256 + ((crc >> 64) & 0xff)]
                     ^ model->table_word[(WORDCHARS - 10) * 256 + ((crc >> 72) & 0xff)]
                     ^ model->table_word[(WORDCHARS - 11) * 256 + ((crc >> 80) & 0xff)]
-                    ^ model->table_word[WORDCHARS - 12 * 256 + ((crc >> 88) & 0xff)]
-                    ^ model->table_word[WORDCHARS - 13 * 256 + ((crc >> 96) & 0xff)]
-                    ^ model->table_word[WORDCHARS - 14 * 256 + ((crc >> 104) & 0xff)]
-                    ^ model->table_word[WORDCHARS - 15 * 256 + ((crc >> 112) & 0xff)]
-                    ^ model->table_word[WORDCHARS - 16 * 256 + (crc >> 120)
+                    ^ model->table_word[(WORDCHARS - 12) * 256 + ((crc >> 88) & 0xff)]
+                    ^ model->table_word[(WORDCHARS - 13) * 256 + ((crc >> 96) & 0xff)]
+                    ^ model->table_word[(WORDCHARS - 14) * 256 + ((crc >> 104) & 0xff)]
+                    ^ model->table_word[(WORDCHARS - 15) * 256 + ((crc >> 112) & 0xff)]
+                    ^ model->table_word[(WORDCHARS - 16) * 256 + (crc >> 120)
 #endif
 #endif
 #endif
