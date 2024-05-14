@@ -3,6 +3,8 @@
  * For conditions of distribution and use, see copyright notice in crcany.c.
  */
 
+#include <stdlib.h>
+
 #include "crcdbl.h"
 #include "crc.h"
 
@@ -181,43 +183,28 @@ void crc_zeros_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo,
 
 int crc_table_bytewise_dbl(model_t *model) {
     if(model->table_byte == NULL) {
-        model->table_byte = (word_t*) malloc(WORDCHARS * 256);
+        model->table_byte = (word_t*) malloc(WORDCHARS * 256 * 2);
         
         if(model->table_byte == NULL) {
             return 1;
         }
     }
     
-    if(model->table_byte_hi == NULL) {
-        model->table_byte_hi = (word_t*) malloc(WORDCHARS * 256);
-        
-        if(model->table_byte_hi == NULL) {
-            return 1;
-        }
-    }
-    
-    word_t crc_hi;
-    word_t crc_lo;
-    
     unsigned char k = 0;
     do {
-        crc_hi = 0;
-        crc_lo = 0;
+        word_t crc_hi = 0;
+        word_t crc_lo = 0;
         crc_bitwise_dbl(model, &crc_hi, &crc_lo, &k, 1);
         if (model->rev)
             reverse_dbl(&crc_hi, &crc_lo, model->width);
         model->table_byte[k] = crc_lo;
-        model->table_byte_hi[k] = crc_hi;
+        model->table_byte[256 + k] = crc_hi;
     } while (++k);
     
     return 0;
 }
 
 void crc_bytewise_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo, unsigned char const *buf, size_t len) {
-    // If requested, return the initial CRC.
-    if (buf == NULL)
-        return model->init;
-
     // Pre-process the CRC.
     if (model->rev)
         reverse_dbl(crc_hi, crc_lo, model->width);
@@ -228,20 +215,22 @@ void crc_bytewise_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo, unsigned c
     
     // Process the input data a byte at a time.
     if (model->ref) {
+        lo &= ONES(model->width);
         hi &= ONES(model->width - WORDBITS);
         while (len--) {
-            idx = lo ^ *buf++;
+            idx = (lo ^ *buf++) & 0xff;
             lo = SHR_LO(hi, lo, 8) ^ model->table_byte[idx];
-            hi = SHR_HI(hi, lo, 8) ^ model->table_byte_hi[idx];
+            hi = SHR_HI(hi, lo, 8) ^ model->table_byte[256 + idx];
         }
     }
     else {
         unsigned shift = model->width - 8;  // 1..WORDBITS-8
         while (len--) {
             idx = (SHR_LO(hi, lo, shift) ^ *buf++) & 0xff;
-            hi = SHL_LO(hi, lo, 8) ^ model->table_byte[idx];
-            hi = SHL_HI(hi, lo, 8) ^ model->table_byte_hi[idx];
+            lo = SHL_LO(hi, lo, 8) ^ model->table_byte[idx];
+            hi = SHL_HI(hi, lo, 8) ^ model->table_byte[256 + idx];
         }
+        lo &= ONES(model->width);
         hi &= ONES(model->width - WORDBITS);
     }
     

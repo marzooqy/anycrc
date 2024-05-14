@@ -87,7 +87,7 @@ typedef struct {
     word_t check, check_hi;     /* CRC of the nine ASCII bytes "123456789" */
     word_t res, res_hi;         /* Residue of the CRC */
     word_t *table_comb;         /* table for CRC combination */
-    word_t *table_byte, *table_byte_hi; /* table for byte-wise calculation */
+    word_t *table_byte;         /* table for byte-wise calculation */
     word_t *table_word;         /* tables for word-wise calculation */
     word_t *table_slice16;      /* tables for the slice16 calculation */
 } model_t;

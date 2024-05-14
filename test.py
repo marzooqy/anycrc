@@ -57,8 +57,9 @@ for model, params in anycrc.models.items():
         value = crc._calc_p(test_data2)
         print('parallel whole:   ' + fmt_str.format(value, value2))
         assert value == value2
-        print()
         
+    print()
+    
 #check that all of the aliases are valid
 print('Aliases:')
 for alias, name in anycrc.aliases.items():

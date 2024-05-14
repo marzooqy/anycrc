@@ -21,7 +21,6 @@ cdef extern from '../../lib/crcany/model.h':
         word_t res, res_hi
         word_t *table_comb
         word_t *table_byte
-        word_t *table_byte_hi
         word_t *table_word
         word_t *table_slice16
         
@@ -143,7 +142,7 @@ cdef class CRC:
             return self._calc(data, len(data))
             
         else:
-            crc_bitwise_dbl(&self.model, &crc_hi, &crc_lo, data, len(data))
+            crc_bytewise_dbl(&self.model, &crc_hi, &crc_lo, data, len(data))
             crc = crc_hi
             crc <<= word_bits
             crc += crc_lo
@@ -158,7 +157,7 @@ cdef class CRC:
             return self.reg
             
         else:
-            crc_bitwise_dbl(&self.model, &self.reg_hi, &self.reg, data, len(data))
+            crc_bytewise_dbl(&self.model, &self.reg_hi, &self.reg, data, len(data))
             crc = self.reg_hi
             crc <<= word_bits
             crc += self.reg
