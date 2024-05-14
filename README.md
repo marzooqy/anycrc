@@ -60,21 +60,9 @@ The CRC will be computed in parallel when the input is large enough. If you want
 >>> anycrc.set_parallel(False)
 ```
 
-The CRC's width cannot exceed your system's maximum integer width multiplied by 2.
-
 For a list of pre-built models, check [models.py](https://github.com/marzooqy/anycrc/blob/main/src/anycrc/models.py). To get a list of the models at any time, use the following command:
 
 `python -m anycrc models`
-
-The following table lists the algorithms used by library for computing the CRC:
-
-| Data Length | Width <= Max\* | Width > Max\* |
-|---|:-:|:-:|
-| <16 | byte-by-byte | byte-by-byte |
-| <20,000 | slice-by-16 | byte-by-byte |
-| >=20,000 | parallel slice-by-16 | byte-by-byte |
-
-\*Max: Maximum integer width on your system
 
 ## Benchmarks
 
