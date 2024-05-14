@@ -112,7 +112,8 @@ models = {
     'CRC64-GO-ISO': model(width=64, poly=0x000000000000001b, init=0xffffffffffffffff, refin=True, refout=True, xorout=0xffffffffffffffff, check=0xb90956c775a41001, residue=0x5300000000000000),
     'CRC64-MS': model(width=64, poly=0x259c84cba6426349, init=0xffffffffffffffff, refin=True, refout=True, xorout=0x0000000000000000, check=0x75d4b74f024eceea, residue=0x0000000000000000),
     'CRC64-WE': model(width=64, poly=0x42f0e1eba9ea3693, init=0xffffffffffffffff, refin=False, refout=False, xorout=0xffffffffffffffff, check=0x62ec59e3f1a4f00a, residue=0xfcacbebd5931a992),
-    'CRC64-XZ': model(width=64, poly=0x42f0e1eba9ea3693, init=0xffffffffffffffff, refin=True, refout=True, xorout=0xffffffffffffffff, check=0x995dc9bbdf1939fa, residue=0x49958c9abd7d353f)
+    'CRC64-XZ': model(width=64, poly=0x42f0e1eba9ea3693, init=0xffffffffffffffff, refin=True, refout=True, xorout=0xffffffffffffffff, check=0x995dc9bbdf1939fa, residue=0x49958c9abd7d353f),
+    'CRC82-DARC': model(width=82, poly=0x0308c0111011401440411, init=0x000000000000000000000, refin=True, refout=True, xorout=0x000000000000000000000, check=0x09ea83f625023801fd612, residue=0x000000000000000000000)
 }
 
 aliases = {

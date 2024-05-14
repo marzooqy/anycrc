@@ -40,19 +40,23 @@ cdef extern from '../../lib/crcany/crc.h':
     cdef int crc_table_combine(model_t *model)
     cdef word_t crc_combine(model_t *model, word_t crc1, word_t crc2, uintmax_t len2);
     
+cdef extern from '../../lib/crcany/crcdbl.h':
+    cdef int crc_table_bytewise_dbl(model_t *model)
+    cdef void crc_bytewise_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo, const unsigned char *buf, size_t len)
+    
 cdef bint parallel = True
-word_width = 64 if sys.maxsize > 2 ** 32 else 32
+cdef unsigned char word_bits = 64 if sys.maxsize > 2 ** 32 else 32
 
 cdef class CRC:
     cdef model_t model
-    cdef word_t register
+    cdef word_t reg, reg_hi
     
     def __init__(self, width, poly, init, ref_in, ref_out, xor_out, check=0, residue=0):
         cdef unsigned endian = 1 if sys.byteorder == 'little' else 0
         refin = 'true' if ref_in else 'false'
         refout = 'true' if ref_out else 'false'
         
-        if width > word_width:
+        if width > word_bits * 2:
             raise ValueError('CRC width is larger than the system\'s (or python\'s) maximum integer size')
             
         string = f'width={width} poly={poly} init={init} refin={refin} refout={refout} xorout={xor_out} check={check} residue={residue} name=""'.encode('utf-8')
@@ -64,41 +68,56 @@ cdef class CRC:
             
         process_model(&self.model)
         
-        error_code = crc_table_bytewise(&self.model)
-        
-        if error_code == 1:
-            raise MemoryError('Out of memory error')
+        if self.model.width <= word_bits:
+            error_code = crc_table_bytewise(&self.model)
             
-        error_code = crc_table_slice16(&self.model, endian, word_width)
-        
-        if error_code == 1:
-            raise MemoryError('Out of memory error')
+            if error_code == 1:
+                raise MemoryError('Out of memory error')
+                
+            error_code = crc_table_slice16(&self.model, endian, word_bits)
             
-        error_code = crc_table_combine(&self.model)
-        
-        if error_code == 1:
-            raise MemoryError('Out of memory error')
+            if error_code == 1:
+                raise MemoryError('Out of memory error')
+                
+            error_code = crc_table_combine(&self.model)
             
-        self.register = self.model.init
-        
+            if error_code == 1:
+                raise MemoryError('Out of memory error')
+                
+            self.reg = self.model.init
+            
+        else:
+            error_code = crc_table_bytewise_dbl(&self.model)
+            
+            if error_code == 1:
+                raise MemoryError('Out of memory error')
+                
     def __del__(self):
         free_model(&self.model);
         
     def get(self):
-        return self.register
-        
+        if self.model.width <= word_bits:
+            return self.reg
+            
+        else:
+            crc = self.reg_hi
+            crc <<= word_bits
+            crc += self.reg
+            return crc
+            
     def set(self, word_t crc):
-        self.register = crc
+        self.reg = crc
+        self.reg_hi = crc >> word_bits
         
     def reset(self):
-        self.register = self.model.init
+        self.reg = self.model.init
         
     cdef word_t _calc(self, const unsigned char *data, word_t length):
         cdef word_t crc
         cdef int error = 0
         
-        if parallel and length > 20000:
-            crc = crc_parallel(&self.model, self.register, data, length, &error)
+        if parallel and length >= 20000:
+            crc = crc_parallel(&self.model, self.reg, data, length, &error)
             
             if error == 1:
                 raise MemoryError('Out of memory error')
@@ -106,26 +125,45 @@ cdef class CRC:
             return crc
             
         else:
-            return crc_slice16(&self.model, self.register, data, length)
+            return crc_slice16(&self.model, self.reg, data, length)
             
     def calc(self, data):
         if isinstance(data, str):
             data = (<unicode> data).encode('utf-8')
             
-        return self._calc(data, len(data))
+        cdef word_t crc_hi = self.reg_hi
+        cdef word_t crc_lo = self.reg
         
+        if self.model.width <= word_bits:
+            return self._calc(data, len(data))
+            
+        else:
+            crc_bytewise_dbl(&self.model, &crc_hi, &crc_lo, data, len(data))
+            crc = crc_hi
+            crc <<= word_bits
+            crc += crc_lo
+            return crc
+            
     def update(self, data):
         if isinstance(data, str):
             data = (<unicode> data).encode('utf-8')
             
-        self.register = self._calc(data, len(data))
-        return self.register
-        
+        if self.model.width <= word_bits:
+            self.reg = self._calc(data, len(data))
+            return self.reg
+            
+        else:
+            crc_bytewise_dbl(&self.model, &self.reg_hi, &self.reg, data, len(data))
+            crc = self.reg_hi
+            crc <<= word_bits
+            crc += self.reg
+            return crc
+            
     #parallel
     def _calc_p(self, data):
         cdef const unsigned char* data_p = data
         cdef int error = 0
-        cdef crc = crc_parallel(&self.model, self.register, data_p, len(data), &error)
+        cdef crc = crc_parallel(&self.model, self.reg, data_p, len(data), &error)
         
         if error == 1:
             raise MemoryError('Out of memory error')
@@ -135,12 +173,12 @@ cdef class CRC:
     #slice-by-16
     def _calc_16(self, data):
         cdef const unsigned char* data_p = data
-        return crc_slice16(&self.model, self.register, data_p, len(data))
+        return crc_slice16(&self.model, self.reg, data_p, len(data))
         
     #byte-by-byte
     def _calc_b(self, data):
         cdef const unsigned char* data_p = data
-        return crc_bytewise(&self.model, self.register, data_p, len(data))
+        return crc_bytewise(&self.model, self.reg, data_p, len(data))
         
 def set_parallel(is_parallel):
     global parallel

@@ -8,7 +8,7 @@ test_data = b'123456789'
 test_data2 = b'abcdefghijklmnopqrstuvwxyz'
 
 for model, params in anycrc.models.items():
-    if word_size == 32 and params.width > 32:
+    if word_size == 32 and params.width > 64:
         break
         
     if params.width % 4 == 0:
@@ -38,26 +38,27 @@ for model, params in anycrc.models.items():
     assert value == check
     crc.reset()
     
-    #read all at once
-    value = crc.calc(test_data2)
-    value2 = crc2._calc_b(test_data2)
+    if (word_size == 32 and params.width <= 32) or (word_size == 64 and params.width <= 64):
+        #read all at once
+        value = crc.calc(test_data2)
+        value2 = crc2._calc_b(test_data2)
 
-    print('16 bytes whole:   ' + fmt_str.format(value, value2))
-    assert value == value2
-    
-    #read one char at a time
-    for c in test_data2:
-        value = crc.update(c.to_bytes(1, 'little'))
+        print('16 bytes whole:   ' + fmt_str.format(value, value2))
+        assert value == value2
+        
+        #read one char at a time
+        for c in test_data2:
+            value = crc.update(c.to_bytes(1, 'little'))
 
-    print('16 bytes partial: ' + fmt_str.format(value, value2))
-    assert value == value2
-    
-    crc.reset()
-    value = crc._calc_p(test_data2)
-    print('parallel whole:   ' + fmt_str.format(value, value2))
-    assert value == value2
-    print()
-    
+        print('16 bytes partial: ' + fmt_str.format(value, value2))
+        assert value == value2
+        
+        crc.reset()
+        value = crc._calc_p(test_data2)
+        print('parallel whole:   ' + fmt_str.format(value, value2))
+        assert value == value2
+        print()
+        
 #check that all of the aliases are valid
 print('Aliases:')
 for alias, name in anycrc.aliases.items():

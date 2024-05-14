@@ -66,6 +66,15 @@ For a list of pre-built models, check [models.py](https://github.com/marzooqy/an
 
 `python -m anycrc models`
 
+The following table lists the algorithms used by library for computing the CRC:
+
+| Data Length | CRC Width <= SWW\* | CRC Width > SWW\* |
+| <16 | byte-by-byte | byte-by-byte |
+| <20,000 | slice-by-16 | byte-by-byte |
+| >=20,000 | parallel slice-by-16 | byte-by-byte |
+
+\*SWW: System Word Width
+
 ## Benchmarks
 
 Calculating the CRC32 for lorem ipsum 1 million times:

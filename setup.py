@@ -35,7 +35,7 @@ else:
     
 setup(
     name = 'anycrc',
-    version = '0.6.3',
+    version = '0.7.0',
     package_dir = {"": "src"},
     cmdclass={"build_ext": Build},
     ext_modules = [
@@ -43,7 +43,7 @@ setup(
             name='anycrc.anycrc',
             extra_compile_args=compile_args,
             extra_link_args=link_args,
-            sources=['src/anycrc/anycrc.pyx', 'lib/crcany/model.c', 'lib/crcany/crc.c']
+            sources=['src/anycrc/anycrc.pyx', 'lib/crcany/model.c', 'lib/crcany/crc.c', 'lib/crcany/crcdbl.c']
         )
     ]
 )

@@ -519,6 +519,7 @@ void process_model(model_t *model) {
     model->rev ^= model->ref;
     model->table_comb = NULL;
     model->table_byte = NULL;
+    model->table_byte_hi = NULL;
     model->table_word = NULL;
     model->table_slice16 = NULL;
 }
