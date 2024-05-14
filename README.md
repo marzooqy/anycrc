@@ -74,7 +74,7 @@ The following table lists the algorithms used by library for computing the CRC:
 | <20,000 | slice-by-16 | byte-by-byte |
 | >=20,000 | parallel slice-by-16 | byte-by-byte |
 
-\*MAX: Max integer width
+\*Max: Max integer width
 
 ## Benchmarks
 
