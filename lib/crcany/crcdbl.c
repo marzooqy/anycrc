@@ -196,10 +196,13 @@ int crc_table_bytewise_dbl(model_t *model) {
         }
     }
     
+    word_t crc_hi;
+    word_t crc_lo;
+    
     unsigned char k = 0;
     do {
-        word_t crc_hi = 0;
-        word_t crc_lo = 0;
+        crc_hi = 0;
+        crc_lo = 0;
         crc_bitwise_dbl(model, &crc_hi, &crc_lo, &k, 1);
         if (model->rev)
             reverse_dbl(&crc_hi, &crc_lo, model->width);

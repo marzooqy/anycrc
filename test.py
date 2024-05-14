@@ -38,7 +38,7 @@ for model, params in anycrc.models.items():
     assert value == check
     crc.reset()
     
-    if (word_size == 32 and params.width <= 32) or (word_size == 64 and params.width <= 64):
+    if params.width <= word_size:
         #read all at once
         value = crc.calc(test_data2)
         value2 = crc2._calc_b(test_data2)

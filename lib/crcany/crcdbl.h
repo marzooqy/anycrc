@@ -8,6 +8,10 @@
 
 #include "model.h"
 
+/* Return the reversal of the low n-bits of hi/lo in hi/lo.
+   1 <= n <= WORDBITS*2. */
+void reverse_dbl(word_t *hi, word_t *lo, unsigned n);
+
 /* Similar to crc_bitwise(), but works for CRCs up to twice as long as a
    word_t. This processes long CRCs stored in two word_t values, *crc_hi and
    *crc_lo. The final CRC is returned in *crc_hi and *crc_lo.  If buf is NULL,

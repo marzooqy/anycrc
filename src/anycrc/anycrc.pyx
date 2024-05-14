@@ -21,6 +21,7 @@ cdef extern from '../../lib/crcany/model.h':
         word_t res, res_hi
         word_t *table_comb
         word_t *table_byte
+        word_t *table_byte_hi
         word_t *table_word
         word_t *table_slice16
         
@@ -41,6 +42,7 @@ cdef extern from '../../lib/crcany/crc.h':
     cdef word_t crc_combine(model_t *model, word_t crc1, word_t crc2, uintmax_t len2);
     
 cdef extern from '../../lib/crcany/crcdbl.h':
+    cdef void crc_bitwise_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo, const unsigned char *buf, size_t len)
     cdef int crc_table_bytewise_dbl(model_t *model)
     cdef void crc_bytewise_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo, const unsigned char *buf, size_t len)
     
@@ -57,7 +59,7 @@ cdef class CRC:
         refout = 'true' if ref_out else 'false'
         
         if width > word_bits * 2:
-            raise ValueError('CRC width is larger than the system\'s (or python\'s) maximum integer size')
+            raise ValueError('CRC width is larger than what is allowed')
             
         string = f'width={width} poly={poly} init={init} refin={refin} refout={refout} xorout={xor_out} check={check} residue={residue} name=""'.encode('utf-8')
         
@@ -92,6 +94,9 @@ cdef class CRC:
             if error_code == 1:
                 raise MemoryError('Out of memory error')
                 
+            self.reg = self.model.init
+            self.reg_hi = self.model.init_hi
+            
     def __del__(self):
         free_model(&self.model);
         
@@ -138,7 +143,7 @@ cdef class CRC:
             return self._calc(data, len(data))
             
         else:
-            crc_bytewise_dbl(&self.model, &crc_hi, &crc_lo, data, len(data))
+            crc_bitwise_dbl(&self.model, &crc_hi, &crc_lo, data, len(data))
             crc = crc_hi
             crc <<= word_bits
             crc += crc_lo
@@ -153,7 +158,7 @@ cdef class CRC:
             return self.reg
             
         else:
-            crc_bytewise_dbl(&self.model, &self.reg_hi, &self.reg, data, len(data))
+            crc_bitwise_dbl(&self.model, &self.reg_hi, &self.reg, data, len(data))
             crc = self.reg_hi
             crc <<= word_bits
             crc += self.reg

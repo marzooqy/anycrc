@@ -510,7 +510,7 @@ word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len, int
     word_t* crc_p = (word_t*)malloc((nthreads - 1) * WORDCHARS);
     
     if(crc_p == NULL) {
-        error = 1;
+        *error = 1;
         return crc;
     }
     
