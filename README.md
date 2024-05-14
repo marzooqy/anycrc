@@ -64,13 +64,13 @@ For a list of pre-built models, check [models.py](https://github.com/marzooqy/an
 
 `python -m anycrc models`
 
-The algorithms used will depend on the length of the input and the CRC's width:
+The algorithm used will depend on the length of the input and the CRC's width:
 
-| Data Length | Width <= 64 | Width > 64 |
-|---|:-:|:-:|
-| <16 | byte-by-byte | byte-by-byte |
-| <20,000 | slice-by-16 | byte-by-byte |
-| >=20,000 | parallel slice-by-16 | byte-by-byte |
+| Data Length | Width ≤ 64 | Width > 64 |
+|:-:|:-:|:-:|
+| Length < 16 | byte-by-byte | byte-by-byte |
+| 16 ≤ Length < 20,000 | slice-by-16 | byte-by-byte |
+| Length ≥ 20,000 | parallel slice-by-16 | byte-by-byte |
 
 The maximum possible CRC width is 128 bits.
 
