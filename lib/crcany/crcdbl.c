@@ -192,8 +192,8 @@ int crc_table_bytewise_dbl(model_t *model) {
     
     unsigned char k = 0;
     do {
-        word_t crc_hi = 0;
         word_t crc_lo = 0;
+        word_t crc_hi = 0;
         crc_bitwise_dbl(model, &crc_hi, &crc_lo, &k, 1);
         if (model->rev)
             reverse_dbl(&crc_hi, &crc_lo, model->width);
@@ -211,11 +211,10 @@ void crc_bytewise_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo, unsigned c
         
     word_t lo = *crc_lo;
     word_t hi = *crc_hi;
-    unsigned char idx;
+    unsigned short idx;
     
     // Process the input data a byte at a time.
     if (model->ref) {
-        lo &= ONES(model->width);
         hi &= ONES(model->width - WORDBITS);
         while (len--) {
             idx = (lo ^ *buf++) & 0xff;
@@ -230,7 +229,6 @@ void crc_bytewise_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo, unsigned c
             lo = SHL_LO(hi, lo, 8) ^ model->table_byte[idx];
             hi = SHL_HI(hi, lo, 8) ^ model->table_byte[256 + idx];
         }
-        lo &= ONES(model->width);
         hi &= ONES(model->width - WORDBITS);
     }
     

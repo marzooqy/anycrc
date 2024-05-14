@@ -115,6 +115,7 @@ cdef class CRC:
         
     def reset(self):
         self.reg = self.model.init
+        self.reg_hi = self.model.init_hi
         
     cdef word_t _calc(self, const unsigned char *data, word_t length):
         cdef word_t crc
@@ -135,8 +136,8 @@ cdef class CRC:
         if isinstance(data, str):
             data = (<unicode> data).encode('utf-8')
             
-        cdef word_t crc_hi = self.reg_hi
         cdef word_t crc_lo = self.reg
+        cdef word_t crc_hi = self.reg_hi
         
         if self.model.width <= word_bits:
             return self._calc(data, len(data))

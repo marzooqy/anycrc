@@ -68,13 +68,13 @@ For a list of pre-built models, check [models.py](https://github.com/marzooqy/an
 
 The following table lists the algorithms used by library for computing the CRC:
 
-| Data Length | Width <= MAX\* | Width > MAX\* |
+| Data Length | Width <= Max\* | Width > Max\* |
 |---|:-:|:-:|
 | <16 | byte-by-byte | byte-by-byte |
 | <20,000 | slice-by-16 | byte-by-byte |
 | >=20,000 | parallel slice-by-16 | byte-by-byte |
 
-\*MAX: Max Integer Width
+\*MAX: Max integer width
 
 ## Benchmarks
 
