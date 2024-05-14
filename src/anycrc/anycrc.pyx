@@ -7,6 +7,9 @@ import sys
 ctypedef uintmax_t word_t
 
 cdef extern from '../../lib/crcany/model.h':
+    cdef unsigned short WORDCHARS
+    cdef unsigned short WORDBITS = WORDCHARS << 3
+    
     ctypedef struct model_t:
         unsigned short width
         short cycle
@@ -46,7 +49,7 @@ cdef extern from '../../lib/crcany/crcdbl.h':
     cdef void crc_bytewise_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo, const unsigned char *buf, size_t len)
     
 cdef bint parallel = True
-cdef unsigned char word_bits = 64 if sys.maxsize > 2 ** 32 else 32
+word_bits = WORDBITS
 
 cdef class CRC:
     cdef model_t model
@@ -57,7 +60,7 @@ cdef class CRC:
         refin = 'true' if ref_in else 'false'
         refout = 'true' if ref_out else 'false'
         
-        if width > word_bits * 2:
+        if width > WORDBITS * 2:
             raise ValueError('CRC width is larger than what is allowed')
             
         string = f'width={width} poly={poly} init={init} refin={refin} refout={refout} xorout={xor_out} check={check} residue={residue} name=""'.encode('utf-8')
@@ -69,13 +72,13 @@ cdef class CRC:
             
         process_model(&self.model)
         
-        if self.model.width <= word_bits:
+        if self.model.width <= WORDBITS:
             error_code = crc_table_bytewise(&self.model)
             
             if error_code == 1:
                 raise MemoryError('Out of memory error')
                 
-            error_code = crc_table_slice16(&self.model, endian, word_bits)
+            error_code = crc_table_slice16(&self.model, endian, WORDBITS)
             
             if error_code == 1:
                 raise MemoryError('Out of memory error')
@@ -100,18 +103,18 @@ cdef class CRC:
         free_model(&self.model);
         
     def get(self):
-        if self.model.width <= word_bits:
+        if self.model.width <= WORDBITS:
             return self.reg
             
         else:
             crc = self.reg_hi
-            crc <<= word_bits
+            crc <<= WORDBITS
             crc += self.reg
             return crc
             
     def set(self, word_t crc):
         self.reg = crc
-        self.reg_hi = crc >> word_bits
+        self.reg_hi = crc >> WORDBITS
         
     def reset(self):
         self.reg = self.model.init
@@ -139,13 +142,13 @@ cdef class CRC:
         cdef word_t crc_lo = self.reg
         cdef word_t crc_hi = self.reg_hi
         
-        if self.model.width <= word_bits:
+        if self.model.width <= WORDBITS:
             return self._calc(data, len(data))
             
         else:
             crc_bytewise_dbl(&self.model, &crc_hi, &crc_lo, data, len(data))
             crc = crc_hi
-            crc <<= word_bits
+            crc <<= WORDBITS
             crc += crc_lo
             return crc
             
@@ -153,14 +156,14 @@ cdef class CRC:
         if isinstance(data, str):
             data = (<unicode> data).encode('utf-8')
             
-        if self.model.width <= word_bits:
+        if self.model.width <= WORDBITS:
             self.reg = self._calc(data, len(data))
             return self.reg
             
         else:
             crc_bytewise_dbl(&self.model, &self.reg_hi, &self.reg, data, len(data))
             crc = self.reg_hi
-            crc <<= word_bits
+            crc <<= WORDBITS
             crc += self.reg
             return crc
             

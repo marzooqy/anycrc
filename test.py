@@ -1,14 +1,12 @@
 import anycrc
 import sys
 
-word_size = 64 if sys.maxsize > 2 ** 32 else 32
-
 #The standard test data b'123456789' isn't good enough when testing slice-by-16 because the data length is < 16
 test_data = b'123456789'
 test_data2 = b'abcdefghijklmnopqrstuvwxyz'
 
 for model, params in anycrc.models.items():
-    if word_size == 32 and params.width > 64:
+    if params.width > anycrc.word_bits * 2:
         break
         
     if params.width % 4 == 0:
@@ -38,7 +36,7 @@ for model, params in anycrc.models.items():
     assert value == check
     crc.reset()
     
-    if params.width <= word_size:
+    if params.width <= anycrc.word_bits:
         #read all at once
         value = crc.calc(test_data2)
         value2 = crc2._calc_b(test_data2)
