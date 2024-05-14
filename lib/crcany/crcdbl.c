@@ -215,7 +215,12 @@ void crc_bytewise_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo, unsigned c
     
     // Process the input data a byte at a time.
     if (model->ref) {
-        hi &= ONES(model->width - WORDBITS);
+        if(model->width > WORDBITS) {
+            hi &= ONES(model->width - WORDBITS);
+        } else {
+            lo &= ONES(model->width);
+            hi = 0;
+        }
         while (len--) {
             idx = (lo ^ *buf++) & 0xff;
             lo = SHR_LO(hi, lo, 8) ^ model->table_byte[idx];
@@ -229,7 +234,12 @@ void crc_bytewise_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo, unsigned c
             lo = SHL_LO(hi, lo, 8) ^ model->table_byte[idx];
             hi = SHL_HI(hi, lo, 8) ^ model->table_byte[256 + idx];
         }
-        hi &= ONES(model->width - WORDBITS);
+        if(model->width > WORDBITS) {
+            hi &= ONES(model->width - WORDBITS);
+        } else {
+            lo &= ONES(model->width);
+            hi = 0;
+        }
     }
     
     *crc_lo = lo;
