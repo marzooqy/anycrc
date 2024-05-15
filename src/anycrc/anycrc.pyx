@@ -7,8 +7,8 @@ import sys
 ctypedef uintmax_t word_t
 
 cdef extern from '../../lib/crcany/model.h':
-    cdef unsigned short WORDCHARS
-    cdef unsigned short WORDBITS = WORDCHARS << 3
+    cdef const unsigned short WORDCHARS
+    cdef const unsigned short WORDBITS
     
     ctypedef struct model_t:
         unsigned short width
