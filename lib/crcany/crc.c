@@ -419,8 +419,8 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
             if (!model->ref)
                 crc = swap(crc);
             do {
-                uint32_t crc_hi = (crc >> 32) ^ *(uint32_t const *)(buf + 4);
                 uint32_t crc_lo = (crc & 0xffffffff) ^ *(uint32_t const *)buf;
+                uint32_t crc_hi = (crc >> 32) ^ *(uint32_t const *)(buf + 4);
                 uint32_t i3 = *(uint32_t const *)(buf + 8);
                 uint32_t i4 = *(uint32_t const *)(buf + 12);
                 
