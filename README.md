@@ -64,8 +64,6 @@ For a list of pre-built models, check [models.py](https://github.com/marzooqy/an
 
 `python -m anycrc models`
 
-The algorithm used will depend on the length of the input and the CRC's width:
-
 The maximum possible CRC width is 128 bits.
 
 ## Benchmarks
