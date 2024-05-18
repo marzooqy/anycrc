@@ -123,7 +123,7 @@ cdef class CRC:
         cdef word_t crc
         cdef int error = 0
         
-        if parallel and length >= 20000:
+        if parallel and length >= 200000:
             crc = crc_parallel(&self.model, self.reg, data, length, &error)
             
             if error == 1:

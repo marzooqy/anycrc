@@ -66,12 +66,6 @@ For a list of pre-built models, check [models.py](https://github.com/marzooqy/an
 
 The algorithm used will depend on the length of the input and the CRC's width:
 
-| Data Length | Width ≤ 64 | Width > 64 |
-|:-:|:-:|:-:|
-| Length < 16 | byte-by-byte | byte-by-byte |
-| 16 ≤ Length < 20,000 | slice-by-16 | byte-by-byte |
-| Length ≥ 20,000 | parallel slice-by-16 | byte-by-byte |
-
 The maximum possible CRC width is 128 bits.
 
 ## Benchmarks
@@ -99,4 +93,6 @@ Tested on a 10th generation Intel i7 processor. Parallel performance will depend
 
 #### Notes
 
-Parallelism is disabled when the length of the input data is under 20k, as the serial method is faster in that case.
+Parallelism is disabled when the length of the input data is under 200k, as the serial method is faster in that case.
+
+The input needs to be very large in order to notice the speed advantage of the parallel algorithm.

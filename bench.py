@@ -143,9 +143,9 @@ elif sys.argv[1] == '2':
 #find the point at which the parallel version becomes faster than the serial version
 elif sys.argv[1] == '3':
     model = anycrc.Model('CRC32')
-    n = 100000
+    n = 10000
     
-    for i in range(4):
+    for i in range(1, 4):
         t = time.perf_counter()
         data = test_data[:200] * 10 ** i
         
