@@ -54,7 +54,7 @@ cdef class CRC:
     cdef model_t model
     cdef word_t reg, reg_hi
     
-    def __init__(self, width, poly, init, ref_in, ref_out, xor_out, check=0, residue=0):
+    def __cinit__(self, width, poly, init, ref_in, ref_out, xor_out, check=0, residue=0):
         cdef unsigned endian = 1 if sys.byteorder == 'little' else 0
         refin = 'true' if ref_in else 'false'
         refout = 'true' if ref_out else 'false'
@@ -98,7 +98,7 @@ cdef class CRC:
             self.reg = self.model.init
             self.reg_hi = self.model.init_hi
             
-    def __del__(self):
+    def __dealloc__(self):
         free_model(&self.model);
         
     def get(self):

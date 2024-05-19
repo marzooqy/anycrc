@@ -525,6 +525,7 @@ void process_model(model_t *model) {
 
 // See model.h.
 void free_model(model_t *model) {
+    free(model->name);
     free(model->table_comb);
     free(model->table_byte);
     free(model->table_word);
