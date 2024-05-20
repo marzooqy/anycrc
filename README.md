@@ -94,3 +94,5 @@ Tested on a 10th generation Intel i7 processor. Parallel performance will depend
 Parallelism is disabled when the length of the input data is under 200k, as the serial method is faster in that case.
 
 The input needs to be very large in order to notice the speed advantage of the parallel algorithm.
+
+CRCs with a width larger than 64 bits use the slower byte-by-byte algorithm.
