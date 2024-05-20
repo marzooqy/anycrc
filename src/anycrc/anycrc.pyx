@@ -119,18 +119,9 @@ cdef class CRC:
         self.reg = self.model.init
         self.reg_hi = self.model.init_hi
         
-    cdef word_t _calc(self, const unsigned char *data, word_t length):
-        cdef word_t crc
-        cdef int error = 0
-        
+    cdef word_t _calc(self, const unsigned char *data, word_t length, int *error):
         if parallel and length >= 200000:
-            crc = crc_parallel(&self.model, self.reg, data, length, &error)
-            
-            if error == 1:
-                raise MemoryError('Out of memory error')
-                
-            return crc
-            
+            return crc_parallel(&self.model, self.reg, data, length, error)
         else:
             return crc_slice16(&self.model, self.reg, data, length)
             
@@ -140,9 +131,15 @@ cdef class CRC:
             
         cdef word_t crc_lo = self.reg
         cdef word_t crc_hi = self.reg_hi
+        cdef int error = 0;
         
         if self.model.width <= WORDBITS:
-            return self._calc(data, len(data))
+            crc_lo = self._calc(data, len(data), &error)
+            
+            if error == 1:
+                raise MemoryError('Out of memory error')
+                
+            return crc_lo
             
         else:
             crc_bytewise_dbl(&self.model, &crc_hi, &crc_lo, data, len(data))
@@ -155,8 +152,14 @@ cdef class CRC:
         if isinstance(data, str):
             data = (<unicode> data).encode('utf-8')
             
+        cdef int error = 0
+        
         if self.model.width <= WORDBITS:
-            self.reg = self._calc(data, len(data))
+            self.reg = self._calc(data, len(data), &error)
+            
+            if error == 1:
+                raise MemoryError('Out of memory error')
+                
             return self.reg
             
         else:
