@@ -49,7 +49,7 @@ cdef extern from '../../lib/crcany/crcdbl.h':
     
 cdef bint parallel = True
 cdef word_t MASK = -1
-word_bits = WORDBITS
+word_bits = WORDBITS #accessible from python
 
 cdef class CRC:
     cdef model_t model
