@@ -35,7 +35,7 @@ else:
     
 setup(
     name = 'anycrc',
-    version = '0.7.4',
+    version = '0.7.5',
     package_dir = {"": "src"},
     cmdclass={"build_ext": Build},
     ext_modules = [
