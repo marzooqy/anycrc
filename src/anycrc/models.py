@@ -1,4 +1,4 @@
-# taken from Greg Cook's CRC catalogue: https://reveng.sourceforge.io/crc-catalogue/
+# Taken from Greg Cook's CRC catalogue: https://reveng.sourceforge.io/crc-catalogue/all.htm
 
 from collections import namedtuple
 
@@ -137,7 +137,7 @@ aliases = {
     'CRC15': 'CRC15-CAN',
     'ARC': 'CRC16-ARC',
     'CRC16': 'CRC16-ARC',
-    'CRC15-ACORN': 'CRC16-XMODEM',
+    'CRC16-ACORN': 'CRC16-XMODEM',
     'CRC16-AUG-CCITT': 'CRC16-SPI-FUJITSU',
     'CRC16-AUTOSAR': 'CRC16-IBM-3740',
     'CRC16-BLUETOOTH': 'CRC16-KERMIT',
@@ -172,8 +172,8 @@ aliases = {
     'B-CRC32': 'CRC32-BZIP2',
     'CRC32': 'CRC32-ISO-HDLC',
     'CRC32C': 'CRC32-ISCSI',
-    'CRC32Q': 'CRC32-AIXM',
     'CRC32D': 'CRC32-BASE91-D',
+    'CRC32Q': 'CRC32-AIXM',
     'CRC32-AAL5': 'CRC32-BZIP2',
     'CRC32-ADCCP': 'CRC32-ISO-HDLC',
     'CRC32-DECT-B': 'CRC32-BZIP2',

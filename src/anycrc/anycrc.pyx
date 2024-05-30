@@ -63,7 +63,7 @@ cdef class CRC:
         if width > WORDBITS * 2:
             raise ValueError('CRC width is larger than what is allowed')
             
-        string = f'width={width} poly={poly} init={init} refin={refin} refout={refout} xorout={xor_out} check={check} residue={residue} name=""'.encode('utf-8')
+        string = f'width={width} poly={poly} init={init} refin={refin} refout={refout} xorout={xor_out} check={check} residue={residue} name=""'.encode('ascii')
         
         cdef int error_code = read_model(&self.model, string, 0)
         

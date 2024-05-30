@@ -9,10 +9,9 @@ for model, params in anycrc.models.items():
     if params.width > anycrc.word_bits * 2:
         break
         
-    if params.width % 4 == 0:
-        disp_width = params.width // 4
-    else:
-        disp_width = params.width // 4 + 1
+    disp_width = params.width // 4
+    if params.width % 4 != 0:
+        disp_width += 1
         
     fmt_str = '0x{:0widthx} 0x{:0widthx}'.replace('width', str(disp_width))
     
