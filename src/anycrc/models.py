@@ -5,6 +5,8 @@ from collections import namedtuple
 model = namedtuple('model', ['width', 'poly', 'init', 'refin', 'refout', 'xorout', 'check', 'residue'], defaults=(0, 0))
 
 models = {
+    'CRC3-GSM': model(width=3, poly=0x3, init=0x0, refin=False, refout=False, xorout=0x7, check=0x4, residue=0x2),
+    'CRC3-ROHC': model(width=3, poly=0x3, init=0x7, refin=True, refout=True, xorout=0x0, check=0x6, residue=0x0),
     'CRC4-G-704': model(width=4, poly=0x3, init=0x0, refin=True, refout=True, xorout=0x0, check=0x7, residue=0x0),
     'CRC4-INTERLAKEN': model(width=4, poly=0x3, init=0xf, refin=False, refout=False, xorout=0xf, check=0xb, residue=0x2),
     'CRC5-EPC-C1G2':  model(width=5, poly=0x09, init=0x09, refin=False, refout=False, xorout=0x00, check=0x00, residue=0x00),
@@ -111,6 +113,7 @@ models = {
     'CRC64-ECMA-182': model(width=64, poly=0x42f0e1eba9ea3693, init=0x0000000000000000, refin=False, refout=False, xorout=0x0000000000000000, check=0x6c40df5f0b497347, residue=0x0000000000000000),
     'CRC64-GO-ISO': model(width=64, poly=0x000000000000001b, init=0xffffffffffffffff, refin=True, refout=True, xorout=0xffffffffffffffff, check=0xb90956c775a41001, residue=0x5300000000000000),
     'CRC64-MS': model(width=64, poly=0x259c84cba6426349, init=0xffffffffffffffff, refin=True, refout=True, xorout=0x0000000000000000, check=0x75d4b74f024eceea, residue=0x0000000000000000),
+    'CRC64-REDIS': model(width=64, poly=0xad93d23594c935a9, init=0x0000000000000000, refin=True, refout=True, xorout=0x0000000000000000, check=0xe9c6d914c4b8d9ca, residue=0x0000000000000000),
     'CRC64-WE': model(width=64, poly=0x42f0e1eba9ea3693, init=0xffffffffffffffff, refin=False, refout=False, xorout=0xffffffffffffffff, check=0x62ec59e3f1a4f00a, residue=0xfcacbebd5931a992),
     'CRC64-XZ': model(width=64, poly=0x42f0e1eba9ea3693, init=0xffffffffffffffff, refin=True, refout=True, xorout=0xffffffffffffffff, check=0x995dc9bbdf1939fa, residue=0x49958c9abd7d353f),
     'CRC82-DARC': model(width=82, poly=0x0308c0111011401440411, init=0x000000000000000000000, refin=True, refout=True, xorout=0x000000000000000000000, check=0x09ea83f625023801fd612, residue=0x000000000000000000000)
