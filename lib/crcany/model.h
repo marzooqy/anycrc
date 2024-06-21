@@ -130,7 +130,7 @@ model_t get_model(unsigned short width, word_t poly, word_t init, char refin, ch
 /* Same as get_model but allows the width to be higher than 64 bits */
 model_t get_model_dbl(unsigned short width, word_t poly_hi, word_t poly, word_t init_hi, word_t init,
                       char refin, char refout, word_t xorout_hi, word_t xorout, word_t check_hi, word_t check,
-					  word_t res_hi, word_t res);
+                      word_t res_hi, word_t res);
 
 /* Deallocate the model's tables */
 void free_model(model_t *model);

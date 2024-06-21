@@ -12,15 +12,15 @@
 
 // See model.h.
 model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout, word_t check, word_t res) {
-	model_t model;
-	model.width = width;
-	model.poly = poly;
-	model.init = init;
-	model.xorout = xorout;
-	model.ref = refin;
-	model.rev = refout;
-	model.check = check;
-	model.res = res;
+    model_t model;
+    model.width = width;
+    model.poly = poly;
+    model.init = init;
+    model.xorout = xorout;
+    model.ref = refin;
+    model.rev = refout;
+    model.check = check;
+    model.res = res;
 
     if (refin)
         model.poly = reverse(model.poly, model.width);
@@ -34,27 +34,27 @@ model_t get_model(unsigned short width, word_t poly, word_t init, char refin, ch
     model.table_word = NULL;
     model.table_slice16 = NULL;
 
-	return model;
+    return model;
 }
 
 // See model.h.
 model_t get_model_dbl(unsigned short width, word_t poly_hi, word_t poly, word_t init_hi, word_t init,
                       char refin, char refout, word_t xorout_hi, word_t xorout, word_t check_hi, word_t check,
-					  word_t res_hi, word_t res) {
-	model_t model;
-	model.width = width;
-	model.poly = poly;
-	model.poly_hi = poly_hi;
-	model.init = init;
-	model.init_hi = init_hi;
-	model.xorout = xorout;
-	model.xorout_hi = xorout_hi;
-	model.ref = refin;
-	model.rev = refout;
-	model.check = check;
-	model.check_hi = check_hi;
-	model.res = res;
-	model.res_hi = res_hi;
+                      word_t res_hi, word_t res) {
+    model_t model;
+    model.width = width;
+    model.poly = poly;
+    model.poly_hi = poly_hi;
+    model.init = init;
+    model.init_hi = init_hi;
+    model.xorout = xorout;
+    model.xorout_hi = xorout_hi;
+    model.ref = refin;
+    model.rev = refout;
+    model.check = check;
+    model.check_hi = check_hi;
+    model.res = res;
+    model.res_hi = res_hi;
 
     if (refin)
         reverse_dbl(&model.poly_hi, &model.poly, model.width);
@@ -69,7 +69,7 @@ model_t get_model_dbl(unsigned short width, word_t poly_hi, word_t poly, word_t 
     model.table_word = NULL;
     model.table_slice16 = NULL;
 
-	return model;
+    return model;
 }
 
 // See model.h.
