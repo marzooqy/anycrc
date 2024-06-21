@@ -96,18 +96,3 @@ Tested on a 10th generation Intel i7 processor. Parallel performance will depend
 2- The input needs to be very large in order to notice the speed advantage of the parallel algorithm.
 
 3- CRCs with a width larger than 64 bits use the slower byte-by-byte algorithm.
-
-## Compiling
-
-In the base directory, use the following command:
-
-`pip install .`
-
-You need to have the specific compiler used for your operating system:
-
-| Operating System | Compiler |
-|---|---|
-| 64-bit Windows | Mingw-w64 |
-| 32-bit Windows | MSVC |
-| macOS | GCC 13 |
-| Linux | GCC |
