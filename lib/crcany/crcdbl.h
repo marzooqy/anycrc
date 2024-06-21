@@ -41,7 +41,7 @@ int crc_table_bytewise_dbl(model_t *);
 /* Equivalent to crc_bitwise(), but use a faster byte-wise table-based
    approach. This assumes that model->table_byte and model->table_byte_hi has been initialized using
    crc_table_bytewise_dbl(). */
-void crc_bytewise_dbl(model_t *, word_t *, word_t *, 
+void crc_bytewise_dbl(model_t *, word_t *, word_t *,
                         unsigned char const *, size_t);
 
 /* Similar to crc_zeros(), but works for CRCs up to twice as long as a

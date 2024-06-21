@@ -5,62 +5,57 @@ import sys
 test_data = b'123456789'
 test_data2 = b'abcdefghijklmnopqrstuvwxyz'
 
-for model, params in anycrc.models.items():
-    if params.width > anycrc.word_bits * 2:
+for name, model in anycrc.models.items():
+    if model.width > anycrc.word_bits * 2:
         break
-        
-    disp_width = params.width // 4
-    if params.width % 4 != 0:
-        disp_width += 1
-        
-    fmt_str = '0x{:0widthx} 0x{:0widthx}'.replace('width', str(disp_width))
-    
-    print(model)
-    
-    crc = anycrc.Model(model)   
-    crc2 = anycrc.Model(model)
-    
+
+    print(name)
+    print(anycrc.str_model(model))
+
+    crc = anycrc.Model(name)
+    crc2 = anycrc.Model(name)
+
     #read all at once
     value = crc.calc(test_data)
-    check = params.check
-    
-    print('1 byte whole:     ' + fmt_str.format(value, check))
+    check = model.check
+
+    print('1 byte whole:     {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(check, model.width)))
     assert value == check
-    
+
     #read one char at a time
     for c in test_data:
         value = crc.update(c.to_bytes(1, 'little'))
-    
-    print('1 byte partial:   ' + fmt_str.format(value, check))
+
+    print('1 byte partial:   {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(check, model.width)))
     assert value == check
     crc.reset()
-    
-    if params.width <= anycrc.word_bits:
+
+    if model.width <= anycrc.word_bits:
         #read all at once
         value = crc.calc(test_data2)
         value2 = crc2._calc_b(test_data2)
 
-        print('16 bytes whole:   ' + fmt_str.format(value, value2))
+        print('16 bytes whole:   {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
         assert value == value2
-        
+
         #read one char at a time
         for c in test_data2:
             value = crc.update(c.to_bytes(1, 'little'))
 
-        print('16 bytes partial: ' + fmt_str.format(value, value2))
+        print('16 bytes partial: {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
         assert value == value2
-        
+
         crc.reset()
         value = crc._calc_p(test_data2)
-        print('parallel whole:   ' + fmt_str.format(value, value2))
+        print('parallel whole:   {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
         assert value == value2
-        
+
     print()
-    
+
 #check that all of the aliases are valid
 print('Aliases:')
 for alias, name in anycrc.aliases.items():
     assert name in anycrc.models
     print(alias + ' OK')
-    
+
 print()

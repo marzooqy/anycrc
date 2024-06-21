@@ -6,7 +6,7 @@
 /*
 * Edited by Hussain Al Marzooq
 */
-  
+
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -69,12 +69,12 @@ word_t crc_bitwise(model_t *model, word_t crc, void const *dat, size_t len) {
 int crc_table_bytewise(model_t *model) {
     if(model->table_byte == NULL) {
         model->table_byte = (word_t*) malloc(WORDCHARS * 256);
-        
+
         if(model->table_byte == NULL) {
             return 1;
         }
     }
-    
+
     unsigned char k = 0;
     do {
         word_t crc = crc_bitwise(model, 0, &k, 1);
@@ -84,7 +84,7 @@ int crc_table_bytewise(model_t *model) {
             crc <<= 8 - model->width;
         model->table_byte[k] = crc;
     } while (++k);
-    
+
     return 0;
 }
 
@@ -148,15 +148,15 @@ static inline word_t swap(word_t x) {
 
 int crc_table_wordwise(model_t *model, unsigned little, unsigned word_bits) {
     unsigned word_bytes = word_bits >> 3;
-    
+
     if(model->table_word == NULL) {
         model->table_word = (word_t*) malloc(WORDCHARS * word_bytes * 256);
-        
+
         if(model->table_word == NULL) {
             return 1;
         }
     }
-    
+
     unsigned opp = little ^ model->ref;
     unsigned top =
         model->ref ? 0 :
@@ -164,7 +164,7 @@ int crc_table_wordwise(model_t *model, unsigned little, unsigned word_bits) {
     word_t xor = model->xorout;
     if (model->width < 8 && !model->ref)
         xor <<= 8 - model->width;
-    
+
     for (unsigned k = 0; k < 256; k++) {
         word_t crc = model->table_byte[k];
         model->table_word[k] = opp ? swaplow(crc << top, word_bytes) :
@@ -185,7 +185,7 @@ int crc_table_wordwise(model_t *model, unsigned little, unsigned word_bits) {
                                             crc << top;
         }
     }
-    
+
     return 0;
 }
 
@@ -334,12 +334,12 @@ word_t crc_wordwise(model_t *model, word_t crc, void const *dat, size_t len) {
 int crc_table_slice16(model_t *model, unsigned little, unsigned word_bits) {
     if(model->table_slice16 == NULL) {
         model->table_slice16 = (word_t*) malloc(WORDCHARS * 16 * 256);
-        
+
         if(model->table_slice16 == NULL) {
             return 1;
         }
     }
-    
+
     unsigned opp = little ^ model->ref;
     unsigned top =
         model->ref ? 0 :
@@ -368,7 +368,7 @@ int crc_table_slice16(model_t *model, unsigned little, unsigned word_bits) {
                                             crc << top;
         }
     }
-    
+
     return 0;
 }
 
@@ -423,7 +423,7 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
                 uint32_t crc_hi = (crc >> 32) ^ *(uint32_t const *)(buf + 4);
                 uint32_t i3 = *(uint32_t const *)(buf + 8);
                 uint32_t i4 = *(uint32_t const *)(buf + 12);
-                
+
                 crc = model->table_slice16[15 * 256 + (crc_lo & 0xff)]
                     ^ model->table_slice16[14 * 256 + ((crc_lo >> 8) & 0xff)]
                     ^ model->table_slice16[13 * 256 + ((crc_lo >> 16) & 0xff)]
@@ -440,7 +440,7 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
                     ^ model->table_slice16[2 * 256 + ((i4 >> 8) & 0xff)]
                     ^ model->table_slice16[256 + ((i4 >> 16) & 0xff)]
                     ^ model->table_slice16[i4 >> 24];
-                    
+
                 buf += 16;
                 len -= 16;
             } while (len >= 16);
@@ -455,7 +455,7 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
                 uint32_t crc_lo = (crc & 0xffffffff) ^ *(uint32_t const *)(buf + 4);
                 uint32_t i3 = *(uint32_t const *)(buf + 8);
                 uint32_t i4 = *(uint32_t const *)(buf + 12);
-                
+
                 crc = model->table_slice16[i4 & 0xff]
                     ^ model->table_slice16[256 + ((i4 >> 8) & 0xff)]
                     ^ model->table_slice16[2 * 256 + ((i4 >> 16) & 0xff)]
@@ -472,7 +472,7 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
                     ^ model->table_slice16[13 * 256 + ((crc_hi >> 8) & 0xff)]
                     ^ model->table_slice16[14 * 256 + ((crc_hi >> 16) & 0xff)]
                     ^ model->table_slice16[15 * 256 + (crc_hi >> 24)];
-                    
+
                 buf += 16;
                 len -= 16;
             } while (len >= 16);
@@ -506,23 +506,23 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
 
 word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len, int *error) {
     short nthreads = omp_get_max_threads();
-    
+
     word_t* crc_p = (word_t*)malloc((nthreads - 1) * WORDCHARS);
-    
+
     if(crc_p == NULL) {
         *error = 1;
         return crc;
     }
-    
+
     size_t block_len = len / nthreads;
-    
+
     // This way all of the later blocks will have the same size
     size_t first_block_len = block_len + (len - nthreads * block_len);
     unsigned char* offset = (unsigned char*)dat + first_block_len;
-    
+
     // Use signed variable to handle OpenMP compiler error (MSVC)
     short i;
-    
+
     // Split the data into a number of blocks equal to the system's number of threads
     // then compute the CRC for each block in parallel
     #pragma omp parallel for
@@ -535,15 +535,15 @@ word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len, int
             crc_p[(unsigned short)i] = crc_slice16(model, model->init, offset + i * block_len, block_len);
         }
     }
-    
+
     // Combine the CRCs
     // Not much could be done to parallelize this, so just do it serially
     for(i = 0; i < nthreads - 1; i++) {
         crc = crc_combine(model, crc, crc_p[i], block_len);
     }
-    
+
     free(crc_p);
-    
+
     return crc;
 }
 
@@ -587,12 +587,12 @@ static word_t multmodp(model_t *model, word_t a, word_t b) {
 int crc_table_combine(model_t *model) {
     if(model->table_comb == NULL) {
         model->table_comb = (word_t*) malloc(WORDCHARS * 67);
-        
+
         if(model->table_comb == NULL) {
             return 1;
         }
     }
-    
+
     // Keep squaring x^1 modulo p(x), where p(x) is the CRC polynomial, to
     // generate x^2^n modulo p(x).
     word_t sq = model->ref ? (word_t)1 << (model->width - 2) : 2;   // x^1

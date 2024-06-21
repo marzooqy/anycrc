@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "anycrc"
-version = "0.7.7"
-description = "Python CRC Computation Library"
+version = "0.7.8"
+description = "The fastest Python CRC Library"
 readme = "README.md"
 requires-python = ">=3.7"
 

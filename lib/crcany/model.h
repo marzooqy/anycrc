@@ -2,7 +2,7 @@
  * Copyright (C) 2014, 2016, 2017, 2020, 2021 Mark Adler
  * For conditions of distribution and use, see copyright notice in crcany.c.
  */
- 
+
 /*
 * Edited by Hussain Al Marzooq
 */
@@ -15,7 +15,6 @@
 #ifndef _MODEL_H_
 #define _MODEL_H_
 
-#include <stdio.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <limits.h>
@@ -80,7 +79,6 @@ typedef struct {
     short back;                 /* index of table_comb[] to cycle back to */
     char ref;                   /* if true, reflect input and output */
     char rev;                   /* if true, reverse output */
-    char *name;                 /* text description of this CRC */
     word_t poly, poly_hi;       /* polynomial representation (sans x^width) */
     word_t init, init_hi;       /* CRC of a zero-length sequence */
     word_t xorout, xorout_hi;   /* final CRC is exclusive-or'ed with this */
@@ -92,22 +90,10 @@ typedef struct {
     word_t *table_slice16;      /* tables for the slice16 calculation */
 } model_t;
 
-/* Read and verify a CRC model description from the string str, returning the
-   result in *model.  Return 0 on success, 1 on invalid input, or 2 if out of
-   memory.  model->name is allocated and should be freed when done. str is
-   modified in the process, and so it cannot be a literal string.
-
+/*
    The parameters are "width", "poly", "init", "refin", "refout", "xorout",
-   "check", "residue", and "name".  The names may be abbreviated to "w", "p",
-   "i", "r", "refo", "x", "c", "res", and "n" respectively.  Each name is
-   followed by an "=" sign, followed by the value for that parameter.  There
-   are no spaces permitted around the "=".  "width", "poly", "init", "xorout",
-   "check", and "residue" are non-negative integers, and can be provided in
-   decimal (no leading zero), octal (prefixed with "0"), or hexadecimal
-   (prefixed by "0x"). refin and refout must be "true" or "false", and can be
-   abbreviated to "t" or "f". Upper and lower case are considered equivalent
-   for all parameter names and values. The value for "name" may be in quotes to
-   permit spaces in the name. The parameters may be provided in any order.
+   "check", "residue", "width", "poly", "init", "xorout", "check", and "residue"
+   are non-negative integers, refin and refout must be "1" or "0".
 
    "width" is the number of bits in the CRC, referred to herein as n.  "poly"
    is the binary representation of the CRC polynomial, sans the x^n term.
@@ -127,23 +113,27 @@ typedef struct {
    "poly", "init", "xorout", "check", and "residue" must all be less than 2^n.
    The least significant bit of "poly" must be one.
 
-   "init", "xorout", and "residue" are optional, and are set to zero if not
-   provided.  Either "refin" or "refout" can be omitted, in which case the one
-   missing is set to the one provided.  At least one of "refin" or "refout"
-   must be provided. All other parameters must be provided. If lenient is true,
-   then "check" can be omitted.
-
    Example (from the RevEng catalogue at
    http://reveng.sourceforge.net/crc-catalogue/all.htm ):
 
       width=16 poly=0x1021 init=0x0000 refin=true refout=true xorout=0x0000
-          check=0x2189 residue=0x0000 name="KERMIT"
+          check=0x2189 residue=0x0000
 
-   The same model maximally abbreviated:
+   Processs values for use in crc routines -- note that this reflects the
+   polynomial and init values for ready use in the crc routines if necessary,
+   changes the meaning of init, and replaces refin and refout with the
+   different meanings reflect and reverse (reverse is very rarely used)
 
-      w=16 p=4129 r=t c=8585 n=KERMIT
- */
-int read_model(model_t *model, char *str, int lenient);
+   Returns the model. */
+model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout, word_t check, word_t res);
+
+/* Same as get_model but allows the width to be higher than 64 bits */
+model_t get_model_dbl(unsigned short width, word_t poly_hi, word_t poly, word_t init_hi, word_t init,
+                      char refin, char refout, word_t xorout_hi, word_t xorout, word_t check_hi, word_t check,
+					  word_t res_hi, word_t res);
+
+/* Deallocate the model's tables */
+void free_model(model_t *model);
 
 /* Return the reversal of the low n-bits of x.  1 <= n <= WORDBITS.  The high
    WORDBITS - n bits in x are ignored, and are set to zero in the returned
@@ -156,27 +146,5 @@ word_t reverse(word_t x, unsigned n);
 /* Return the reversal of the low n-bits of hi/lo in hi/lo.
    1 <= n <= WORDBITS*2. */
 void reverse_dbl(word_t *hi, word_t *lo, unsigned n);
-
-/* Process values for use in crc routines -- note that this reflects the
-   polynomial and init values for ready use in the crc routines if necessary,
-   changes the meaning of init, and replaces refin and refout with the
-   different meanings reflect and reverse (reverse is very rarely used) */
-void process_model(model_t *model);
-
-/* Deallocate the model's tables */
-void free_model(model_t *model);
-
-/* Read a newline-terminated or EOF-terminated line from in.  The trailing
-   newline and any other trailing space characters are removed, and any
-   embedded nuls are deleted.  The line is terminated with a nul.  The return
-   value is the number of characters in the returned line, not including the
-   terminating nul, or -1 for EOF or read error.  The returned line may have
-   zero length, which represents a blank line from the input.  *line is
-   allocated space with the returned line, where *size is the size of that
-   space.  *line can be reused in subsequent calls, and needs to be freed when
-   done.  The first call can be with *line == NULL, in which case a line buffer
-   will be allocated.  *line will be reallocated as needed for longer input
-   lines. */
-ptrdiff_t getcleanline(char **line, size_t *size, FILE *in);
 
 #endif
