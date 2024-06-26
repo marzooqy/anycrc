@@ -26,9 +26,8 @@ cdef extern from '../../lib/crcany/model.h':
         word_t *table_slice16
 
     cdef model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout, word_t check, word_t res)
-    cdef model_t get_model_dbl(unsigned short width, word_t poly_hi, word_t poly, word_t init_hi, word_t init,
-                      char refin, char refout, word_t xorout_hi, word_t xorout, word_t check_hi, word_t check,
-					  word_t res_hi, word_t res)
+    cdef model_t get_model_dbl(unsigned short width, word_t poly_hi, word_t poly, word_t init_hi, word_t init, char refin, char refout,
+                               word_t xorout_hi, word_t xorout, word_t check_hi, word_t check, word_t res_hi, word_t res)
 
     cdef void free_model(model_t *model)
 
