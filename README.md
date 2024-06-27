@@ -58,7 +58,7 @@ For a list of pre-built models, check [models.py](https://github.com/marzooqy/an
 
 `python -m anycrc models`
 
-The maximum possible CRC width is 128 bits.
+The maximum possible CRC width is 128 bits. CRCs with a width larger than 64 bits use the slower byte-by-byte algorithm.
 
 ## Benchmarks
 
@@ -80,4 +80,4 @@ Calculating the CRC32 for the text of lorem ipsum repeated 1 million times in a 
 | fastcrc | 0.67 | 0.62 | 5.18 |
 | crcmod-plus | 0.67 | 0.62 | 5.18 |
 
-Tested on a 10th generation Intel i7 processor. Parallel performance will depend on your system.
+Tested on a 10th generation Intel i7 processor.
