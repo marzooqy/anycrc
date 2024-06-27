@@ -1,6 +1,4 @@
-This is a Cython module with bindings to the [crcany](https://github.com/madler/crcany) library. It supports calculating CRC hashes of arbitary sizes as well as updating a CRC hash over time.
-
-Anycrc supports all of the CRCs listed in the [RevEng CRC Catalogue](https://reveng.sourceforge.io/crc-catalogue/all.htm).
+This is a Cython module with bindings to the [crcany](https://github.com/madler/crcany) library. It supports calculating CRC hashes of arbitary sizes as well as updating a CRC hash over time. Anycrc supports all of the CRCs listed in the [RevEng CRC Catalogue](https://reveng.sourceforge.io/crc-catalogue/all.htm).
 
 ## Installation
 
