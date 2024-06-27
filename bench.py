@@ -115,30 +115,3 @@ elif sys.argv[1] == '1':
 
 elif sys.argv[1] == '2':
     benchmark(test_data * 10 ** 6, 1)
-
-#find the point at which the parallel version becomes faster than the serial version
-elif sys.argv[1] == '3':
-    model = anycrc.Model('CRC32')
-    n = 10000
-
-    for i in range(1, 4):
-        t = time.perf_counter()
-        data = test_data[:200] * 10 ** i
-
-        print('{} Bytes:'.format(len(data)))
-
-        for i in range(n):
-            model._calc_16(data)
-
-        s_time_elapsed = time.perf_counter() - t
-
-        print('Serial: {:.2f}s'.format(s_time_elapsed))
-
-        t = time.perf_counter()
-
-        for i in range(n):
-            model._calc_p(data)
-
-        p_time_elapsed = time.perf_counter() - t
-
-        print('Parallel: {:.2f}s\n'.format(p_time_elapsed))
