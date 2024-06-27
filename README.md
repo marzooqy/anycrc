@@ -1,4 +1,6 @@
-This is a Cython module with bindings to the [crcany](https://github.com/madler/crcany) library. It supports calculating CRC hashes of arbitary sizes as well as updating a crc hash over time. It takes advantage of crcany's ability to efficiently combine multiple CRCs to parallelize the CRC's calculation.
+This is a Cython module with bindings to the [crcany](https://github.com/madler/crcany) library. It supports calculating CRC hashes of arbitary sizes as well as updating a CRC hash over time.
+
+Anycrc supports all of the CRCs listed in the [RevEng CRC Catalogue](https://reveng.sourceforge.io/crc-catalogue/all.htm).
 
 ## Installation
 
@@ -81,18 +83,9 @@ Calculating the CRC32 for the text of lorem ipsum repeated 1 million times in a 
 
 | Module | Time Elapsed (s) | Speed (GiB/s) | Relative |
 |---|:-:|:-:|:-:|
-| anycrc (parallel) | 0.02 | 24.51 | 1.00 |
-| anycrc (serial) | 0.13 | 3.21 | 7.64 |
-| zlib | 0.22 | 1.93 | 12.72 |
-| fastcrc | 0.67 | 0.62 | 39.75 |
-| crcmod-plus | 0.67 | 0.62 | 39.73 |
+| anycrc | 0.13 | 3.21 | 1.00 |
+| zlib | 0.22 | 1.93 | 1.66 |
+| fastcrc | 0.67 | 0.62 | 5.18 |
+| crcmod-plus | 0.67 | 0.62 | 5.18 |
 
 Tested on a 10th generation Intel i7 processor. Parallel performance will depend on your system.
-
-#### Notes
-
-1- Parallelism is disabled when the length of the input data is under 200k, as the serial method is faster in that case.
-
-2- The input needs to be very large in order to notice the speed advantage of the parallel algorithm.
-
-3- CRCs with a width larger than 64 bits use the slower byte-by-byte algorithm.

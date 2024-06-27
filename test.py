@@ -45,11 +45,6 @@ for name, model in anycrc.models.items():
         print('16 bytes partial: {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
         assert value == value2
 
-        crc.reset()
-        value = crc._calc_p(test_data2)
-        print('parallel whole:   {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
-        assert value == value2
-
     print()
 
 #check that all of the aliases are valid

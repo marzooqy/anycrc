@@ -9,7 +9,7 @@ import zlib
 test_data = b"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 
 def benchmark(data, n):
-    modules = ['anycrc (parallel)', 'anycrc (serial)', 'zlib', 'fastcrc', 'crcmod-plus']
+    modules = ['anycrc', 'zlib', 'fastcrc', 'crcmod-plus']
     duration = [0] * len(modules)
     speed = [0] * len(modules)
     relative = [0] * len(modules)
@@ -18,7 +18,7 @@ def benchmark(data, n):
 
     test_n = 0
 
-    #anycrc parallel
+    #anycrc
     t = time.perf_counter()
 
     model = anycrc.Model('CRC32')
@@ -31,29 +31,6 @@ def benchmark(data, n):
     duration[test_n] = anycrc_time_elapsed
     speed[test_n] = len(data) * n / (1024 ** 3) / anycrc_time_elapsed
     relative[test_n] = 1
-
-    print(modules[test_n])
-    print('Time Elapsed: {:.2f}s'.format(duration[test_n]))
-    print('Speed: {:.2f} GiB/s'.format(speed[test_n]))
-    print('Relative: {:.2f}'.format(relative[test_n]))
-    print()
-
-    test_n += 1
-
-    #anycrc serial
-    t = time.perf_counter()
-
-    anycrc.set_parallel(False)
-    model = anycrc.Model('CRC32')
-
-    for i in range(n):
-        model.calc(data)
-
-    time_elapsed = time.perf_counter() - t
-
-    duration[test_n] = time_elapsed
-    speed[test_n] = len(data) * n / (1024 ** 3) / time_elapsed
-    relative[test_n] = time_elapsed / anycrc_time_elapsed
 
     print(modules[test_n])
     print('Time Elapsed: {:.2f}s'.format(duration[test_n]))

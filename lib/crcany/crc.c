@@ -504,49 +504,6 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
     return crc;
 }
 
-word_t crc_parallel(model_t *model, word_t crc, void const *dat, size_t len, int *error) {
-    short nthreads = omp_get_max_threads();
-
-    word_t* crc_p = (word_t*)malloc((nthreads - 1) * WORDCHARS);
-
-    if(crc_p == NULL) {
-        *error = 1;
-        return crc;
-    }
-
-    size_t block_len = len / nthreads;
-
-    // This way all of the later blocks will have the same size
-    size_t first_block_len = block_len + (len - nthreads * block_len);
-    unsigned char* offset = (unsigned char*)dat + first_block_len;
-
-    // Use signed variable to handle OpenMP compiler error (MSVC)
-    short i;
-
-    // Split the data into a number of blocks equal to the system's number of threads
-    // then compute the CRC for each block in parallel
-    #pragma omp parallel for
-    for(i = -1; i < nthreads - 1; i++) {
-        // First block goes directly into the initial CRC
-        if(i == -1) {
-            crc = crc_slice16(model, crc, (unsigned char*)dat, first_block_len);
-        } else {
-            // Cast index to unsigned to handle compiler error (GCC)
-            crc_p[(unsigned short)i] = crc_slice16(model, model->init, offset + i * block_len, block_len);
-        }
-    }
-
-    // Combine the CRCs
-    // Not much could be done to parallelize this, so just do it serially
-    for(i = 0; i < nthreads - 1; i++) {
-        crc = crc_combine(model, crc, crc_p[i], block_len);
-    }
-
-    free(crc_p);
-
-    return crc;
-}
-
 // Return a(x) multiplied by b(x) modulo p(x), where p(x) is the CRC
 // polynomial. For speed, this requires that a not be zero.
 static word_t multmodp(model_t *model, word_t a, word_t b) {
