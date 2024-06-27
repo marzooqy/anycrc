@@ -54,12 +54,6 @@ Specify your own CRC parameters:
 35
 ```
 
-The CRC will be computed in parallel when the input is large enough. If you want to disable parallelism, use:
-
-```python
->>> anycrc.set_parallel(False)
-```
-
 For a list of pre-built models, check [models.py](https://github.com/marzooqy/anycrc/blob/main/src/anycrc/models.py). To get a list of the models at any time, use the following command:
 
 `python -m anycrc models`
