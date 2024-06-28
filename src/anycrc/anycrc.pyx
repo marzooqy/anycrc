@@ -137,11 +137,6 @@ cdef class CRC:
             crc += self.reg
             return crc
 
-    #slice-by-16
-    def _calc_16(self, data):
-        cdef const unsigned char* data_p = data
-        return crc_slice16(&self.model, self.reg, data_p, len(data))
-
     #byte-by-byte
     def _calc_b(self, data):
         cdef const unsigned char* data_p = data
