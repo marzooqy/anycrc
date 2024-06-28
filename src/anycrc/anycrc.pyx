@@ -110,9 +110,6 @@ cdef class CRC:
         self.reg = self.model.init
         self.reg_hi = self.model.init_hi
 
-    cdef word_t _calc(self, const unsigned char *data, word_t length, int *error):
-        return crc_slice16(&self.model, self.reg, data, length)
-
     def calc(self, data):
         if isinstance(data, str):
             data = (<unicode> data).encode('utf-8')
