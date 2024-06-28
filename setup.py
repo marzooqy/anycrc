@@ -14,24 +14,23 @@ class Build(build_ext):
 
 if sys.platform == 'win32':
     if is_64bit:
-        compile_args = ['-fopenmp', '-O2','-DMS_WIN64']
+        compile_args = ['-O2','-DMS_WIN64']
         link_args = ['-static-libgcc',
                      '-static-libstdc++',
                      '-Wl,-Bstatic,--whole-archive',
                      '-lwinpthread',
                      '-Wl,--no-whole-archive',
-                     '-fopenmp',
                      '-O2',
                      '-DMS_WIN64']
 
     else:
         #github actions and python make it difficult to compile with 32-bit MinGW, so just use MSVC
-        compile_args = ['/openmp']
-        link_args = []
+        compile_args = ['/O2']
+        link_args = ['/O2']
 
 else:
-    compile_args = ['-fopenmp', '-O2']
-    link_args = ['-fopenmp', '-O2']
+    compile_args = ['-O2']
+    link_args = ['-O2']
 
 setup(
     name = 'anycrc',
