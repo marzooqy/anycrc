@@ -38,9 +38,6 @@ cdef extern from '../../lib/crcany/crc.h':
     cdef int crc_table_slice16(model_t *model, unsigned little, unsigned word_bits)
     cdef word_t crc_slice16(model_t *model, word_t crc, const void* dat, size_t len)
 
-    cdef int crc_table_combine(model_t *model)
-    cdef word_t crc_combine(model_t *model, word_t crc1, word_t crc2, uintmax_t len2);
-
 cdef extern from '../../lib/crcany/crcdbl.h':
     cdef int crc_table_bytewise_dbl(model_t *model)
     cdef void crc_bytewise_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo, const unsigned char *buf, size_t len)
@@ -64,11 +61,6 @@ cdef class CRC:
                 raise MemoryError('Out of memory error')
 
             error_code = crc_table_slice16(&self.model, endian, WORDBITS)
-
-            if error_code == 1:
-                raise MemoryError('Out of memory error')
-
-            error_code = crc_table_combine(&self.model)
 
             if error_code == 1:
                 raise MemoryError('Out of memory error')
