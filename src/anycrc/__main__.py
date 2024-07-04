@@ -7,14 +7,14 @@ if len(sys.argv) > 1 and sys.argv[1] == 'models':
         print("'{}': {}".format(name, anycrc.str_model(model)))
 
     print('\nAliases:')
-    for model in anycrc.models.keys():
+    for name in anycrc.models:
         aliases = []
 
         for alias, model_name in anycrc.aliases.items():
-            if model == model_name:
+            if name == model_name:
                 aliases.append(alias)
 
         if len(aliases) > 0:
-            print("'{}': {}".format(model, aliases))
+            print("'{}': {}".format(name, aliases))
 
     print()
