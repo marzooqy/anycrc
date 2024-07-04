@@ -15,7 +15,3 @@ requires-python = ">=3.7"
 [tool.cibuildwheel]
 build-frontend = "pip"
 skip = "pp*"
-
-#Apple's clang doesn't come with openmp by default
-[tool.cibuildwheel.macos.environment]
-CC = "gcc-13"
