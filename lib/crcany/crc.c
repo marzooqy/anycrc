@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "omp.h"
 #include "crc.h"
 
 word_t crc_bitwise(model_t *model, word_t crc, void const *dat, size_t len) {
