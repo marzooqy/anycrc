@@ -184,19 +184,19 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
 
     // Process as many 16 byte blocks as are available.
     if (len >= 16) {
-		// Prepare common constants.
-		uint32_t crc_hi, crc_lo, i3, i4;
-		unsigned top = model->ref ? 0 : WORDBITS - (model->width > 8 ? model->width : 8);
-		unsigned shift = model->width <= 8 ? 8 - model->width : model->width - 8;
+        // Prepare common constants.
+        uint32_t crc_hi, crc_lo, i3, i4;
+        unsigned top = model->ref ? 0 : WORDBITS - (model->width > 8 ? model->width : 8);
+        unsigned shift = model->width <= 8 ? 8 - model->width : model->width - 8;
 
-		// Pre-process the CRC.
-		if (model->rev)
-			crc = reverse(crc, model->width);
+        // Pre-process the CRC.
+        if (model->rev)
+            crc = reverse(crc, model->width);
 
-		if (model->ref)
-			crc &= ONES(model->width);
-		else if (model->width <= 8)
-			crc <<= shift;
+        if (model->ref)
+            crc &= ONES(model->width);
+        else if (model->width <= 8)
+            crc <<= shift;
 
         crc <<= top;
 
@@ -219,19 +219,19 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
 
         crc >>= top;
 
-		if (!model->ref) {
-			if (model->width <= 8)
-				crc >>= shift;
-			else
-				crc &= ONES(model->width);
-		}
+        if (!model->ref) {
+            if (model->width <= 8)
+                crc >>= shift;
+            else
+                crc &= ONES(model->width);
+        }
 
-		// Post-process.
-		if (model->rev)
-			crc = reverse(crc, model->width);
+        // Post-process.
+        if (model->rev)
+            crc = reverse(crc, model->width);
     }
 
     // Process any remaining bytes after the last 16 byte block.
-	crc = crc_bytewise(model, crc, buf, len);
+    crc = crc_bytewise(model, crc, buf, len);
     return crc;
 }
