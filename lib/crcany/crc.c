@@ -86,10 +86,6 @@ int crc_table_bytewise(model_t *model) {
 word_t crc_bytewise(model_t *model, word_t crc, void const *dat, size_t len) {
     unsigned char const *buf = dat;
 
-    // If requested, return the initial CRC.
-    if (buf == NULL)
-        return model->init;
-
     // Pre-process the CRC.
     if (model->rev)
         crc = reverse(crc, model->width);
@@ -177,10 +173,6 @@ int crc_table_slice16(model_t *model) {
 
 word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
     unsigned char const *buf = dat;
-
-    // If requested, return the initial CRC.
-    if (buf == NULL)
-        return model->init;
 
     // Process as many 16 byte blocks as are available.
     if (len >= 16) {

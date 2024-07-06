@@ -90,13 +90,6 @@ void crc_bitwise_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo, unsigned ch
         return;
     }
 
-    // If requested, return the initial CRC.
-    if (buf == NULL) {
-        *crc_lo = model->init;
-        *crc_hi = model->init_hi;
-        return;
-    }
-
     // Pre-process the CRC.
     word_t lo = *crc_lo ^ model->xorout;
     word_t hi = *crc_hi ^ model->xorout_hi;
