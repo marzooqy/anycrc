@@ -58,7 +58,7 @@ typedef uintmax_t word_t;
 
    ref and rev are derived from refin and refout.  ref and rev must be 0 or 1.
    ref is the same as refin.  rev is true only if refin and refout are
-   different.  rev true is very uncommon, and occurs in only one of the 72 CRCs
+   different.  rev true is very uncommon, and occurs in only one of the CRCs
    in the RevEng catalogue.  When rev is false, the common case, ref true means
    that both the input and output are reflected. Reflected CRCs are quite
    common.
@@ -71,12 +71,10 @@ typedef uintmax_t word_t;
    The structure includes space for pre-computed tables used to speed up CRC
    and CRC combination calculations. table_byte[] and table_word[] are filled
    in by the crc_table_wordwise() routine, using the CRC parameters already
-   defined in the structure. table_comb[] is filled in by crc_table_combine().
+   defined in the structure.
  */
 typedef struct {
     unsigned short width;       /* number of bits in the CRC (the degree of the polynomial) */
-    short cycle;                /* length of the table_comb[] cycle */
-    short back;                 /* index of table_comb[] to cycle back to */
     char ref;                   /* if true, reflect input and output */
     char rev;                   /* if true, reverse output */
     word_t poly, poly_hi;       /* polynomial representation (sans x^width) */
@@ -84,9 +82,7 @@ typedef struct {
     word_t xorout, xorout_hi;   /* final CRC is exclusive-or'ed with this */
     word_t check, check_hi;     /* CRC of the nine ASCII bytes "123456789" */
     word_t res, res_hi;         /* Residue of the CRC */
-    word_t *table_comb;         /* table for CRC combination */
     word_t *table_byte;         /* table for byte-wise calculation */
-    word_t *table_word;         /* tables for word-wise calculation */
     word_t *table_slice16;      /* tables for the slice16 calculation */
 } model_t;
 
@@ -127,7 +123,7 @@ typedef struct {
    Returns the model. */
 model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout, word_t check, word_t res);
 
-/* Same as get_model but allows the width to be higher than 64 bits */
+/* Same as get_model but allows the width to be higher than WORDBITS */
 model_t get_model_dbl(unsigned short width, word_t poly_hi, word_t poly, word_t init_hi, word_t init,
                       char refin, char refout, word_t xorout_hi, word_t xorout, word_t check_hi, word_t check,
                       word_t res_hi, word_t res);

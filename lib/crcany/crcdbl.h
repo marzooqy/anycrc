@@ -3,6 +3,10 @@
  * For conditions of distribution and use, see copyright notice in crcany.c.
  */
 
+/*
+* Edited by Hussain Al Marzooq
+*/
+
 #ifndef _CRCDBL_H_
 #define _CRCDBL_H_
 
@@ -27,8 +31,7 @@
 
    The CRC of the sequence is left in hi, lo.
  */
-void crc_bitwise_dbl(model_t *, word_t *, word_t *,
-                     unsigned char const *, size_t);
+void crc_bitwise_dbl(model_t *, word_t *, word_t *, unsigned char const *, size_t);
 
 /* Fill in the 256-entry tables in model with the CRC of the bytes 0..255, for a
    byte-wise calculation of the given CRC model.  The table value is the
@@ -39,13 +42,8 @@ void crc_bitwise_dbl(model_t *, word_t *, word_t *,
 int crc_table_bytewise_dbl(model_t *);
 
 /* Equivalent to crc_bitwise(), but use a faster byte-wise table-based
-   approach. This assumes that model->table_byte and model->table_byte_hi has been initialized using
-   crc_table_bytewise_dbl(). */
-void crc_bytewise_dbl(model_t *, word_t *, word_t *,
-                        unsigned char const *, size_t);
-
-/* Similar to crc_zeros(), but works for CRCs up to twice as long as a
-   word_t. */
-void crc_zeros_dbl(model_t *, word_t *, word_t *, size_t);
+   approach. This assumes that model->table_byte and model->table_byte_hi
+   has been initialized using crc_table_bytewise_dbl(). */
+void crc_bytewise_dbl(model_t *, word_t *, word_t *, unsigned char const *, size_t);
 
 #endif

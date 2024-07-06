@@ -3,6 +3,10 @@
  * For conditions of distribution and use, see copyright notice in crcany.c.
  */
 
+/*
+* Edited by Hussain Al Marzooq
+*/
+
 #include <stdlib.h>
 
 #include "crcdbl.h"
@@ -75,8 +79,7 @@
         } \
     } while (0)
 
-void crc_bitwise_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo,
-                     unsigned char const *buf, size_t len) {
+void crc_bitwise_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo, unsigned char const *buf, size_t len) {
     word_t poly_lo = model->poly;
     word_t poly_hi = model->poly_hi;
 
@@ -141,46 +144,6 @@ void crc_bitwise_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo,
     *crc_hi = hi;
 }
 
-void crc_zeros_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo,
-                   size_t count) {
-    word_t poly_lo = model->poly;
-    word_t poly_hi = model->poly_hi;
-
-    // Use crc_zeros() for CRCs that fit in a word_t.
-    if (model->width <= WORDBITS) {
-        *crc_lo = crc_zeros(model, *crc_lo, count);
-        *crc_hi = 0;
-        return;
-    }
-
-    // Pre-process the CRC.
-    word_t lo = *crc_lo ^ model->xorout;
-    word_t hi = *crc_hi ^ model->xorout_hi;
-    if (model->rev)
-        reverse_dbl(&hi, &lo, model->width);
-
-    // Process the input data a bit at a time.
-    if (model->ref) {
-        hi &= ONES(model->width - WORDBITS);
-        while (count--)
-            BIGREF;
-    }
-    else {
-        word_t mask = (word_t)1 << (model->width - WORDBITS - 1);
-        while (count--)
-            BIGNORM;
-        hi &= ONES(model->width - WORDBITS);
-    }
-
-    // Post-process and return the CRC.
-    if (model->rev)
-        reverse_dbl(&hi, &lo, model->width);
-    lo ^= model->xorout;
-    hi ^= model->xorout_hi;
-    *crc_lo = lo;
-    *crc_hi = hi;
-}
-
 int crc_table_bytewise_dbl(model_t *model) {
     if(model->table_byte == NULL) {
         model->table_byte = (word_t*) malloc(WORDCHARS * 256 * 2);
@@ -195,8 +158,10 @@ int crc_table_bytewise_dbl(model_t *model) {
         word_t crc_lo = 0;
         word_t crc_hi = 0;
         crc_bitwise_dbl(model, &crc_hi, &crc_lo, &k, 1);
+
         if (model->rev)
             reverse_dbl(&crc_hi, &crc_lo, model->width);
+
         model->table_byte[k] = crc_lo;
         model->table_byte[256 + k] = crc_hi;
     } while (++k);

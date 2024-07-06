@@ -7,8 +7,8 @@
 * Edited by Hussain Al Marzooq
 */
 
-#include "model.h"
 #include <stdlib.h>
+#include "model.h"
 
 // See model.h.
 model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout, word_t check, word_t res) {
@@ -29,9 +29,7 @@ model_t get_model(unsigned short width, word_t poly, word_t init, char refin, ch
 
     model.init ^= model.xorout;
     model.rev ^= model.ref;
-    model.table_comb = NULL;
     model.table_byte = NULL;
-    model.table_word = NULL;
     model.table_slice16 = NULL;
 
     return model;
@@ -64,9 +62,7 @@ model_t get_model_dbl(unsigned short width, word_t poly_hi, word_t poly, word_t 
     model.init ^= model.xorout;
     model.init_hi ^= model.xorout_hi;
     model.rev ^= model.ref;
-    model.table_comb = NULL;
     model.table_byte = NULL;
-    model.table_word = NULL;
     model.table_slice16 = NULL;
 
     return model;
@@ -74,9 +70,7 @@ model_t get_model_dbl(unsigned short width, word_t poly_hi, word_t poly, word_t 
 
 // See model.h.
 void free_model(model_t *model) {
-    free(model->table_comb);
     free(model->table_byte);
-    free(model->table_word);
     free(model->table_slice16);
 }
 

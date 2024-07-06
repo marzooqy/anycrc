@@ -45,13 +45,12 @@ To go back to the initial value, use:
 >>> crc32.reset()
 ```
 
-Specify your own CRC parameters:
+Create a CRC with specific parameters:
 
 ```python
->>> # width, poly, init, refin, refout, xorout
->>> my_crc = anycrc.CRC(10, 0b0101010101, 0x3ff, True, False, 0)
->>> my_crc.calc('Hello World!')
-35
+>>> crc32 = anycrc.CRC(width=32, poly=0x04c11db7, init=0xffffffff, refin=True, refout=True, xorout=0xffffffff)
+>>> crc32.calc('Hello World!')
+472456355
 ```
 
 For a list of pre-built models, check [models.py](https://github.com/marzooqy/anycrc/blob/main/src/anycrc/models.py). To get a list of the models at any time, use the following command:
@@ -60,24 +59,13 @@ For a list of pre-built models, check [models.py](https://github.com/marzooqy/an
 
 The maximum possible CRC width is 128 bits. CRCs with a width larger than 64 bits use the slower byte-by-byte algorithm.
 
-## Benchmarks
-
-Calculating the CRC32 for lorem ipsum 1 million times:
+## Benchmark
 
 | Module | Time Elapsed (s) | Speed (GiB/s) | Relative |
 |---|:-:|:-:|:-:|
-| anycrc | 0.19 | 2.14 | 1.00 |
-| zlib | 0.28 | 1.49 | 1.44 |
-| fastcrc | 0.80 | 0.52 | 4.12 |
-| crcmod-plus | 0.91 | 0.46 | 4.71 |
-
-Calculating the CRC32 for the text of lorem ipsum repeated 1 million times in a single pass:
-
-| Module | Time Elapsed (s) | Speed (GiB/s) | Relative |
-|---|:-:|:-:|:-:|
-| anycrc | 0.13 | 3.21 | 1.00 |
-| zlib | 0.22 | 1.93 | 1.66 |
-| fastcrc | 0.67 | 0.62 | 5.18 |
-| crcmod-plus | 0.67 | 0.62 | 5.18 |
+| anycrc | 0.36 | 2.56 | 1.00 |
+| zlib | 0.48 | 1.95 | 1.31 |
+| fastcrc | 1.50 | 0.62 | 4.13 |
+| crcmod-plus | 1.50 | 0.62 | 4.13 |
 
 Tested on a 10th generation Intel i7 processor.
