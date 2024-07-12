@@ -11,16 +11,15 @@
 #include "model.h"
 
 // See model.h.
-model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout, word_t check, word_t res) {
+model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout, word_t check) {
     model_t model;
     model.width = width;
     model.poly = poly;
     model.init = init;
     model.xorout = xorout;
     model.ref = refin;
-    model.rev = refout;
+    model.rev = refin ^ refout;
     model.check = check;
-    model.res = res;
 
     if (refin)
         model.poly = reverse(model.poly, model.width);
@@ -28,17 +27,16 @@ model_t get_model(unsigned short width, word_t poly, word_t init, char refin, ch
         model.init = reverse(model.init, model.width);
 
     model.init ^= model.xorout;
-    model.rev ^= model.ref;
     model.table_byte = NULL;
     model.table_slice16 = NULL;
+    model.table_byte_dbl = NULL;
 
     return model;
 }
 
 // See model.h.
-model_t get_model_dbl(unsigned short width, word_t poly_hi, word_t poly, word_t init_hi, word_t init,
-                      char refin, char refout, word_t xorout_hi, word_t xorout, word_t check_hi, word_t check,
-                      word_t res_hi, word_t res) {
+model_t get_model_dbl(unsigned short width, word_t poly_hi, word_t poly, word_t init_hi, word_t init, char refin, char refout,
+                      word_t xorout_hi, word_t xorout, word_t check_hi, word_t check) {
     model_t model;
     model.width = width;
     model.poly = poly;
@@ -48,22 +46,27 @@ model_t get_model_dbl(unsigned short width, word_t poly_hi, word_t poly, word_t 
     model.xorout = xorout;
     model.xorout_hi = xorout_hi;
     model.ref = refin;
-    model.rev = refout;
+    model.rev = refin ^ refout;
     model.check = check;
     model.check_hi = check_hi;
-    model.res = res;
-    model.res_hi = res_hi;
 
-    if (refin)
-        reverse_dbl(&model.poly_hi, &model.poly, model.width);
-    if (refout)
-        reverse_dbl(&model.init_hi, &model.init, model.width);
+    if (refin) {
+        dword_t dpoly = reverse_dbl((dword_t) {poly_hi, poly}, model.width);
+        model.poly = dpoly.lo;
+        model.poly_hi = dpoly.hi;
+    }
+
+    if (refout) {
+        dword_t dinit = reverse_dbl((dword_t) {init_hi, init}, model.width);
+        model.init = dinit.lo;
+        model.init_hi = dinit.hi;
+    }
 
     model.init ^= model.xorout;
     model.init_hi ^= model.xorout_hi;
-    model.rev ^= model.ref;
     model.table_byte = NULL;
     model.table_slice16 = NULL;
+    model.table_byte_dbl = NULL;
 
     return model;
 }
@@ -72,6 +75,7 @@ model_t get_model_dbl(unsigned short width, word_t poly_hi, word_t poly, word_t 
 void free_model(model_t *model) {
     free(model->table_byte);
     free(model->table_slice16);
+    free(model->table_byte_dbl);
 }
 
 // See model.h.
@@ -119,23 +123,25 @@ word_t reverse(word_t x, unsigned n) {
     }
 #  endif
 #endif
-    return n < 2*WORDBITS ? reverse(x, WORDBITS) << (n - WORDBITS) : 0;
+    return n < 2 * WORDBITS ? reverse(x, WORDBITS) << (n - WORDBITS) : 0;
 }
 
 // See model.h.
-void reverse_dbl(word_t *hi, word_t *lo, unsigned n) {
+dword_t reverse_dbl(dword_t x, unsigned n) {
     if (n <= WORDBITS) {
-        *lo = reverse(*lo, n);
-        *hi = 0;
+        x.lo = reverse(x.lo, n);
+        x.hi = 0;
     }
     else {
-        word_t tmp = reverse(*lo, WORDBITS);
-        *lo = reverse(*hi, n - WORDBITS);
-        if (n < WORDBITS*2) {
-            *lo |= tmp << (n - WORDBITS);
-            *hi = tmp >> (WORDBITS*2 - n);
+        word_t tmp = reverse(x.lo, WORDBITS);
+        x.lo = reverse(x.hi, n - WORDBITS);
+        if (n < WORDBITS * 2) {
+            x.lo |= tmp << (n - WORDBITS);
+            x.hi = tmp >> (WORDBITS * 2 - n);
         }
         else
-            *hi = tmp;
+            x.hi = tmp;
     }
+
+    return x;
 }

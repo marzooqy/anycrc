@@ -31,6 +31,9 @@
    algorithm here can process CRCs up to twice the size of a word_t. */
 typedef uintmax_t word_t;
 
+/* Double length word*/
+typedef struct { word_t hi, lo; } dword_t;
+
 /* Determine the size of uintmax_t at pre-processor time.  (sizeof is not
    evaluated at pre-processor time.)  If word_t is instead set to an explicit
    size above, e.g. uint64_t, then #define WORDCHARS appropriately, e.g. as 8.
@@ -81,15 +84,15 @@ typedef struct {
     word_t init, init_hi;       /* CRC of a zero-length sequence */
     word_t xorout, xorout_hi;   /* final CRC is exclusive-or'ed with this */
     word_t check, check_hi;     /* CRC of the nine ASCII bytes "123456789" */
-    word_t res, res_hi;         /* Residue of the CRC */
     word_t *table_byte;         /* table for byte-wise calculation */
     word_t *table_slice16;      /* tables for the slice16 calculation */
+    dword_t *table_byte_dbl;    /* table for the double byte-wise calculation */
 } model_t;
 
 /*
-   The parameters are "width", "poly", "init", "refin", "refout", "xorout",
-   "check", "residue", "width", "poly", "init", "xorout", "check", and "residue"
-   are non-negative integers, refin and refout must be "1" or "0".
+   The parameters are "width", "poly", "init", "refin", "refout", "xorout", "check".
+   "width", "poly", "init", "xorout", "check" are non-negative integers,
+   refin and refout must be "1" or "0".
 
    "width" is the number of bits in the CRC, referred to herein as n.  "poly"
    is the binary representation of the CRC polynomial, sans the x^n term.
@@ -106,14 +109,14 @@ typedef struct {
    here to the largest integer type available to the compiler (uintmax_t).  On
    most modern systems, this permits up to 128-bit CRCs.
 
-   "poly", "init", "xorout", "check", and "residue" must all be less than 2^n.
+   "poly", "init", "xorout", and "check" must all be less than 2^n.
    The least significant bit of "poly" must be one.
 
    Example (from the RevEng catalogue at
    http://reveng.sourceforge.net/crc-catalogue/all.htm ):
 
       width=16 poly=0x1021 init=0x0000 refin=true refout=true xorout=0x0000
-          check=0x2189 residue=0x0000
+          check=0x2189
 
    Processs values for use in crc routines -- note that this reflects the
    polynomial and init values for ready use in the crc routines if necessary,
@@ -121,12 +124,11 @@ typedef struct {
    different meanings reflect and reverse (reverse is very rarely used)
 
    Returns the model. */
-model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout, word_t check, word_t res);
+model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout, word_t check);
 
 /* Same as get_model but allows the width to be higher than WORDBITS */
-model_t get_model_dbl(unsigned short width, word_t poly_hi, word_t poly, word_t init_hi, word_t init,
-                      char refin, char refout, word_t xorout_hi, word_t xorout, word_t check_hi, word_t check,
-                      word_t res_hi, word_t res);
+model_t get_model_dbl(unsigned short width, word_t poly_hi, word_t poly, word_t init_hi, word_t init, char refin, char refout,
+                      word_t xorout_hi, word_t xorout, word_t check_hi, word_t check);
 
 /* Deallocate the model's tables */
 void free_model(model_t *model);
@@ -141,6 +143,6 @@ word_t reverse(word_t x, unsigned n);
 
 /* Return the reversal of the low n-bits of hi/lo in hi/lo.
    1 <= n <= WORDBITS*2. */
-void reverse_dbl(word_t *hi, word_t *lo, unsigned n);
+dword_t reverse_dbl(dword_t x, unsigned n);
 
 #endif

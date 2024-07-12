@@ -12,7 +12,7 @@
 
 #include "model.h"
 
-/* Apply the len bytes at dat to crc using the CRC described in model. If dat
+/* Apply the len bits at dat to crc using the CRC described in model. If dat
    is NULL, then return the initial CRC for this model.  This allows for the
    calculation of a CRC in pieces, where the first call must be with crc equal
    to the initial value for this CRC model. crc_bitwise() must only be used for

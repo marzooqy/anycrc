@@ -31,7 +31,7 @@
 
    The CRC of the sequence is left in hi, lo.
  */
-void crc_bitwise_dbl(model_t *, word_t *, word_t *, unsigned char const *, size_t);
+dword_t crc_bitwise_dbl(model_t *, dword_t, unsigned char const *, size_t);
 
 /* Fill in the 256-entry tables in model with the CRC of the bytes 0..255, for a
    byte-wise calculation of the given CRC model.  The table value is the
@@ -44,6 +44,6 @@ int crc_table_bytewise_dbl(model_t *);
 /* Equivalent to crc_bitwise(), but use a faster byte-wise table-based
    approach. This assumes that model->table_byte and model->table_byte_hi
    has been initialized using crc_table_bytewise_dbl(). */
-void crc_bytewise_dbl(model_t *, word_t *, word_t *, unsigned char const *, size_t);
+dword_t crc_bytewise_dbl(model_t *, dword_t, unsigned char const *, size_t);
 
 #endif

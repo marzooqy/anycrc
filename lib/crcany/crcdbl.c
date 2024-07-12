@@ -12,195 +12,126 @@
 #include "crcdbl.h"
 #include "crc.h"
 
-// Shift left a double-word quantity by n bits: a <<= n, 0 <= n < WORDBITS.  ah
-// and al must be word_t lvalues.  WORDBITS is the number of bits in a word_t,
-// which must be an unsigned integer type.
-#define SHL(ah, al, n) \
-    do { \
-        if ((n) == 0) \
-            break; \
-        ah <<= n; \
-        ah |= al >> (WORDBITS - (n)); \
-        al <<= n; \
-    } while (0)
+dword_t shl(dword_t dw, word_t shft) {
+    return (dword_t) {(dw.hi << shft) | (dw.lo >> (WORDBITS - shft)), dw.lo << shft};
+}
 
-// Shift right a double-word quantity by n bits: a >>= n, 0 <= n < WORDBITS.
-// ah and al must be word_t lvalues.  WORDBITS is the number of bits in a
-// word_t, which must be an unsigned integer type.
-#define SHR(ah, al, n) \
-    do { \
-        if ((n) == 0) \
-            break; \
-        al >>= n; \
-        al |= ah << (WORDBITS - (n)); \
-        ah >>= n; \
-    } while (0)
+dword_t shr(dword_t dw, word_t shft) {
+    return (dword_t) {dw.hi >> shft, (dw.hi << (WORDBITS - shft)) | (dw.lo >> shft)};
+}
 
-// Shifting helpers
-#define SHL_HI(ah, al, n) ((ah << n) | (al >> (WORDBITS - n)))
-#define SHL_LO(ah, al, n) (al << n)
-#define SHR_HI(ah, al, n) (ah >> n)
-#define SHR_LO(ah, al, n) ((al >> n) | (ah << (WORDBITS - n)))
+dword_t xor(dword_t dw, dword_t dw2) {
+    return (dword_t) {dw.hi ^ dw2.hi, dw.lo ^ dw2.lo};
+}
 
-// Process one bit in a big reflected CRC in crc_bitwise_dbl().
-#define BIGREF \
-    do { \
-        word_t tmp = lo & 1; \
-        lo = (lo >> 1) | (hi << (WORDBITS - 1)); \
-        hi >>= 1; \
-        if (tmp) { \
-            lo ^= poly_lo; \
-            hi ^= poly_hi; \
-        } \
-    } while (0)
-
-// Process one bit in a non-reflected CRC that has been shifted to put the high
-// byte at the bottom of hi in crc_bitwise_dbl().
-#define BIGCROSS \
-    do { \
-        word_t tmp = hi & 0x80; \
-        hi = (hi << 1) | (lo >> (WORDBITS - 1)); \
-        lo <<= 1; \
-        if (tmp) { \
-            lo ^= poly_lo; \
-            hi ^= poly_hi; \
-        } \
-    } while (0)
-
-// Process one bit in a big non-reflected CRC in crc_bitwise_dbl().
-#define BIGNORM \
-    do { \
-        word_t tmp = hi & mask; \
-        hi = (hi << 1) | (lo >> (WORDBITS - 1)); \
-        lo <<= 1; \
-        if (tmp) { \
-            lo ^= poly_lo; \
-            hi ^= poly_hi; \
-        } \
-    } while (0)
-
-void crc_bitwise_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo, unsigned char const *buf, size_t len) {
-    word_t poly_lo = model->poly;
-    word_t poly_hi = model->poly_hi;
+dword_t crc_bitwise_dbl(model_t *model, dword_t crc, unsigned char const *buf, size_t len) {
+    dword_t poly = {model->poly_hi, model->poly};
+    dword_t xorout = {model->xorout_hi, model->xorout};
 
     // Use crc_bitwise() for CRCs that fit in a word_t.
     if (model->width <= WORDBITS) {
-        *crc_lo = crc_bitwise(model, *crc_lo, buf, len);
-        *crc_hi = 0;
-        return;
+        crc.lo = crc_bitwise(model, crc.lo, buf, len);
+        crc.hi = 0;
+        return crc;
     }
 
     // Pre-process the CRC.
-    word_t lo = *crc_lo ^ model->xorout;
-    word_t hi = *crc_hi ^ model->xorout_hi;
+    crc = xor(crc, xorout);
     if (model->rev)
-        reverse_dbl(&hi, &lo, model->width);
+        crc = reverse_dbl(crc, model->width);
 
     // Process the input data a bit at a time.
     if (model->ref) {
-        hi &= ONES(model->width - WORDBITS);
-        while (len--) {
-            lo ^= *buf++;
-            BIGREF;  BIGREF;  BIGREF;  BIGREF;
-            BIGREF;  BIGREF;  BIGREF;  BIGREF;
+        int k = 0;
+        crc.hi &= ONES(model->width - WORDBITS);
+        while (len >= 8) {
+            crc.lo ^= *buf++;
+            for (k = 0; k < 8; k++)
+                crc = crc.lo & 1 ? xor(shr(crc, 1), poly) : shr(crc, 1);
+            len -= 8;
         }
-    }
-    else if (model->width - WORDBITS <= 8) {
-        unsigned shift = 8 - (model->width - WORDBITS); // 0..7
-        SHL(poly_hi, poly_lo, shift);
-        SHL(hi, lo, shift);
-        while (len--) {
-            hi ^= *buf++;
-            BIGCROSS;  BIGCROSS;  BIGCROSS;  BIGCROSS;
-            BIGCROSS;  BIGCROSS;  BIGCROSS;  BIGCROSS;
-        }
-        SHR(hi, lo, shift);
-        hi &= ONES(model->width - WORDBITS);
     }
     else {
         word_t mask = (word_t)1 << (model->width - WORDBITS - 1);
         unsigned shift = model->width - WORDBITS - 8;   // 1..WORDBITS-8
-        while (len--) {
-            hi ^= (word_t)(*buf++) << shift;
-            BIGNORM;  BIGNORM;  BIGNORM;  BIGNORM;
-            BIGNORM;  BIGNORM;  BIGNORM;  BIGNORM;
+        int k = 0;
+        while (len) {
+            crc = xor(crc, shl((dword_t){0, *buf++}, shift));
+            for (k = 0; k < (len > 8 ? 8 : len); k++)
+                crc = crc.hi & mask ? xor(shl(crc, 1), poly) : shl(crc, 1);
+            len -= k;
         }
-        hi &= ONES(model->width - WORDBITS);
+        crc.hi &= ONES(model->width - WORDBITS);
     }
 
     // Post-process and return the CRC.
     if (model->rev)
-        reverse_dbl(&hi, &lo, model->width);
-    lo ^= model->xorout;
-    hi ^= model->xorout_hi;
-    *crc_lo = lo;
-    *crc_hi = hi;
+        crc = reverse_dbl(crc, model->width);
+
+    return xor(crc, xorout);
 }
 
 int crc_table_bytewise_dbl(model_t *model) {
-    if(model->table_byte == NULL) {
-        model->table_byte = (word_t*) malloc(WORDCHARS * 256 * 2);
+    if(model->table_byte_dbl == NULL) {
+        model->table_byte_dbl = (dword_t*) malloc(WORDCHARS * 256 * 2);
 
-        if(model->table_byte == NULL) {
+        if(model->table_byte_dbl == NULL) {
             return 1;
         }
     }
 
     unsigned char k = 0;
     do {
-        word_t crc_lo = 0;
-        word_t crc_hi = 0;
-        crc_bitwise_dbl(model, &crc_hi, &crc_lo, &k, 1);
+        dword_t crc = {0, 0};
+        crc = crc_bitwise_dbl(model, crc, &k, 8);
 
         if (model->rev)
-            reverse_dbl(&crc_hi, &crc_lo, model->width);
+            crc = reverse_dbl(crc, model->width);
 
-        model->table_byte[k] = crc_lo;
-        model->table_byte[256 + k] = crc_hi;
+        model->table_byte_dbl[k] = crc;
     } while (++k);
 
     return 0;
 }
 
-void crc_bytewise_dbl(model_t *model, word_t *crc_hi, word_t *crc_lo, unsigned char const *buf, size_t len) {
-    // Use crc_bytewise() for CRCs that fit in a word_t.
-    if (model->width <= WORDBITS) {
-        *crc_lo = crc_bytewise(model, *crc_lo, buf, len);
-        *crc_hi = 0;
-        return;
-    }
-
-    // Pre-process the CRC.
-    if (model->rev)
-        reverse_dbl(crc_hi, crc_lo, model->width);
-
-    word_t lo = *crc_lo;
-    word_t hi = *crc_hi;
-    unsigned short idx;
-
-    // Process the input data a byte at a time.
-    if (model->ref) {
-        hi &= ONES(model->width - WORDBITS);
-        while (len--) {
-            idx = (lo ^ *buf++) & 0xff;
-            lo = SHR_LO(hi, lo, 8) ^ model->table_byte[idx];
-            hi = SHR_HI(hi, lo, 8) ^ model->table_byte[256 + idx];
+dword_t crc_bytewise_dbl(model_t *model, dword_t crc, unsigned char const *buf, size_t len) {
+    if (len >= 8) {
+        // Use crc_bytewise() for CRCs that fit in a word_t.
+        if (model->width <= WORDBITS) {
+            crc.lo = crc_bytewise(model, crc.lo, buf, len);
+            crc.hi = 0;
+            return crc;
         }
-    }
-    else {
-        unsigned shift = model->width - 8;  // 1..WORDBITS-8
-        while (len--) {
-            idx = (SHR_LO(hi, lo, shift) ^ *buf++) & 0xff;
-            lo = SHL_LO(hi, lo, 8) ^ model->table_byte[idx];
-            hi = SHL_HI(hi, lo, 8) ^ model->table_byte[256 + idx];
+
+        // Pre-process the CRC.
+        if (model->rev)
+            crc = reverse_dbl(crc, model->width);
+
+        // Process the input data a byte at a time.
+        if (model->ref) {
+            crc.hi &= ONES(model->width - WORDBITS);
+            while (len >= 8) {
+                crc = xor(shr(crc, 8), model->table_byte_dbl[(crc.lo ^ *buf++) & 0xff]);
+                len -= 8;
+            }
         }
-        hi &= ONES(model->width - WORDBITS);
+        else {
+            unsigned shift = model->width - 8;  // 1..WORDBITS-8
+            while (len >= 8) {
+                crc = xor(shl(crc, 8), model->table_byte_dbl[(shr(crc, shift).lo ^ *buf++) & 0xff]);
+                len -= 8;
+            }
+            crc.hi &= ONES(model->width - WORDBITS);
+        }
+
+        // Post-process and return the CRC
+        if (model->rev)
+            crc = reverse_dbl(crc, model->width);
     }
 
-    *crc_lo = lo;
-    *crc_hi = hi;
+    // Process any remaining bits after the last byte
+    if (len > 0)
+        crc = crc_bitwise_dbl(model, crc, buf, len);
 
-    // Post-process and return the CRC
-    if (model->rev)
-        reverse_dbl(crc_hi, crc_lo, model->width);
+    return crc;
 }
