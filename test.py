@@ -10,7 +10,7 @@ if len(sys.argv) > 1:
         test_data2 = b'abcdefghijklmnopqrstuvwxyz'
 
         for name, model in anycrc.models.items():
-            if model.width > anycrc.word_bits * 2:
+            if model.width > anycrc.word_bits:
                 break
 
             print(name)
@@ -19,25 +19,18 @@ if len(sys.argv) > 1:
             crc = anycrc.Model(name)
             crc2 = anycrc.Model(name)
 
-            #check to see if the result from the bit-by-bit algorithm matches the check value
-            value = crc._calc_bit(test_data)
-            check = model.check
-            print('bit-by-bit:    {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(check, model.width)))
-            assert value == check
-
             #check to see if the result from the byte-by-byte algorithm matches the check value
-            value = crc._calc_byte(test_data)
+            value = crc._calc_b(test_data)
             check = model.check
             print('byte-by-byte:  {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(check, model.width)))
             assert value == check
 
-            if model.width <= anycrc.word_bits:
-                #check to see if the result from the slice-by-16 algorithm matches the byte-by-byte value
-                value = crc.calc(test_data2)
-                value2 = crc2._calc_byte(test_data2)
+            #check to see if the result from the slice-by-16 algorithm matches the byte-by-byte value
+            value = crc.calc(test_data2)
+            value2 = crc2._calc_b(test_data2)
 
-                print('slice-by-16:   {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
-                assert value == value2
+            print('slice-by-16:   {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
+            assert value == value2
 
             #process the data one byte at a time
             for c in test_data:
@@ -53,7 +46,7 @@ if len(sys.argv) > 1:
                 bit_data.frombytes(test_data2)
                 crc.update(bit_data[:150])
                 value = crc.update(bit_data[150:])
-                value2 = crc2._calc_bit(test_data2)
+                value2 = crc2._calc_b(test_data2)
 
                 print('bits:          {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
                 assert value == value2

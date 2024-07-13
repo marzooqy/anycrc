@@ -10,6 +10,16 @@
 #include <stdlib.h>
 #include "crc.h"
 
+// Swap the bytes in a word_t. swap() is used at most twice per crc_slice16() call.
+word_t swap(word_t x) {
+    word_t y = x & 0xff;
+    for (int i = 0; i < WORDCHARS - 1; i++) {
+        x >>= 8;
+        y = (y << 8) | (x & 0xff);
+    }
+    return y;
+}
+
 word_t crc_bitwise(model_t *model, word_t crc, void const *dat, size_t len) {
     unsigned char const *buf = dat;
     word_t poly = model->poly;
@@ -127,20 +137,6 @@ word_t crc_bytewise(model_t *model, word_t crc, void const *dat, size_t len) {
     if (len > 0)
         crc = crc_bitwise(model, crc, buf, len);
     return crc;
-}
-
-// Swap the bytes in a word_t. swap() is used at most twice per crc_slice16() call.
-static inline word_t swap(word_t x) {
-    unsigned n = WORDCHARS;
-    if (n == 0)
-        return 0;
-    word_t y = x & 0xff;
-    while (--n) {
-        x >>= 8;
-        y <<= 8;
-        y |= x & 0xff;
-    }
-    return y;
 }
 
 int crc_table_slice16(model_t *model) {

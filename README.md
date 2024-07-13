@@ -1,4 +1,4 @@
-This is a Cython module with bindings to the [crcany](https://github.com/madler/crcany) library. It supports calculating CRC hashes of arbitary sizes as well as updating a CRC hash over time. Anycrc supports all of the CRCs listed in the [RevEng CRC Catalogue](https://reveng.sourceforge.io/crc-catalogue/all.htm).
+This is a Cython module with bindings to the [crcany](https://github.com/madler/crcany) library. It supports calculating CRC hashes of arbitary sizes as well as updating a CRC hash over time.
 
 ## Installation
 
@@ -78,7 +78,7 @@ For a list of pre-built models, check [models.py](https://github.com/marzooqy/an
 
 `python -m anycrc models`
 
-The maximum possible CRC width is 128 bits. CRCs with a width larger than 64 bits use the slower byte-by-byte algorithm.
+The maximum supported CRC width is 64 bits.
 
 ## Benchmark
 

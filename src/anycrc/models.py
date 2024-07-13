@@ -127,7 +127,6 @@ models = {
     'CRC64-REDIS': model(width=64, poly=0xad93d23594c935a9, init=0x0000000000000000, refin=True, refout=True, xorout=0x0000000000000000, check=0xe9c6d914c4b8d9ca),
     'CRC64-WE': model(width=64, poly=0x42f0e1eba9ea3693, init=0xffffffffffffffff, refin=False, refout=False, xorout=0xffffffffffffffff, check=0x62ec59e3f1a4f00a),
     'CRC64-XZ': model(width=64, poly=0x42f0e1eba9ea3693, init=0xffffffffffffffff, refin=True, refout=True, xorout=0xffffffffffffffff, check=0x995dc9bbdf1939fa),
-    'CRC82-DARC': model(width=82, poly=0x0308c0111011401440411, init=0x000000000000000000000, refin=True, refout=True, xorout=0x000000000000000000000, check=0x09ea83f625023801fd612)
 }
 
 aliases = {

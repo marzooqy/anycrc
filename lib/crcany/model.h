@@ -31,9 +31,6 @@
    algorithm here can process CRCs up to twice the size of a word_t. */
 typedef uintmax_t word_t;
 
-/* Double length word*/
-typedef struct { word_t hi, lo; } dword_t;
-
 /* Determine the size of uintmax_t at pre-processor time.  (sizeof is not
    evaluated at pre-processor time.)  If word_t is instead set to an explicit
    size above, e.g. uint64_t, then #define WORDCHARS appropriately, e.g. as 8.
@@ -86,7 +83,6 @@ typedef struct {
     word_t check, check_hi;     /* CRC of the nine ASCII bytes "123456789" */
     word_t *table_byte;         /* table for byte-wise calculation */
     word_t *table_slice16;      /* tables for the slice16 calculation */
-    dword_t *table_byte_dbl;    /* table for the double byte-wise calculation */
 } model_t;
 
 /*
@@ -126,23 +122,12 @@ typedef struct {
    Returns the model. */
 model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout, word_t check);
 
-/* Same as get_model but allows the width to be higher than WORDBITS */
-model_t get_model_dbl(unsigned short width, word_t poly_hi, word_t poly, word_t init_hi, word_t init, char refin, char refout,
-                      word_t xorout_hi, word_t xorout, word_t check_hi, word_t check);
-
 /* Deallocate the model's tables */
 void free_model(model_t *model);
 
-/* Return the reversal of the low n-bits of x.  1 <= n <= WORDBITS.  The high
+/* Return the reversal of the low n-bits of x. 1 <= n <= WORDBITS. The high
    WORDBITS - n bits in x are ignored, and are set to zero in the returned
-   result.  A table-driven implementation would be faster, but the speed of
-   reverse() is of no consequence since it is used at most twice per crc()
-   call.  Even then, it is only used in the rare case that refin and refout are
-   different. */
-word_t reverse(word_t x, unsigned n);
-
-/* Return the reversal of the low n-bits of hi/lo in hi/lo.
-   1 <= n <= WORDBITS*2. */
-dword_t reverse_dbl(dword_t x, unsigned n);
-
+   result. reverse() is only used if refin and refout are different. */
+   word_t reverse(word_t x, unsigned n);
+   
 #endif
