@@ -17,7 +17,9 @@ setup(
             name='anycrc.anycrc',
             extra_compile_args=compile_args,
             extra_link_args=link_args,
-            sources=['src/anycrc/anycrc.pyx', 'lib/crcany/model.c', 'lib/crcany/crc.c']
+            sources=['src/anycrc/anycrc.pyx',
+                     'lib/crcany/model.c',
+                     'lib/crcany/crc.c']
         )
     ]
 )
