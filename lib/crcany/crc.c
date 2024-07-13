@@ -10,14 +10,16 @@
 #include <stdlib.h>
 #include "crc.h"
 
+#define SWAP_BYTE(x, i) (((word_t) (x >> ((i) << 3)) & 0xff) << (WORDBITS - (((i) + 1) << 3)))
+#define SWAP_WORD(x, i) SWAP_BYTE(x, i) | SWAP_BYTE(x, i + 1) | SWAP_BYTE(x, i + 2) | SWAP_BYTE(x, i + 3)
+
 // Swap the bytes in a word_t. swap() is used at most twice per crc_slice16() call.
 word_t swap(word_t x) {
-    word_t y = x & 0xff;
-    for (int i = 0; i < WORDCHARS - 1; i++) {
-        x >>= 8;
-        y = (y << 8) | (x & 0xff);
-    }
-    return y;
+    return SWAP_WORD(x, 0)
+    #if WORDBITS >= 64
+          | SWAP_WORD(x, 4)
+    #endif
+    ;
 }
 
 word_t crc_bitwise(model_t *model, word_t crc, void const *dat, size_t len) {
