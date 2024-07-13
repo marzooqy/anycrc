@@ -25,28 +25,25 @@
 #endif
 
 /* Type to use for CRC calculations.  This should be the largest unsigned
-   integer type available, to maximize the cases that can be computed.  word_t
-   can be any unsigned integer type, except for unsigned char.  All of the
-   algorithms here can process CRCs up to the size of a word_t.  The bit-wise
-   algorithm here can process CRCs up to twice the size of a word_t. */
+   integer type available, to maximize the cases that can be computed.
+   word_t can be any unsigned integer type larger than or equal to 32 bits.
+   All of the algorithms here can process CRCs up to the size of a word_t. */
 typedef uintmax_t word_t;
 
 /* Determine the size of uintmax_t at pre-processor time.  (sizeof is not
    evaluated at pre-processor time.)  If word_t is instead set to an explicit
    size above, e.g. uint64_t, then #define WORDCHARS appropriately, e.g. as 8.
  */
-#if UINTMAX_MAX == UINT16_MAX
-#  define WORDCHARS 2
-#elif UINTMAX_MAX == UINT32_MAX
+#if UINTMAX_MAX == UINT32_MAX
 #  define WORDCHARS 4
 #elif UINTMAX_MAX == UINT64_MAX
 #  define WORDCHARS 8
 #else
-#  error uintmax_t must be 2, 4, or 8 bytes for this code.
+#  error uintmax_t must be 4, or 8 bytes for this code.
 #endif
 
 /* The number of bits in a word_t (assumes CHAR_BIT is 8). */
-#define WORDBITS (WORDCHARS<<3)
+#define WORDBITS (WORDCHARS << 3)
 
 /* Mask for the low n bits of a word_t (n must be greater than zero). */
 #define ONES(n) (((word_t)0 - 1) >> (WORDBITS - (n)))
@@ -74,15 +71,15 @@ typedef uintmax_t word_t;
    defined in the structure.
  */
 typedef struct {
-    unsigned short width;       /* number of bits in the CRC (the degree of the polynomial) */
-    char ref;                   /* if true, reflect input and output */
-    char rev;                   /* if true, reverse output */
-    word_t poly;                /* polynomial representation (sans x^width) */
-    word_t init;                /* CRC of a zero-length sequence */
-    word_t xorout;              /* final CRC is exclusive-or'ed with this */
-    word_t check;               /* CRC of the nine ASCII bytes "123456789" */
-    word_t *table_byte;         /* table for byte-wise calculation */
-    word_t *table_slice16;      /* tables for the slice16 calculation */
+    unsigned short width;     /* number of bits in the CRC (the degree of the polynomial) */
+    char ref;                 /* if true, reflect input and output */
+    char rev;                 /* if true, reverse output */
+    word_t poly;              /* polynomial representation (sans x^width) */
+    word_t init;              /* CRC of a zero-length sequence */
+    word_t xorout;            /* final CRC is exclusive-or'ed with this */
+    word_t check;             /* CRC of the nine ASCII bytes "123456789" */
+    word_t *table_byte;       /* table for byte-wise calculation */
+    word_t *table_slice16;    /* tables for the slice16 calculation */
 } model_t;
 
 /*
