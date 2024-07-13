@@ -77,10 +77,10 @@ typedef struct {
     unsigned short width;       /* number of bits in the CRC (the degree of the polynomial) */
     char ref;                   /* if true, reflect input and output */
     char rev;                   /* if true, reverse output */
-    word_t poly, poly_hi;       /* polynomial representation (sans x^width) */
-    word_t init, init_hi;       /* CRC of a zero-length sequence */
-    word_t xorout, xorout_hi;   /* final CRC is exclusive-or'ed with this */
-    word_t check, check_hi;     /* CRC of the nine ASCII bytes "123456789" */
+    word_t poly;                /* polynomial representation (sans x^width) */
+    word_t init;                /* CRC of a zero-length sequence */
+    word_t xorout;              /* final CRC is exclusive-or'ed with this */
+    word_t check;               /* CRC of the nine ASCII bytes "123456789" */
     word_t *table_byte;         /* table for byte-wise calculation */
     word_t *table_slice16;      /* tables for the slice16 calculation */
 } model_t;
@@ -128,6 +128,6 @@ void free_model(model_t *model);
 /* Return the reversal of the low n-bits of x. 1 <= n <= WORDBITS. The high
    WORDBITS - n bits in x are ignored, and are set to zero in the returned
    result. reverse() is only used if refin and refout are different. */
-   word_t reverse(word_t x, unsigned n);
-   
+word_t reverse(word_t x, unsigned n);
+
 #endif
