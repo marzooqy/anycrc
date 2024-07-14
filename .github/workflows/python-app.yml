@@ -31,7 +31,6 @@ jobs:
       run: |
             python -m pip install --upgrade pip
             python -m pip install .
-            python -m pip install bitarray
     - name: Run test
       run: |
             python test.py models
@@ -54,7 +53,6 @@ jobs:
       run: |
             python -m pip install --upgrade pip
             python -m pip install .
-            python -m pip install bitarray
     - name: Run test
       run: |
             python test.py models
@@ -77,7 +75,6 @@ jobs:
       run: |
             python -m pip install --upgrade pip
             python -m pip install .
-            python -m pip install bitarray
     - name: Run test
       run: |
             python test.py models
@@ -100,7 +97,6 @@ jobs:
       run: |
             python -m pip install --upgrade pip
             python -m pip install .
-            python -m pip install bitarray
     - name: Run test
       run: |
             python test.py models
