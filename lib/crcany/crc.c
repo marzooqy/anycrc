@@ -178,8 +178,8 @@ int crc_table_slice16(model_t *model) {
     return 0;
 }
 
-#define BYTE_SLICE(idx, val) model->table_slice16[((idx) << 8) | ((val >> ((~(idx) & 0x3) << 3)) & 0xff)]
-#define WORD_SLICE(idx, val) (BYTE_SLICE(idx + 3, val) ^ BYTE_SLICE(idx + 2, val) ^ BYTE_SLICE(idx + 1, val) ^ BYTE_SLICE(idx, val))
+#define SLICE_BYTE(idx, val) model->table_slice16[((idx) << 8) | ((val >> ((~(idx) & 0x3) << 3)) & 0xff)]
+#define SLICE_WORD(idx, val) SLICE_BYTE(idx + 3, val) ^ SLICE_BYTE(idx + 2, val) ^ SLICE_BYTE(idx + 1, val) ^ SLICE_BYTE(idx, val)
 
 word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
     unsigned char const *buf = dat;
@@ -210,7 +210,7 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
             crc_hi = (crc >> 32) ^ *(uint32_t const *)(buf + 4);
             i3 = *(uint32_t const *)(buf + 8);
             i4 = *(uint32_t const *)(buf + 12);
-            crc = WORD_SLICE(12, crc_lo) ^ WORD_SLICE(8, crc_hi) ^ WORD_SLICE(4, i3) ^ WORD_SLICE(0, i4);
+            crc = SLICE_WORD(12, crc_lo) ^ SLICE_WORD(8, crc_hi) ^ SLICE_WORD(4, i3) ^ SLICE_WORD(0, i4);
 
             buf += 16;
             len -= 16 * 8;
