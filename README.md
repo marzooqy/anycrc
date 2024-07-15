@@ -53,24 +53,15 @@ Create a CRC with specific parameters:
 472456355
 ```
 
-For non-reflected CRCs, the length of the data can be specified in bits:
-
-```python
->>> crc32 = anycrc.Model('CRC32-MPEG-2')
->>> data = b'Hello World!'
->>> crc32.update(data, length=48)
->>> crc32.update(data[6:], length=48)
-2498069329
-```
-
-Or by using the [bitarray](https://github.com/ilanschnell/bitarray) module:
+For non-reflected CRCs, the length of the data can be specified in bits by calling `calc_bits` or `update_bits` and passing a [bitarray](https://github.com/ilanschnell/bitarray) object:
 
 ```python
 >>> from bitarray import bitarray
+>>> crc32 = anycrc.Model('CRC32-MPEG-2')
 >>> bits = bitarray()
 >>> bits.frombytes(b'Hello World!')
->>> crc32.update(bits[:50])
->>> crc32.update(bits[50:])
+>>> crc32.update_bits(bits[:50])
+>>> crc32.update_bits(bits[50:])
 2498069329
 ```
 

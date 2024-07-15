@@ -1,6 +1,6 @@
 # Copyright (c) 2024 Hussain Al Marzooq
 
-from libc.stdint cimport uintmax_t, intmax_t
+from libc.stdint cimport uintmax_t
 from .models import *
 
 import bitarray
@@ -42,20 +42,12 @@ cdef class CRC:
     def __cinit__(self, width=None, poly=None, init=None, refin=None, refout=None, xorout=None, check=0):
         if width is None:
             raise ValueError('width value is not provided')
-        elif width <= 0:
-            raise ValueError('width should be larger than zero')
-        elif width > word_bits:
-            raise ValueError(f'width is larger than {word_bits} bits')
 
         if poly is None:
             raise ValueError('poly value is not provided')
-        elif poly < 0:
-            raise ValueError('poly should be a positive value')
 
         if init is None:
             raise ValueError('init value is not provided')
-        elif init < 0:
-            raise ValueError('init should be a positive value')
 
         if refin is None:
             raise ValueError('refin value is not provided')
@@ -65,8 +57,9 @@ cdef class CRC:
 
         if xorout is None:
             raise ValueError('xorout value is not provided')
-        elif xorout < 0:
-            raise ValueError('xorout should be a positive value')
+
+        if width > word_bits:
+            raise ValueError(f'width is larger than {word_bits} bits')
 
         cdef int error_code
 
@@ -95,76 +88,41 @@ cdef class CRC:
     def reset(self):
         self.register = self.model.init
 
-    def calc(self, data, intmax_t length=-1):
+    cpdef word_t calc(self, data):
         if isinstance(data, str):
             data = (<unicode> data).encode('utf-8')
 
-        elif isinstance(data, bitarray.bitarray) or isinstance(data, bitarray.frozenbitarray):
-            #clear the pad bits so that they won't affect the CRC calculation
-            v = memoryview(data)
-            v[-1] &= MASK << data.padbits
-            length = len(data)
+        cdef const unsigned char[:] view = data
+        return crc_slice16(&self.model, self.register, &view[0], len(view) * 8)
+
+    cpdef word_t calc_bits(self, data):
+        #clear the pad bits so that they won't affect the CRC calculation
+        with memoryview(data) as mv:
+            mv[-1] &= MASK << data.padbits
 
         cdef const unsigned char[:] view = data
-        cdef intmax_t size = len(view) * 8
+        cdef word_t length = len(data)
 
-        if length < 0:
-            length = size
-        elif length > size:
-            raise ValueError('length is larger than the data\'s size')
-
-        if self.model.ref and length > 0 and length % 8 > 0:
+        if self.model.ref and length % 8 > 0:
             raise ValueError('bit lengths are not supported with reflected CRCs')
 
         return crc_slice16(&self.model, self.register, &view[0], length)
 
-    def update(self, data, intmax_t length=-1):
-        if isinstance(data, str):
-            data = (<unicode> data).encode('utf-8')
+    def update(self, data):
+        self.register = self.calc(data)
+        return self.register
 
-        elif isinstance(data, bitarray.bitarray) or isinstance(data, bitarray.frozenbitarray):
-            #clear the pad bits so that they won't affect the CRC calculation
-            v = memoryview(data)
-            v[-1] &= MASK << data.padbits
-            length = len(data)
-
-        cdef const unsigned char[:] view = data
-        cdef intmax_t size = len(view) * 8
-
-        if length < 0:
-            length = size
-        elif length > size:
-            raise ValueError('length is larger than the data\'s size')
-
-        if self.model.ref and length > 0 and length % 8 > 0:
-            raise ValueError('bit lengths are not supported with reflected CRCs')
-
-        self.register = crc_slice16(&self.model, self.register, &view[0], length)
+    def update_bits(self, data):
+        self.register = self.calc_bits(data)
         return self.register
 
     #byte-by-byte (for testing)
-    def _calc_b(self, data, intmax_t length=-1):
+    def _calc_b(self, data):
         if isinstance(data, str):
             data = (<unicode> data).encode('utf-8')
 
-        elif isinstance(data, bitarray.bitarray) or isinstance(data, bitarray.frozenbitarray):
-            #clear the pad bits so that they won't affect the CRC calculation
-            v = memoryview(data)
-            v[-1] &= MASK << data.padbits
-            length = len(data)
-
         cdef const unsigned char[:] view = data
-        cdef intmax_t size = len(view) * 8
-
-        if length < 0:
-            length = size
-        elif length > size:
-            raise ValueError('length is larger than the data\'s size')
-
-        if self.model.ref and length > 0 and length % 8 > 0:
-            raise ValueError('bit lengths are not supported with reflected CRCs')
-
-        return crc_bytewise(&self.model, self.register, &view[0], length)
+        return crc_bytewise(&self.model, self.register, &view[0], len(view) * 8)
 
 def Model(name):
     if name in models:

@@ -44,8 +44,8 @@ if len(sys.argv) > 1:
             if not model.refin:
                 bit_data = bitarray()
                 bit_data.frombytes(test_data2)
-                crc.update(bit_data[:150])
-                value = crc.update(bit_data[150:])
+                crc.update_bits(bit_data[:150])
+                value = crc.update_bits(bit_data[150:])
                 value2 = crc2._calc_b(test_data2)
 
                 print('bits:          {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
