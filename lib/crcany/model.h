@@ -77,14 +77,13 @@ typedef struct {
     word_t poly;              /* polynomial representation (sans x^width) */
     word_t init;              /* CRC of a zero-length sequence */
     word_t xorout;            /* final CRC is exclusive-or'ed with this */
-    word_t check;             /* CRC of the nine ASCII bytes "123456789" */
     word_t *table_byte;       /* table for byte-wise calculation */
     word_t *table_slice16;    /* tables for the slice16 calculation */
 } model_t;
 
 /*
-   The parameters are "width", "poly", "init", "refin", "refout", "xorout", "check".
-   "width", "poly", "init", "xorout", "check" are non-negative integers,
+   The parameters are "width", "poly", "init", "refin", "refout", "xorout".
+   "width", "poly", "init", "xorout" are non-negative integers,
    refin and refout must be "1" or "0".
 
    "width" is the number of bits in the CRC, referred to herein as n.  "poly"
@@ -95,21 +94,19 @@ typedef struct {
    "init" is the initial contents of the CRC register.  If "refin" is true,
    then the input bytes are reflected.  If "refout" is true, then the CRC
    register is reflected on output.  "xorout" is exclusive-ored with the CRC,
-   after reflection if any. "check" is the CRC of the nine bytes "123456789"
-   encoded in ASCII.  "name" is the name of the CRC.
+   after reflection if any.
 
    "width" can be as much as twice the number of bits in the word_t type, set
    here to the largest integer type available to the compiler (uintmax_t).  On
    most modern systems, this permits up to 128-bit CRCs.
 
-   "poly", "init", "xorout", and "check" must all be less than 2^n.
+   "poly", "init", and "xorout" must all be less than 2^n.
    The least significant bit of "poly" must be one.
 
    Example (from the RevEng catalogue at
-   http://reveng.sourceforge.net/crc-catalogue/all.htm ):
+   http://reveng.sourceforge.net/crc-catalogue/all.htm):
 
       width=16 poly=0x1021 init=0x0000 refin=true refout=true xorout=0x0000
-          check=0x2189
 
    Processs values for use in crc routines -- note that this reflects the
    polynomial and init values for ready use in the crc routines if necessary,
@@ -117,7 +114,7 @@ typedef struct {
    different meanings reflect and reverse (reverse is very rarely used)
 
    Returns the model. */
-model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout, word_t check);
+model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout);
 
 /* Deallocate the model's tables */
 void free_model(model_t *model);

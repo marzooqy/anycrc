@@ -13,14 +13,11 @@ cdef extern from '../../lib/crcany/model.h':
     ctypedef struct model_t:
         unsigned short width
         char ref, rev
-        word_t poly
-        word_t init
-        word_t xorout
-        word_t check
+        word_t poly, init, xorout
         word_t *table_byte
         word_t *table_slice16
 
-    cdef model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout, word_t check)
+    cdef model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout)
     cdef void free_model(model_t *model)
 
 cdef extern from '../../lib/crcany/crc.h':
@@ -37,7 +34,7 @@ cdef class CRC:
     cdef model_t model
     cdef word_t register
 
-    def __cinit__(self, width=None, poly=None, init=None, refin=None, refout=None, xorout=None, check=0):
+    def __cinit__(self, width=None, poly=None, init=None, refin=None, refout=None, xorout=None, check=None):
         if width is None:
             raise ValueError('width value is not provided')
 
@@ -61,7 +58,7 @@ cdef class CRC:
 
         cdef int error_code
 
-        self.model = get_model(width, poly, init, refin, refout, xorout, check)
+        self.model = get_model(width, poly, init, refin, refout, xorout)
         error_code = crc_table_bytewise(&self.model)
 
         if error_code == 1:

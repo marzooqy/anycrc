@@ -11,7 +11,7 @@
 #include "model.h"
 
 // See model.h.
-model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout, word_t check) {
+model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout) {
     model_t model;
     model.width = width;
     model.poly = poly;
@@ -19,7 +19,6 @@ model_t get_model(unsigned short width, word_t poly, word_t init, char refin, ch
     model.xorout = xorout;
     model.ref = refin;
     model.rev = refin ^ refout;
-    model.check = check;
 
     if (refin)
         model.poly = reverse(model.poly, model.width);
