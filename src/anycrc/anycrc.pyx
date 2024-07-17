@@ -13,10 +13,10 @@ cdef extern from '../../lib/crcany/model.h':
     ctypedef struct model_t:
         unsigned short width
         char ref, rev
-        word_t poly, poly_hi
-        word_t init, init_hi
-        word_t xorout, xorout_hi
-        word_t check, check_hi
+        word_t poly
+        word_t init
+        word_t xorout
+        word_t check
         word_t *table_byte
         word_t *table_slice16
 
@@ -24,8 +24,6 @@ cdef extern from '../../lib/crcany/model.h':
     cdef void free_model(model_t *model)
 
 cdef extern from '../../lib/crcany/crc.h':
-    cdef word_t crc_bitwise(model_t *model, word_t crc, const void *dat, size_t len);
-
     cdef int crc_table_bytewise(model_t *model)
     cdef word_t crc_bytewise(model_t *model, word_t crc, const void *dat, size_t len);
 
