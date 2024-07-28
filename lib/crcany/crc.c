@@ -142,10 +142,10 @@ int crc_table_slice16(model_t *model) {
 }
 
 #define SLICE_BYTE_REF(idx) model->table_slice16[((15 - idx) * 256) | buf[idx]]
-#define SLICE_CRC_REF(val, idx) model->table_slice16[((15 - idx) * 256) | (((val >> (idx * 8)) ^ buf[idx]) & 0xff)]
+#define SLICE_CRC_REF(idx) model->table_slice16[((15 - idx) * 256) | (((crc >> (idx * 8)) ^ buf[idx]) & 0xff)]
 
 #define SLICE_BYTE(idx) model->table_slice16[(idx * 256) | buf[15 - idx]]
-#define SLICE_CRC(val, idx) model->table_slice16[(idx * 256) | (((val >> ((idx & 0x7) * 8)) ^ buf[15 - idx]) & 0xff)]
+#define SLICE_CRC(idx) model->table_slice16[(idx * 256) | (((crc >> ((idx & 0x7) * 8)) ^ buf[15 - idx]) & 0xff)]
 
 word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
     unsigned char const *buf = dat;
@@ -158,8 +158,8 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
 
         if (model->ref) {
             do {
-                crc = SLICE_CRC_REF(crc, 0) ^ SLICE_CRC_REF(crc, 1) ^ SLICE_CRC_REF(crc, 2) ^ SLICE_CRC_REF(crc, 3)
-                    ^ SLICE_CRC_REF(crc, 4) ^ SLICE_CRC_REF(crc, 5) ^ SLICE_CRC_REF(crc, 6) ^ SLICE_CRC_REF(crc, 7)
+                crc = SLICE_CRC_REF(0) ^ SLICE_CRC_REF(1) ^ SLICE_CRC_REF(2) ^ SLICE_CRC_REF(3)
+                    ^ SLICE_CRC_REF(4) ^ SLICE_CRC_REF(5) ^ SLICE_CRC_REF(6) ^ SLICE_CRC_REF(7)
                     ^ SLICE_BYTE_REF(8) ^ SLICE_BYTE_REF(9) ^ SLICE_BYTE_REF(10) ^ SLICE_BYTE_REF(11)
                     ^ SLICE_BYTE_REF(12) ^ SLICE_BYTE_REF(13) ^ SLICE_BYTE_REF(14) ^ SLICE_BYTE_REF(15);
 
@@ -173,8 +173,8 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
             do {
                 crc = SLICE_BYTE(0) ^ SLICE_BYTE(1) ^ SLICE_BYTE(2) ^ SLICE_BYTE(3)
                     ^ SLICE_BYTE(4) ^ SLICE_BYTE(5) ^ SLICE_BYTE(6) ^ SLICE_BYTE(7)
-                    ^ SLICE_CRC(crc, 8) ^ SLICE_CRC(crc, 9) ^ SLICE_CRC(crc, 10) ^ SLICE_CRC(crc, 11)
-                    ^ SLICE_CRC(crc, 12) ^ SLICE_CRC(crc, 13) ^ SLICE_CRC(crc, 14) ^ SLICE_CRC(crc, 15);
+                    ^ SLICE_CRC(8) ^ SLICE_CRC(9) ^ SLICE_CRC(10) ^ SLICE_CRC(11)
+                    ^ SLICE_CRC(12) ^ SLICE_CRC(13) ^ SLICE_CRC(14) ^ SLICE_CRC(15);
 
                 buf += 16;
                 len -= 16 * 8;
