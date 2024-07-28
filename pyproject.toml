@@ -16,7 +16,3 @@ dependencies = ["bitarray"]
 [tool.cibuildwheel]
 build-frontend = "pip"
 skip = "pp*"
-
-#clang doesn't produce the correct CRC results in the current build
-[tool.cibuildwheel.macos.environment]
-CC = "gcc-14"
