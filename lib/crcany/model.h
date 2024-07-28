@@ -45,10 +45,7 @@ typedef uintmax_t word_t;
 /* The number of bits in a word_t (assumes CHAR_BIT is 8). */
 #define WORDBITS (WORDCHARS << 3)
 
-/* Mask for the low n bits of a word_t (n must be greater than zero). */
-#define ONES(n) (((word_t)0 - 1) >> (WORDBITS - (n)))
-
-/* CRC description and tables, allowing for double-word CRCs.
+/* CRC description and tables
 
    The description is based on Ross William's parameters, but with some changes
    to the parameters as described below.
@@ -63,7 +60,7 @@ typedef uintmax_t word_t;
    init is different here as well, representing the CRC of a zero-length
    sequence, instead of the initial contents of the CRC register.
 
-   poly is reflected for refin true.  xorout is reflected for refout true.
+   poly is reflected for refin true.  init is reflected for refout true.
 
    The structure includes space for pre-computed tables used to speed up CRC
    and CRC combination calculations. table_byte[] and table_word[] are filled

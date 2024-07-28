@@ -10,7 +10,7 @@ else:
 
 setup(
     name = 'anycrc',
-    version = '0.9.4',
+    version = '0.9.5',
     package_dir = {"": "src"},
     ext_modules = [
         Extension(
