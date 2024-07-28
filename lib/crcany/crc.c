@@ -141,12 +141,11 @@ int crc_table_slice16(model_t *model) {
     return 0;
 }
 
-#define SLICE_BYTE_REF(val, idx) model->table_slice16[((15 - (idx)) << 8) | (((val >> (((idx) & 0x7) << 3)) ^ buf[(idx)]) & 0xff)]
-#define SLICE_WORD_REF(val, idx) SLICE_BYTE_REF(val, idx) ^ SLICE_BYTE_REF(val, idx + 1) \
-                               ^ SLICE_BYTE_REF(val, idx + 2) ^ SLICE_BYTE_REF(val, idx + 3)
+#define SLICE_BYTE_REF(idx) model->table_slice16[((15 - idx) * 256) | buf[idx]]
+#define SLICE_CRC_REF(val, idx) model->table_slice16[((15 - idx) * 256) | (((val >> (idx * 8)) ^ buf[idx]) & 0xff)]
 
-#define SLICE_BYTE(val, idx) model->table_slice16[((idx) << 8) | (((val >> (((idx) & 0x7) << 3)) ^ buf[15 - (idx)]) & 0xff)]
-#define SLICE_WORD(val, idx) SLICE_BYTE(val, idx) ^ SLICE_BYTE(val, idx + 1) ^ SLICE_BYTE(val, idx + 2) ^ SLICE_BYTE(val, idx + 3)
+#define SLICE_BYTE(idx) model->table_slice16[(idx * 256) | buf[15 - idx]]
+#define SLICE_CRC(val, idx) model->table_slice16[(idx * 256) | (((val >> ((idx & 0x7) * 8)) ^ buf[15 - idx]) & 0xff)]
 
 word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
     unsigned char const *buf = dat;
@@ -159,7 +158,11 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
 
         if (model->ref) {
             do {
-                crc = SLICE_WORD_REF(crc, 0) ^ SLICE_WORD_REF(crc, 4) ^ SLICE_WORD_REF(0, 8) ^ SLICE_WORD_REF(0, 12);
+                crc = SLICE_CRC_REF(crc, 0) ^ SLICE_CRC_REF(crc, 1) ^ SLICE_CRC_REF(crc, 2) ^ SLICE_CRC_REF(crc, 3)
+                    ^ SLICE_CRC_REF(crc, 4) ^ SLICE_CRC_REF(crc, 5) ^ SLICE_CRC_REF(crc, 6) ^ SLICE_CRC_REF(crc, 7)
+                    ^ SLICE_BYTE_REF(8) ^ SLICE_BYTE_REF(9) ^ SLICE_BYTE_REF(10) ^ SLICE_BYTE_REF(11)
+                    ^ SLICE_BYTE_REF(12) ^ SLICE_BYTE_REF(13) ^ SLICE_BYTE_REF(14) ^ SLICE_BYTE_REF(15);
+
                 buf += 16;
                 len -= 16 * 8;
             } while (len >= 16 * 8);
@@ -168,7 +171,11 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
             unsigned top = WORDBITS - model->width;
             crc <<= top;
             do {
-                crc = SLICE_WORD(0, 0) ^ SLICE_WORD(0, 4) ^ SLICE_WORD(crc, 8) ^ SLICE_WORD(crc, 12);
+                crc = SLICE_BYTE(0) ^ SLICE_BYTE(1) ^ SLICE_BYTE(2) ^ SLICE_BYTE(3)
+                    ^ SLICE_BYTE(4) ^ SLICE_BYTE(5) ^ SLICE_BYTE(6) ^ SLICE_BYTE(7)
+                    ^ SLICE_CRC(crc, 8) ^ SLICE_CRC(crc, 9) ^ SLICE_CRC(crc, 10) ^ SLICE_CRC(crc, 11)
+                    ^ SLICE_CRC(crc, 12) ^ SLICE_CRC(crc, 13) ^ SLICE_CRC(crc, 14) ^ SLICE_CRC(crc, 15);
+
                 buf += 16;
                 len -= 16 * 8;
             } while (len >= 16 * 8);

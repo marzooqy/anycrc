@@ -73,14 +73,13 @@ const unsigned char reverse_table[256] = {
     0x1F, 0x9F, 0x5F, 0xDF, 0x3F, 0xBF, 0x7F, 0xFF
 };
 
-#define REVERSE_BYTE(x, i) ((word_t) reverse_table[(x >> ((i) << 3)) & 0xff] << (WORDBITS - (((i) + 1) << 3)))
-#define REVERSE_WORD(x, i) REVERSE_BYTE(x, i) | REVERSE_BYTE(x, i + 1) | REVERSE_BYTE(x, i + 2) | REVERSE_BYTE(x, i + 3)
+#define REVERSE_BYTE(x, i) ((word_t) reverse_table[(x >> (i * 8)) & 0xff] << (WORDBITS - ((i + 1) * 8)))
 
 // See model.h
 word_t reverse(word_t x, unsigned n) {
-    return (REVERSE_WORD(x, 0)
+    return (REVERSE_BYTE(x, 0) | REVERSE_BYTE(x, 1) | REVERSE_BYTE(x, 2) | REVERSE_BYTE(x, 3)
     #if WORDBITS >= 64
-           | REVERSE_WORD(x, 4)
+          | REVERSE_BYTE(x, 4) | REVERSE_BYTE(x, 5) | REVERSE_BYTE(x, 6) | REVERSE_BYTE(x, 7)
     #endif
     ) >> (WORDBITS - n);
 }
