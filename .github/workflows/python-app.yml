@@ -51,7 +51,6 @@ jobs:
         architecture: ${{ matrix.architecture }}
     - name: Install dependencies
       run: |
-            export CC=gcc-14
             python -m pip install --upgrade pip
             python -m pip install .
     - name: Run test
@@ -74,7 +73,6 @@ jobs:
         architecture: ${{ matrix.architecture }}
     - name: Install dependencies
       run: |
-            export CC=gcc-14
             python -m pip install --upgrade pip
             python -m pip install .
     - name: Run test
