@@ -159,7 +159,8 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
 
         if (model->ref) {
             do {
-                crc = SLICE_WORD_REF(crc, 0) ^ SLICE_WORD_REF(crc, 4) ^ SLICE_WORD_REF(0, 8) ^ SLICE_WORD_REF(0, 12);
+                crc = SLICE_WORD_REF(crc, 0) ^ SLICE_WORD_REF(crc, 4)
+                    ^ SLICE_WORD_REF((word_t) 0, 8) ^ SLICE_WORD_REF((word_t) 0, 12);
                 buf += 16;
                 len -= 16 * 8;
             } while (len >= 16 * 8);
@@ -168,7 +169,8 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
             unsigned top = WORDBITS - model->width;
             crc <<= top;
             do {
-                crc = SLICE_WORD(0, 0) ^ SLICE_WORD(0, 4) ^ SLICE_WORD(crc, 8) ^ SLICE_WORD(crc, 12);
+                crc = SLICE_WORD((word_t) 0, 0) ^ SLICE_WORD((word_t) 0, 4)
+                    ^ SLICE_WORD(crc, 8) ^ SLICE_WORD(crc, 12);
                 buf += 16;
                 len -= 16 * 8;
             } while (len >= 16 * 8);
