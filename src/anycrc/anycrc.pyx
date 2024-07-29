@@ -91,10 +91,6 @@ cdef class CRC:
         return crc_slice16(&self.model, self.register, &view[0], len(view) * 8)
 
     cpdef word_t calc_bits(self, data):
-        #clear the pad bits so that they won't affect the CRC calculation
-        with memoryview(data) as mv:
-            mv[-1] &= MASK << data.padbits
-
         cdef const unsigned char[:] view = data
         cdef word_t length = len(data)
 

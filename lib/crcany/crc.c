@@ -32,16 +32,24 @@ word_t crc_bitwise(model_t *model, word_t crc, void const *dat, size_t len) {
         word_t mask = (word_t)1 << (WORDBITS - 1);
         unsigned top = WORDBITS - model->width;
         unsigned shift = WORDBITS - 8;
-        int k;
-
         poly <<= top;
         crc <<= top;
-        while (len) {
+
+        while (len >= 8) {
             crc ^= (word_t)(*buf++) << shift;
-            for (k = 0; k < (len > 8 ? 8 : len); k++)
+            for (int k = 0; k < 8; k++)
                 crc = crc & mask ? (crc << 1) ^ poly : crc << 1;
-            len -= k;
+            len -= 8;
         }
+
+        // Clear the remaining bits so that they won't affect the CRC calculation.
+        if (len > 0) {
+            unsigned char off = (unsigned char)-1 << (8 - len);
+            crc ^= (word_t)(*buf & off) << shift;
+            while (len--)
+                crc = crc & mask ? (crc << 1) ^ poly : crc << 1;
+        }
+
         crc >>= top;
     }
 
