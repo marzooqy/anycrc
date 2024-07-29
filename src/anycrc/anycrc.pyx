@@ -27,7 +27,6 @@ cdef extern from '../../lib/crcany/crc.h':
     cdef int crc_table_slice16(model_t *model)
     cdef word_t crc_slice16(model_t *model, word_t crc, const void *dat, size_t len)
 
-cdef word_t MASK = -1
 word_bits = WORDBITS #accessible from python
 
 cdef class CRC:
