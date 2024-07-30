@@ -14,17 +14,16 @@ cdef extern from '../../lib/crcany/model.h':
         unsigned short width
         char ref, rev
         word_t poly, init, xorout
-        word_t *table_byte
-        word_t *table_slice16
+        word_t *table
 
-    cdef model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout)
+    cdef int init_model(model_t *model, unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout)
     cdef void free_model(model_t *model)
 
 cdef extern from '../../lib/crcany/crc.h':
-    cdef int crc_table_bytewise(model_t *model)
+    cdef void crc_table_bytewise(model_t *model)
     cdef word_t crc_bytewise(model_t *model, word_t crc, const void *dat, size_t len);
 
-    cdef int crc_table_slice16(model_t *model)
+    cdef void crc_table_slice16(model_t *model)
     cdef word_t crc_slice16(model_t *model, word_t crc, const void *dat, size_t len)
 
 word_bits = WORDBITS #accessible from python
@@ -55,18 +54,13 @@ cdef class CRC:
         if width > word_bits:
             raise ValueError(f'width is larger than {word_bits} bits')
 
-        cdef int error_code
-
-        self.model = get_model(width, poly, init, refin, refout, xorout)
-        error_code = crc_table_bytewise(&self.model)
+        cdef int error_code = init_model(&self.model, width, poly, init, refin, refout, xorout)
 
         if error_code == 1:
             raise MemoryError('Out of memory error')
 
-        error_code = crc_table_slice16(&self.model)
-
-        if error_code == 1:
-            raise MemoryError('Out of memory error')
+        crc_table_bytewise(&self.model)
+        crc_table_slice16(&self.model)
 
         self.register = self.model.init
 

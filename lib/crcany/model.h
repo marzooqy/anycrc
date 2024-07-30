@@ -74,8 +74,7 @@ typedef struct {
     word_t poly;              /* polynomial representation (sans x^width) */
     word_t init;              /* CRC of a zero-length sequence */
     word_t xorout;            /* final CRC is exclusive-or'ed with this */
-    word_t *table_byte;       /* table for byte-wise calculation */
-    word_t *table_slice16;    /* tables for the slice16 calculation */
+    word_t *table;            /* table for the CRC calculation */
 } model_t;
 
 /*
@@ -108,10 +107,8 @@ typedef struct {
    Processs values for use in crc routines -- note that this reflects the
    polynomial and init values for ready use in the crc routines if necessary,
    changes the meaning of init, and replaces refin and refout with the
-   different meanings reflect and reverse (reverse is very rarely used)
-
-   Returns the model. */
-model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout);
+   different meanings reflect and reverse (reverse is very rarely used). */
+int init_model(model_t *model, unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout);
 
 /* Deallocate the model's tables */
 void free_model(model_t *model);

@@ -11,31 +11,26 @@
 #include "model.h"
 
 // See model.h.
-model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout) {
-    model_t model;
-    model.width = width;
-    model.poly = poly;
-    model.init = init;
-    model.xorout = xorout;
-    model.ref = refin;
-    model.rev = refin ^ refout;
+int init_model(model_t *model, unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout) {
+    model->width = width;
+    model->poly = refin ? reverse(poly, width) : poly;
+    model->init = refout ? reverse(init, width) : init;
+    model->xorout = xorout;
+    model->ref = refin;
+    model->rev = refin ^ refout;
+    model->table = NULL;
 
-    if (refin)
-        model.poly = reverse(model.poly, model.width);
-    if (refout)
-        model.init = reverse(model.init, model.width);
+    model->table = (word_t*) malloc(WORDCHARS * 256 * 16);
+    if (model->table == NULL)
+        return 1;
 
-    model.init ^= model.xorout;
-    model.table_byte = NULL;
-    model.table_slice16 = NULL;
-
-    return model;
+    model->init ^= xorout;
+    return 0;
 }
 
 // See model.h.
 void free_model(model_t *model) {
-    free(model->table_byte);
-    free(model->table_slice16);
+    free(model->table);
 }
 
 const unsigned char reverse_table[256] = {

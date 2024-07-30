@@ -40,7 +40,7 @@ word_t crc_bitwise(model_t *model, word_t crc, void const *dat, size_t len);
    and the CRC width is less than 8, then the CRC is pre-shifted left to the
    high end of the low 8 bits so that the incoming byte can be exclusive-ored
    directly into a shifted CRC. */
-int crc_table_bytewise(model_t *model);
+void crc_table_bytewise(model_t *model);
 
 /* Equivalent to crc_bitwise(), but use a faster byte-wise table-based
    approach. This assumes that model->table_byte has been initialized using
@@ -55,7 +55,7 @@ word_t crc_bytewise(model_t *model, word_t crc, void const *dat, size_t len);
    CRC is shifted up to the top of the word. The CRC is byte-swapped as needed
    so that the first byte of the CRC to be shifted out is in the same place in
    the word_t as the first byte that comes from memory. */
-int crc_table_slice16(model_t *model);
+void crc_table_slice16(model_t *model);
 
 /* Equivalent to crc_bitwise(), but use an even faster word-wise table-based
    approach.  This assumes that model->table_byte and model->table_word have

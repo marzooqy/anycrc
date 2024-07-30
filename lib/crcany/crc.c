@@ -59,15 +59,7 @@ word_t crc_bitwise(model_t *model, word_t crc, void const *dat, size_t len) {
     return crc ^ model->xorout;
 }
 
-int crc_table_bytewise(model_t *model) {
-    if (model->table_byte == NULL) {
-        model->table_byte = (word_t*) malloc(WORDCHARS * 256);
-
-        if (model->table_byte == NULL) {
-            return 1;
-        }
-    }
-
+void crc_table_bytewise(model_t *model) {
     unsigned char k = 0;
     do {
         word_t crc = crc_bitwise(model, 0, &k, 8);
@@ -75,10 +67,8 @@ int crc_table_bytewise(model_t *model) {
             crc = reverse(crc, model->width);
         if (!model->ref)
             crc <<= WORDBITS - model->width;
-        model->table_byte[k] = crc;
+        model->table[k] = crc;
     } while (++k);
-
-    return 0;
 }
 
 word_t crc_bytewise(model_t *model, word_t crc, void const *dat, size_t len) {
@@ -92,7 +82,7 @@ word_t crc_bytewise(model_t *model, word_t crc, void const *dat, size_t len) {
         // Process the input data a byte at a time.
         if (model->ref) {
             while (len >= 8) {
-                crc = (crc >> 8) ^ model->table_byte[(crc ^ *buf++) & 0xff];
+                crc = (crc >> 8) ^ model->table[(crc ^ *buf++) & 0xff];
                 len -= 8;
             }
         }
@@ -101,7 +91,7 @@ word_t crc_bytewise(model_t *model, word_t crc, void const *dat, size_t len) {
             unsigned shift = WORDBITS - 8;
             crc <<= top;
             while (len >= 8) {
-                crc = (crc << 8) ^ model->table_byte[((crc >> shift) ^ *buf++) & 0xff];
+                crc = (crc << 8) ^ model->table[((crc >> shift) ^ *buf++) & 0xff];
                 len -= 8;
             }
             crc >>= top;
@@ -118,42 +108,30 @@ word_t crc_bytewise(model_t *model, word_t crc, void const *dat, size_t len) {
     return crc;
 }
 
-int crc_table_slice16(model_t *model) {
-    if (model->table_slice16 == NULL) {
-        model->table_slice16 = (word_t*) malloc(WORDCHARS * 16 * 256);
-
-        if (model->table_slice16 == NULL) {
-            return 1;
-        }
-    }
-
+void crc_table_slice16(model_t *model) {
     word_t xorout = model->xorout;
     if (!model->ref)
         xorout <<= WORDBITS - model->width;
 
     for (unsigned k = 0; k < 256; k++) {
-        word_t crc = model->table_byte[k];
-        model->table_slice16[k] = crc;
+        word_t crc = model->table[k];
 
         for (unsigned n = 1; n < 16; n++) {
             crc ^= xorout;
             if (model->ref)
-                crc = (crc >> 8) ^ model->table_byte[crc & 0xff];
+                crc = (crc >> 8) ^ model->table[crc & 0xff];
             else
-                crc = (crc << 8) ^ model->table_byte[(crc >> (WORDBITS - 8)) & 0xff];
+                crc = (crc << 8) ^ model->table[(crc >> (WORDBITS - 8)) & 0xff];
             crc ^= xorout;
-            model->table_slice16[(n << 8) | k] = crc;
+            model->table[(n << 8) | k] = crc;
         }
     }
-
-    return 0;
 }
 
-#define SLICE_BYTE_REF(idx) model->table_slice16[((15 - idx) * 256) | buf[idx]]
-#define SLICE_CRC_REF(idx) model->table_slice16[((15 - idx) * 256) | (((crc >> (idx * 8)) ^ buf[idx]) & 0xff)]
-
-#define SLICE_BYTE(idx) model->table_slice16[(idx * 256) | buf[15 - idx]]
-#define SLICE_CRC(idx) model->table_slice16[(idx * 256) | (((crc >> ((idx & 0x7) * 8)) ^ buf[15 - idx]) & 0xff)]
+#define SLICE_BYTE_REF(idx) model->table[((15 - idx) * 256) | buf[idx]]
+#define SLICE_CRC_REF(idx) model->table[((15 - idx) * 256) | (((crc >> (idx * 8)) ^ buf[idx]) & 0xff)]
+#define SLICE_BYTE(idx) model->table[(idx * 256) | buf[15 - idx]]
+#define SLICE_CRC(idx) model->table[(idx * 256) | (((crc >> ((idx & 0x7) * 8)) ^ buf[15 - idx]) & 0xff)]
 
 word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
     unsigned char const *buf = dat;
