@@ -66,7 +66,7 @@ typedef uintmax_t word_t;
    and CRC combination calculations. table_byte[] and table_word[] are filled
    in by the crc_table_wordwise() routine, using the CRC parameters already
    defined in the structure.
- */
+*/
 typedef struct {
     unsigned short width;     /* number of bits in the CRC (the degree of the polynomial) */
     char ref;                 /* if true, reflect input and output */
@@ -107,7 +107,8 @@ typedef struct {
    Processs values for use in crc routines -- note that this reflects the
    polynomial and init values for ready use in the crc routines if necessary,
    changes the meaning of init, and replaces refin and refout with the
-   different meanings reflect and reverse (reverse is very rarely used). */
+   different meanings reflect and reverse (reverse is very rarely used).
+*/
 int init_model(model_t *model, unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout);
 
 /* Deallocate the model's tables */
