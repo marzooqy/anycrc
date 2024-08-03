@@ -1,4 +1,3 @@
-#the test requires the bitarray module
 from bitarray import bitarray
 import anycrc
 import sys
@@ -64,4 +63,4 @@ if len(sys.argv) > 1:
         print()
 
 elif len(sys.argv) == 1:
-    print('Test name not specified')
+    print('Test name is not specified')
