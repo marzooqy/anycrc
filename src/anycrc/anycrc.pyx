@@ -3,8 +3,6 @@
 from libc.stdint cimport uintmax_t
 from .models import *
 
-import bitarray
-
 ctypedef uintmax_t word_t
 
 cdef extern from '../../lib/crcany/model.h':
