@@ -4,6 +4,7 @@ from .models import *
 
 cdef extern from '../../lib/crcany/model.h':
     ctypedef unsigned int word_t
+    cdef const unsigned short WORDBITS
 
     ctypedef struct model_t:
         unsigned short width
@@ -44,8 +45,8 @@ cdef class CRC:
         if xorout is None:
             raise ValueError('xorout value is not provided')
 
-        if width > 64:
-            raise ValueError('width is larger than 64 bits')
+        if width > WORDBITS:
+            raise ValueError(f'width is larger than {WORDBITS} bits')
 
         cdef int error_code = init_model(&self.model, width, poly, init, refin, refout, xorout)
 
