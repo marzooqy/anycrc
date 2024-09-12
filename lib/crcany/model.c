@@ -11,7 +11,7 @@
 #include "model.h"
 
 // See model.h.
-int init_model(model_t *model, unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout) {
+char init_model(model_t *model, unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout) {
     model->width = width;
     model->poly = refin ? reverse(poly, width) : poly;
     model->init = refout ? reverse(init, width) : init;
@@ -20,7 +20,7 @@ int init_model(model_t *model, unsigned short width, word_t poly, word_t init, c
     model->rev = refin ^ refout;
     model->table = NULL;
 
-    model->table = (word_t*) malloc(WORDCHARS * 256 * 16);
+    model->table = (word_t*) malloc(16 * 256 * WORDBITS);
     if (model->table == NULL)
         return 1;
 
@@ -68,13 +68,10 @@ const unsigned char reverse_table[256] = {
     0x1F, 0x9F, 0x5F, 0xDF, 0x3F, 0xBF, 0x7F, 0xFF
 };
 
-#define REVERSE_BYTE(x, i) ((word_t) reverse_table[(x >> (i * 8)) & 0xff] << (WORDBITS - ((i + 1) * 8)))
+#define REVERSE_BYTE(x, i) ((word_t) reverse_table[(x >> (i * 8)) & 0xff] << ((8 - (i + 1)) * 8))
 
 // See model.h
 word_t reverse(word_t x, unsigned n) {
     return (REVERSE_BYTE(x, 0) | REVERSE_BYTE(x, 1) | REVERSE_BYTE(x, 2) | REVERSE_BYTE(x, 3)
-    #if WORDBITS >= 64
-          | REVERSE_BYTE(x, 4) | REVERSE_BYTE(x, 5) | REVERSE_BYTE(x, 6) | REVERSE_BYTE(x, 7)
-    #endif
-    ) >> (WORDBITS - n);
+          | REVERSE_BYTE(x, 4) | REVERSE_BYTE(x, 5) | REVERSE_BYTE(x, 6) | REVERSE_BYTE(x, 7)) >> (WORDBITS - n);
 }

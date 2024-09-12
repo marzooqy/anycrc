@@ -1,12 +1,9 @@
 # Copyright (c) 2024 Hussain Al Marzooq
 
-from libc.stdint cimport uintmax_t
 from .models import *
 
-ctypedef uintmax_t word_t
-
 cdef extern from '../../lib/crcany/model.h':
-    cdef const unsigned short WORDBITS
+    ctypedef unsigned int word_t
 
     ctypedef struct model_t:
         unsigned short width
@@ -23,8 +20,6 @@ cdef extern from '../../lib/crcany/crc.h':
 
     cdef void crc_table_slice16(model_t *model)
     cdef word_t crc_slice16(model_t *model, word_t crc, const void *dat, size_t len)
-
-word_bits = WORDBITS #accessible from python
 
 cdef class CRC:
     cdef model_t model
@@ -49,8 +44,8 @@ cdef class CRC:
         if xorout is None:
             raise ValueError('xorout value is not provided')
 
-        if width > word_bits:
-            raise ValueError(f'width is larger than {word_bits} bits')
+        if width > 64:
+            raise ValueError('width is larger than 64 bits')
 
         cdef int error_code = init_model(&self.model, width, poly, init, refin, refout, xorout)
 

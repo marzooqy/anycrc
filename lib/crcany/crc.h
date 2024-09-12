@@ -34,7 +34,7 @@ word_t crc_bitwise(model_t *model, word_t crc, void const *dat, size_t len);
 /* Fill in the 256-entry table in model with the CRC of the bytes 0..255, for a
    byte-wise calculation of the given CRC model.  The table value is the
    internal CRC register contents after processing the byte.  If not reflected,
-   then the CRC is pre-shifted left to the high end of WORDBITS so that the
+   then the CRC is pre-shifted left to the high end so that the
    incoming byte can be exclusive-ored directly into a shifted CRC. */
 void crc_table_bytewise(model_t *model);
 

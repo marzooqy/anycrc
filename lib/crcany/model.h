@@ -17,33 +17,14 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <limits.h>
-
-/* Verify that the number of bits in a char is eight, using limits.h. */
-#if CHAR_BIT != 8
-#  error The number of bits in a char must be 8 for this code.
-#endif
 
 /* Type to use for CRC calculations.  This should be the largest unsigned
    integer type available, to maximize the cases that can be computed.
-   word_t can be any unsigned integer type larger than or equal to 32 bits.
    All of the algorithms here can process CRCs up to the size of a word_t. */
-typedef uintmax_t word_t;
+typedef uint64_t word_t;
 
-/* Determine the size of uintmax_t at pre-processor time.  (sizeof is not
-   evaluated at pre-processor time.)  If word_t is instead set to an explicit
-   size above, e.g. uint64_t, then #define WORDCHARS appropriately, e.g. as 8.
- */
-#if UINTMAX_MAX == UINT32_MAX
-#  define WORDCHARS 4
-#elif UINTMAX_MAX == UINT64_MAX
-#  define WORDCHARS 8
-#else
-#  error uintmax_t must be 4, or 8 bytes for this code.
-#endif
-
-/* The number of bits in a word_t (assumes CHAR_BIT is 8). */
-#define WORDBITS (WORDCHARS << 3)
+/* The number of bits in a word_t. */
+#define WORDBITS 64
 
 /* CRC description and tables
 
@@ -92,9 +73,7 @@ typedef struct {
    register is reflected on output.  "xorout" is exclusive-ored with the CRC,
    after reflection if any.
 
-   "width" can be as much as twice the number of bits in the word_t type, set
-   here to the largest integer type available to the compiler (uintmax_t).  On
-   most modern systems, this permits up to 128-bit CRCs.
+   "width" can be as much as WORDBITS bits.
 
    "poly", "init", and "xorout" must all be less than 2^n.
    The least significant bit of "poly" must be one.
@@ -109,7 +88,7 @@ typedef struct {
    changes the meaning of init, and replaces refin and refout with the
    different meanings reflect and reverse (reverse is very rarely used).
 */
-int init_model(model_t *model, unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout);
+char init_model(model_t *model, unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout);
 
 /* Deallocate the model's tables */
 void free_model(model_t *model);

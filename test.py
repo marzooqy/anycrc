@@ -9,9 +9,6 @@ if len(sys.argv) > 1:
         test_data2 = b'abcdefghijklmnopqrstuvwxyz'
 
         for name, model in anycrc.models.items():
-            if model.width > anycrc.word_bits:
-                break
-
             print(name)
             print(anycrc.str_model(model))
 
