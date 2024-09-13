@@ -72,6 +72,8 @@ const unsigned char reverse_table[256] = {
 
 // See model.h
 word_t reverse(word_t x, unsigned n) {
-    return (REVERSE_BYTE(x, 0) | REVERSE_BYTE(x, 1) | REVERSE_BYTE(x, 2) | REVERSE_BYTE(x, 3)
-          | REVERSE_BYTE(x, 4) | REVERSE_BYTE(x, 5) | REVERSE_BYTE(x, 6) | REVERSE_BYTE(x, 7)) >> (WORDBITS - n);
+    x = REVERSE_BYTE(x, 0) | REVERSE_BYTE(x, 1) | REVERSE_BYTE(x, 2) | REVERSE_BYTE(x, 3)
+      | REVERSE_BYTE(x, 4) | REVERSE_BYTE(x, 5) | REVERSE_BYTE(x, 6) | REVERSE_BYTE(x, 7);
+
+    return x >> (WORDBITS - n);
 }
