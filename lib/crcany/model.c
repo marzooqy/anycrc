@@ -10,21 +10,25 @@
 #include <stdlib.h>
 #include "model.h"
 
+// See model.h
+model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout) {
+    return (model_t) {width, refin, refout, poly, init, xorout, NULL};
+}
+
 // See model.h.
-char init_model(model_t *model, unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout) {
-    model->width = width;
-    model->poly = refin ? reverse(poly, width) : poly;
-    model->init = refout ? reverse(init, width) : init;
-    model->xorout = xorout;
-    model->ref = refin;
-    model->rev = refin ^ refout;
-    model->table = NULL;
+char init_model(model_t *model) {
+    if (model->ref)
+        model->poly = reverse(model->poly, model->width);
+    if (model->rev)
+        model->init = reverse(model->init, model->width);
+
+    model->rev ^= model->ref;
+    model->init ^= model->xorout;
 
     model->table = (word_t*) malloc(16 * 256 * WORDBITS);
     if (model->table == NULL)
         return 1;
 
-    model->init ^= xorout;
     return 0;
 }
 
@@ -68,7 +72,7 @@ const unsigned char reverse_table[256] = {
     0x1F, 0x9F, 0x5F, 0xDF, 0x3F, 0xBF, 0x7F, 0xFF
 };
 
-#define REVERSE_BYTE(x, i) ((word_t) reverse_table[(x >> (i * 8)) & 0xff] << ((8 - (i + 1)) * 8))
+#define REVERSE_BYTE(x, i) ((word_t) reverse_table[(x >> (i * 8)) & 0xff] << ((WORDCHARS - (i + 1)) * 8))
 
 // See model.h
 word_t reverse(word_t x, unsigned n) {

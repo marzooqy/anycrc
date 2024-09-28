@@ -12,7 +12,8 @@ cdef extern from '../../lib/crcany/model.h':
         word_t poly, init, xorout
         word_t *table
 
-    cdef int init_model(model_t *model, unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout)
+    cdef model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout)
+    cdef char init_model(model_t *model)
     cdef void free_model(model_t *model)
 
 cdef extern from '../../lib/crcany/crc.h':
@@ -48,7 +49,8 @@ cdef class CRC:
         if width > WORDBITS:
             raise ValueError(f'width is larger than {WORDBITS} bits')
 
-        cdef int error_code = init_model(&self.model, width, poly, init, refin, refout, xorout)
+        self.model = get_model(width, poly, init, refin, refout, xorout)
+        cdef char error_code = init_model(&self.model)
 
         if error_code == 1:
             raise MemoryError('Out of memory error')

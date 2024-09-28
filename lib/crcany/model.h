@@ -23,8 +23,11 @@
    All of the algorithms here can process CRCs up to the size of a word_t. */
 typedef uint64_t word_t;
 
+/* The number of bytes in a word_t. */
+#define WORDCHARS 8
+
 /* The number of bits in a word_t. */
-#define WORDBITS 64
+#define WORDBITS (WORDCHARS * 8)
 
 /* CRC description and tables
 
@@ -59,6 +62,8 @@ typedef struct {
 } model_t;
 
 /*
+   Returns a model initialized with the specified parameters
+
    The parameters are "width", "poly", "init", "refin", "refout", "xorout".
    "width", "poly", "init", "xorout" are non-negative integers,
    refin and refout must be "1" or "0".
@@ -81,14 +86,16 @@ typedef struct {
    Example (from the RevEng catalogue at
    http://reveng.sourceforge.net/crc-catalogue/all.htm):
 
-      width=16 poly=0x1021 init=0x0000 refin=true refout=true xorout=0x0000
+   width=16 poly=0x1021 init=0x0000 refin=true refout=true xorout=0x0000
+*/
+model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout);
 
-   Processs values for use in crc routines -- note that this reflects the
+/* Processs values for use in crc routines -- note that this reflects the
    polynomial and init values for ready use in the crc routines if necessary,
    changes the meaning of init, and replaces refin and refout with the
    different meanings reflect and reverse (reverse is very rarely used).
-*/
-char init_model(model_t *model, unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout);
+   Returns 1 if the allocation of the model's table fails. */
+char init_model(model_t *model);
 
 /* Deallocate the model's tables */
 void free_model(model_t *model);
