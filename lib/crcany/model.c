@@ -25,7 +25,7 @@ char init_model(model_t *model) {
     model->rev ^= model->ref;
     model->init ^= model->xorout;
 
-    model->table = (word_t*) malloc(16 * 256 * WORDBITS);
+    model->table = (word_t*) malloc(16 * 256 * WORDCHARS);
     if (model->table == NULL)
         return 1;
 
