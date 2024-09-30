@@ -10,14 +10,6 @@
 #include <stdlib.h>
 #include "crc.h"
 
-// Swap the bytes in a word_t. swap() is used at most twice per crc_slice16() call.
-word_t swap(word_t x) {
-    return ((x & 0xff) << 56) | ((x >> 56) & 0xff)
-         | ((x & 0xff00) << 40) | ((x >> 40) & 0xff00)
-         | ((x & 0xff0000) << 24) | ((x >> 24) & 0xff0000)
-         | ((x & 0xff000000) << 8) | ((x >> 8) & 0xff000000);
-}
-
 word_t crc_bitwise(model_t *model, word_t crc, void const *dat, size_t len) {
     unsigned char const *buf = dat;
     word_t poly = model->poly;
@@ -136,8 +128,10 @@ void crc_table_slice16(model_t *model) {
     }
 }
 
-#define SLICE_BYTE(idx) model->table[((15 - idx) << 8) | buf[idx]]
-#define SLICE_CRC(idx) model->table[((15 - idx) << 8) | ((crc >> (idx * 8)) & 0xff)]
+#define SLICE_BYTE_REF(idx) model->table[((15 - idx) * 256) | buf[idx]]
+#define SLICE_CRC_REF(idx) model->table[((15 - idx) * 256) | (((crc >> (idx * 8)) ^ buf[idx]) & 0xff)]
+#define SLICE_BYTE(idx) model->table[(idx * 256) | buf[15 - idx]]
+#define SLICE_CRC(idx) model->table[(idx * 256) | (((crc >> ((idx & 0x7) * 8)) ^ buf[15 - idx]) & 0xff)]
 
 word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
     unsigned char const *buf = dat;
@@ -148,24 +142,31 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
         if (model->rev)
             crc = reverse(crc, model->width);
 
-        if (!model->ref)
-            crc = swap(crc);
-
         if (model->ref) {
             do {
-                crc ^= *(word_t const*)buf;
-                crc = SLICE_CRC(0) ^ SLICE_CRC(1) ^ SLICE_CRC(2) ^ SLICE_CRC(3)
-                    ^ SLICE_CRC(4) ^ SLICE_CRC(5) ^ SLICE_CRC(6) ^ SLICE_CRC(7)
-                    ^ SLICE_BYTE(8) ^ SLICE_BYTE(9) ^ SLICE_BYTE(10) ^ SLICE_BYTE(11)
-                    ^ SLICE_BYTE(12) ^ SLICE_BYTE(13) ^ SLICE_BYTE(14) ^ SLICE_BYTE(15);
+                crc = SLICE_CRC_REF(0) ^ SLICE_CRC_REF(1) ^ SLICE_CRC_REF(2) ^ SLICE_CRC_REF(3)
+                    ^ SLICE_CRC_REF(4) ^ SLICE_CRC_REF(5) ^ SLICE_CRC_REF(6) ^ SLICE_CRC_REF(7)
+                    ^ SLICE_BYTE_REF(8) ^ SLICE_BYTE_REF(9) ^ SLICE_BYTE_REF(10) ^ SLICE_BYTE_REF(11)
+                    ^ SLICE_BYTE_REF(12) ^ SLICE_BYTE_REF(13) ^ SLICE_BYTE_REF(14) ^ SLICE_BYTE_REF(15);
 
                 buf += 16;
                 len -= 16 * 8;
             } while (len >= 16 * 8);
         }
+        else {
+            unsigned top = WORDBITS - model->width;
+            crc <<= top;
+            do {
+                crc = SLICE_BYTE(0) ^ SLICE_BYTE(1) ^ SLICE_BYTE(2) ^ SLICE_BYTE(3)
+                    ^ SLICE_BYTE(4) ^ SLICE_BYTE(5) ^ SLICE_BYTE(6) ^ SLICE_BYTE(7)
+                    ^ SLICE_CRC(8) ^ SLICE_CRC(9) ^ SLICE_CRC(10) ^ SLICE_CRC(11)
+                    ^ SLICE_CRC(12) ^ SLICE_CRC(13) ^ SLICE_CRC(14) ^ SLICE_CRC(15);
 
-        if (!model->ref)
-            crc = swap(crc);
+                buf += 16;
+                len -= 16 * 8;
+            } while (len >= 16 * 8);
+            crc >>= top;
+        }
 
         // Post-process
         if (model->rev)

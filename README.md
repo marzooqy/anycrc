@@ -75,9 +75,9 @@ The maximum supported CRC width is 64 bits.
 
 | Module | Time Elapsed (s) | Speed (GiB/s) | Relative |
 |---|:-:|:-:|:-:|
-| anycrc | 0.39 | 2.42 | 1.00 |
-| zlib | 0.48 | 1.94 | 1.25 |
-| fastcrc | 1.50 | 0.62 | 3.90 |
-| crcmod-plus | 1.50 | 0.62 | 3.90 |
+| anycrc | 0.39 | 2.36 | 1.00 |
+| zlib | 0.48 | 1.93 | 1.22 |
+| fastcrc | 1.50 | 0.62 | 3.81 |
+| crcmod-plus | 1.52 | 0.61 | 3.85 |
 
 Tested on a 10th generation Intel i7 processor.
