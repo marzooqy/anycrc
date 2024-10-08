@@ -65,6 +65,16 @@ For non-reflected CRCs, the length of the data can be specified in bits by calli
 2498069329
 ```
 
+To combine two CRCs:
+
+```python
+>>> crc32 = anycrc.Model('CRC32-MPEG-2')
+>>> crc32.combine(crc32.calc(b'Hello '), crc32.calc(b'World!'), 6)
+2498069329
+```
+
+There is also a `combine_bits` method where the length argument is expected to be in bits.
+
 For a list of pre-built models, check [models.py](https://github.com/marzooqy/anycrc/blob/main/src/anycrc/models.py). To get a list of the models at any time, use the following command:
 
 `python -m anycrc models`

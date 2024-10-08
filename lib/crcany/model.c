@@ -12,7 +12,7 @@
 
 // See model.h
 model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout) {
-    return (model_t) {width, refin, refout, poly, init, xorout, NULL};
+    return (model_t) {width, -1, -1, refin, refout, poly, init, xorout, NULL, NULL};
 }
 
 // See model.h.
@@ -25,8 +25,12 @@ char init_model(model_t *model) {
     model->rev ^= model->ref;
     model->init ^= model->xorout;
 
-    model->table = (word_t*) malloc(16 * 256 * WORDCHARS);
+    model->table = (word_t*) malloc(16 * 256 * sizeof(word_t));
     if (model->table == NULL)
+        return 1;
+
+    model->table_comb = (word_t*) malloc(67 * sizeof(word_t));
+    if (model->table_comb == NULL)
         return 1;
 
     return 0;
