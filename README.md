@@ -65,7 +65,7 @@ For non-reflected CRCs, the length of the data can be specified in bits by calli
 2498069329
 ```
 
-To combine two CRCs:
+To combine two CRCs, provide the two CRC values along with the length of the second CRC's message in bytes:
 
 ```python
 >>> crc32 = anycrc.Model('CRC32-MPEG-2')
