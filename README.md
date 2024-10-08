@@ -69,7 +69,9 @@ To combine two CRCs:
 
 ```python
 >>> crc32 = anycrc.Model('CRC32-MPEG-2')
->>> crc32.combine(crc32.calc(b'Hello '), crc32.calc(b'World!'), 6)
+>>> value = crc32.calc(b'Hello ')
+>>> value2 = crc32.calc(b'World!')
+>>> crc32.combine(value, value2, 6)
 2498069329
 ```
 

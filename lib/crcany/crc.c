@@ -223,7 +223,7 @@ void crc_table_combine(model_t *model) {
     word_t sq = model->ref ? (word_t)1 << (model->width - 2) : 2;   // x^1
     model->table_comb[0] = sq;
     int n = 1;
-    while ((unsigned)n < 67) {
+    while (n < 67) {
         sq = multmodp(model, sq, sq); // x^2^n
 
         // If this value has already appeared, then done.
