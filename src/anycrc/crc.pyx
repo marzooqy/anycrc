@@ -113,6 +113,9 @@ cdef class CRC:
         return crc_combine(&self.model, self.register, crc, length * 8)
 
     cpdef word_t combine_bits(self, crc, length):
+        if self.model.ref and length % 8 > 0:
+            raise ValueError('Bit lengths are not supported with reflected CRCs')
+            
         return crc_combine(&self.model, self.register, crc, length)
 
     def ucombine(self, crc, length):
