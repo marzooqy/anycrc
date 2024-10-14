@@ -19,7 +19,6 @@ Read the data in chunks:
 
 ```python
 >>> crc32.update(b'Hello ')
-3788805874
 >>> crc32.update(b'World!')
 2498069329
 ```
@@ -65,13 +64,13 @@ For non-reflected CRCs, the length of the data can be specified in bits by calli
 2498069329
 ```
 
-To combine two CRCs, provide the two CRC values along with the length of the second CRC's message in bytes:
+To combine two CRCs, provide the second CRC value along with the length of the CRC's message in bytes:
 
 ```python
 >>> crc32 = anycrc.Model('CRC32-MPEG-2')
->>> value = crc32.calc(b'Hello ')
->>> value2 = crc32.calc(b'World!')
->>> crc32.combine(value, value2, len(b'World!'))
+>>> value = crc32.calc(b'World!')
+>>> crc32.update(b'Hello ')
+>>> crc32.combine(value, len(b'World!'))
 2498069329
 ```
 

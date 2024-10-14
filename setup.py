@@ -10,14 +10,14 @@ else:
 
 setup(
     name = 'anycrc',
-    version = '1.1.0',
+    version = '1.1.1',
     package_dir = {'': 'src'},
     ext_modules = [
         Extension(
-            name='anycrc.anycrc',
+            name='anycrc.crc',
             extra_compile_args=compile_args,
             extra_link_args=link_args,
-            sources=['src/anycrc/anycrc.pyx',
+            sources=['src/anycrc/crc.pyx',
                      'lib/crcany/model.c',
                      'lib/crcany/crc.c']
         )

@@ -51,9 +51,11 @@ if len(sys.argv) > 1:
             #combine
             value = crc.calc(b'12345')
             value2 = crc.calc(b'6789')
-            value3 = crc.combine(value, value2, len(b'6789'))
+            crc.set(value)
+            value3 = crc.combine(value2, len(b'6789'))
             print('combine:       {} {}'.format(anycrc.get_hex(value3, model.width), anycrc.get_hex(check, model.width)))
             assert value3 == check
+            crc.reset()
 
             #combine bits
             if not model.refin:
@@ -61,9 +63,11 @@ if len(sys.argv) > 1:
                 bit_data.frombytes(test_data)
                 value = crc.calc_bits(bit_data[:36])
                 value2 = crc.calc_bits(bit_data[36:])
-                value3 = crc.combine_bits(value, value2, len(bit_data[36:]))
+                crc.set(value)
+                value3 = crc.combine_bits(value2, len(bit_data[36:]))
                 print('combine bits:  {} {}'.format(anycrc.get_hex(value3, model.width), anycrc.get_hex(check, model.width)))
                 assert value3 == check
+                crc.reset()
 
             print()
 
