@@ -54,8 +54,6 @@ Create a CRC with specific parameters:
 
 The length of the data can be specified in bits by calling `calc_bits` or `update_bits` and passing a [bitarray](https://github.com/ilanschnell/bitarray) object:
 
-For a non-reflected CRC:
-
 ```python
 >>> from bitarray import bitarray
 >>> crc32 = anycrc.Model('CRC32-MPEG-2')
