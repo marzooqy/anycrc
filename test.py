@@ -37,16 +37,19 @@ if len(sys.argv) > 1:
             crc.reset()
 
             #with length in bits
-            if not model.refin:
+            if model.refin:
+                bit_data = bitarray(endian='little')
+            else:
                 bit_data = bitarray()
-                bit_data.frombytes(test_data2)
-                crc.update_bits(bit_data[:100])
-                value = crc.update_bits(bit_data[100:])
-                value2 = crc2._calc_b(test_data2)
 
-                print('bits:          {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
-                assert value == value2
-                crc.reset()
+            bit_data.frombytes(test_data2)
+            crc.update_bits(bit_data[:100])
+            value = crc.update_bits(bit_data[100:])
+            value2 = crc2._calc_b(test_data2)
+
+            print('bits:          {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
+            assert value == value2
+            crc.reset()
 
             #combine
             value = crc.calc(b'12345')
@@ -58,16 +61,19 @@ if len(sys.argv) > 1:
             crc.reset()
 
             #combine bits
-            if not model.refin:
+            if model.refin:
+                bit_data = bitarray(endian='little')
+            else:
                 bit_data = bitarray()
-                bit_data.frombytes(test_data)
-                value = crc.calc_bits(bit_data[:36])
-                value2 = crc.calc_bits(bit_data[36:])
-                crc.set(value)
-                value3 = crc.combine_bits(value2, len(bit_data[36:]))
-                print('combine bits:  {} {}'.format(anycrc.get_hex(value3, model.width), anycrc.get_hex(check, model.width)))
-                assert value3 == check
-                crc.reset()
+
+            bit_data.frombytes(test_data)
+            value = crc.calc_bits(bit_data[:36])
+            value2 = crc.calc_bits(bit_data[36:])
+            crc.set(value)
+            value3 = crc.combine_bits(value2, len(bit_data[36:]))
+            print('combine bits:  {} {}'.format(anycrc.get_hex(value3, model.width), anycrc.get_hex(check, model.width)))
+            assert value3 == check
+            crc.reset()
 
             print()
 

@@ -93,11 +93,14 @@ cdef class CRC:
         if not isinstance(data, bitarray.bitarray) and not isinstance(data, bitarray.frozenbitarray):
             raise TypeError('Expected a bitarray object')
 
+        if self.model.ref and data.endian() != 'little':
+            raise ValueError('A little endian bitarray object is expected for reflected CRCs')
+
+        if not self.model.ref and data.endian() != 'big':
+            raise ValueError('A big endian bitarray object is expected for non-reflected CRCs')
+
         cdef const unsigned char[:] view = data
         cdef word_t length = len(data)
-
-        if self.model.ref and length % 8 > 0:
-            raise ValueError('Bit lengths are not supported with reflected CRCs')
 
         return crc_slice16(&self.model, self.register, &view[0], length)
 
@@ -113,9 +116,6 @@ cdef class CRC:
         return crc_combine(&self.model, self.register, crc, length * 8)
 
     cpdef word_t combine_bits(self, crc, length):
-        if self.model.ref and length % 8 > 0:
-            raise ValueError('Bit lengths are not supported with reflected CRCs')
-            
         return crc_combine(&self.model, self.register, crc, length)
 
     def ucombine(self, crc, length):

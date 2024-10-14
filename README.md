@@ -52,7 +52,9 @@ Create a CRC with specific parameters:
 2498069329
 ```
 
-For non-reflected CRCs, the length of the data can be specified in bits by calling `calc_bits` or `update_bits` and passing a [bitarray](https://github.com/ilanschnell/bitarray) object:
+The length of the data can be specified in bits by calling `calc_bits` or `update_bits` and passing a [bitarray](https://github.com/ilanschnell/bitarray) object:
+
+For a non-reflected CRC:
 
 ```python
 >>> from bitarray import bitarray
@@ -63,6 +65,8 @@ For non-reflected CRCs, the length of the data can be specified in bits by calli
 >>> crc32.update_bits(bits[50:])
 2498069329
 ```
+
+To use bit lengths with reflected CRCs, create a little endian bitarray object: `bitarray(endian='little')`
 
 To combine two CRCs, provide the second CRC value along with the length of the CRC's message in bytes:
 

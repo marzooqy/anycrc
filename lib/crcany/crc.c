@@ -28,6 +28,13 @@ word_t crc_bitwise(model_t *model, word_t crc, void const *dat, size_t len) {
                 crc = crc & 1 ? (crc >> 1) ^ poly : crc >> 1;
             len -= 8;
         }
+
+        if (len > 0) {
+            unsigned char off = (unsigned char)-1 >> (8 - len);
+            crc ^= *buf & off;
+            while (len--)
+                crc = crc & 1 ? (crc >> 1) ^ poly : crc >> 1;
+        }
     }
     else {
         word_t mask = (word_t) 1 << (WORDBITS - 1);
