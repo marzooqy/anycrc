@@ -125,6 +125,7 @@ models = {
     'CRC64-GO-ISO': model(width=64, poly=0x000000000000001b, init=0xffffffffffffffff, refin=True, refout=True, xorout=0xffffffffffffffff, check=0xb90956c775a41001),
     'CRC64-MS': model(width=64, poly=0x259c84cba6426349, init=0xffffffffffffffff, refin=True, refout=True, xorout=0x0000000000000000, check=0x75d4b74f024eceea),
     'CRC64-REDIS': model(width=64, poly=0xad93d23594c935a9, init=0x0000000000000000, refin=True, refout=True, xorout=0x0000000000000000, check=0xe9c6d914c4b8d9ca),
+    'CRC64-NVME': model(width=64, poly=0xad93d23594c93659, init=0xffffffffffffffff, refin=True, refout=True, xorout=0xffffffffffffffff check=0xae8b14860a799888),
     'CRC64-WE': model(width=64, poly=0x42f0e1eba9ea3693, init=0xffffffffffffffff, refin=False, refout=False, xorout=0xffffffffffffffff, check=0x62ec59e3f1a4f00a),
     'CRC64-XZ': model(width=64, poly=0x42f0e1eba9ea3693, init=0xffffffffffffffff, refin=True, refout=True, xorout=0xffffffffffffffff, check=0x995dc9bbdf1939fa),
 }
@@ -201,5 +202,5 @@ aliases = {
     'PKZIP': 'CRC32-ISO-HDLC',
     'XFER': 'CRC32-XFER',
     'CRC64': 'CRC64-ECMA-182',
-    'CRC64-GO-ECMA': 'CRC64-XZ'
+    'CRC64-GO-ECMA': 'CRC64-XZ',
 }
