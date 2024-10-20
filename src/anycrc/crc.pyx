@@ -115,10 +115,10 @@ cdef class CRC:
         self.register = self.calc_bits(data)
         return self.register
 
-    cpdef word_t combine(self, crc, length):
+    def word_t combine(self, crc, length):
         return crc_combine(&self.model, self.register, crc, length * 8)
 
-    cpdef word_t combine_bits(self, crc, length):
+    def word_t combine_bits(self, crc, length):
         return crc_combine(&self.model, self.register, crc, length)
 
     def ucombine(self, crc, length):
