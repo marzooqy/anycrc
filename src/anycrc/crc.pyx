@@ -131,9 +131,6 @@ cdef class CRC:
 
     #byte-by-byte (for testing)
     def _calc_b(self, data):
-        if isinstance(data, str):
-            data = (<unicode> data).encode('utf-8')
-
         cdef const unsigned char[:] view = data
         return crc_bytewise(&self.model, self.register, &view[0], len(view) * 8)
 
