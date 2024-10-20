@@ -5,7 +5,6 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "anycrc"
 version = "1.2.1"
-dependencies = ["bitarray"]
 description = "The fastest Python CRC Library"
 readme = "README.md"
 requires-python = ">=3.7"

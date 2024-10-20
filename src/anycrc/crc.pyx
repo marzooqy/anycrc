@@ -2,7 +2,7 @@
 
 from libc.stdint cimport uintmax_t
 from .models import models, aliases
-import bitarray
+import sys
 
 cdef extern from '../../lib/crcany/model.h':
     ctypedef unsigned int word_t
@@ -80,7 +80,7 @@ cdef class CRC:
         self.register = self.model.init
 
     cpdef word_t calc(self, data):
-        if isinstance(data, bitarray.bitarray) or isinstance(data, bitarray.frozenbitarray):
+        if 'bitarray' in sys.modules and (isinstance(data, sys.modules['bitarray'].bitarray) or isinstance(data, sys.modules['bitarray'].frozenbitarray)):
             raise TypeError('Bitarray objects are not allowed, use calc_bits() or update_bits() instead')
 
         if isinstance(data, str):
@@ -90,7 +90,10 @@ cdef class CRC:
         return crc_slice16(&self.model, self.register, &view[0], len(view) * 8)
 
     cpdef word_t calc_bits(self, data):
-        if not isinstance(data, bitarray.bitarray) and not isinstance(data, bitarray.frozenbitarray):
+        if 'bitarray' not in sys.modules:
+            raise ModuleNotFoundError('The bitarray module is required')
+
+        if not isinstance(data, sys.modules['bitarray'].bitarray) and not isinstance(data, sys.modules['bitarray'].frozenbitarray):
             raise TypeError('Expected a bitarray object')
 
         if self.model.ref and data.endian() != 'little':
