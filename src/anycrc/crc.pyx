@@ -14,6 +14,7 @@ cdef extern from '../../lib/crcany/model.h':
         char ref, rev
         word_t poly, init, xorout
         word_t *table
+        word_t *table_comb
 
     cdef model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout)
     cdef char init_model(model_t *model)
