@@ -104,9 +104,7 @@ cdef class CRC:
             raise ValueError('A big endian bitarray object is expected for non-reflected CRCs')
 
         cdef const unsigned char[:] view = data
-        cdef word_t length = len(data)
-
-        return crc_slice16(&self.model, self.register, &view[0], length)
+        return crc_slice16(&self.model, self.register, &view[0], len(data))
 
     def update(self, data):
         self.register = self.calc(data)
