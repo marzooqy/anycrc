@@ -43,7 +43,7 @@ jobs:
             runner: windows-latest
             architecture: "x86"
 
-          - os: "MacOS (Apple Silicon)"
+          - os: "MacOS (Apple M)"
             runner: macos-latest
 
           - os: "MacOS (Intel)"
