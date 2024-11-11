@@ -46,14 +46,14 @@ jobs:
             runner: windows-latest
             architecture: "x86"
 
-          - name: "MacOS Apple Silicon"
-            os: macos-latest
+          - os: "MacOS Apple Silicon"
+            runner: macos-latest
 
-          - name: "MacOS Intel"
-            os: macos-13
+          - os: "MacOS Intel"
+            runner: macos-13
 
-          - name: "Linux"
-            os: ubuntu-latest
+          - os: "Linux"
+            runner: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python
