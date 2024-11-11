@@ -33,26 +33,26 @@ jobs:
             python test.py aliases
 
   os_test:
-    name: Test on ${{ matrix.os }} ${{ matrix.architecture }}
+    name: Test on ${{ matrix.os }}
     runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
         include:
-          - os: "Windows"
+          - os: "Windows (x64)"
             runner: windows-latest
             architecture: "x64"
 
-          - os: "Windows"
+          - os: "Windows (x86)"
             runner: windows-latest
             architecture: "x86"
 
-          - os: "MacOS Apple Silicon"
+          - os: "Mac (Apple M)"
             runner: macos-latest
 
-          - os: "MacOS Intel"
+          - os: "Mac (Intel)"
             runner: macos-13
 
-          - os: "Linux"
+          - os: "Ubuntu"
             runner: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
