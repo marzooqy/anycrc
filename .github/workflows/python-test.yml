@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-permissions:
-  contents: read
-
 jobs:
   py_version_test:
     name: Test on Python ${{ matrix.python-version }}
@@ -46,10 +43,10 @@ jobs:
             runner: windows-latest
             architecture: "x86"
 
-          - os: "Mac (Apple M)"
+          - os: "MacOS (Apple Silicon)"
             runner: macos-latest
 
-          - os: "Mac (Intel)"
+          - os: "MacOS (Intel)"
             runner: macos-13
 
           - os: "Ubuntu"
