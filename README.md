@@ -91,7 +91,7 @@ The maximum supported CRC width is 64 bits.
 | anycrc | 0.04 | 2269.35 | x1.00 |
 | zlib | 0.05 | 1942.59 | x1.17 |
 | fastcrc | 0.15 | 619.67 | x3.66 |
-| crcmod | 0.16 | 611.34 | x3.71 |
+| crcmod-plus | 0.16 | 611.34 | x3.71 |
 | crc-ct | 0.18 | 529.14 | x4.29 |
 | libscrc | 0.67 | 141.74 | x16.01 |
 | crcengine | 13.99 | 6.82 | x332.86 |

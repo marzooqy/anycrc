@@ -91,7 +91,7 @@ benchmark.print()
 print()
 
 #crcmod
-benchmark = Benchmark('crcmod', relative_to=anycrc_duration)
+benchmark = Benchmark('crcmod-plus', relative_to=anycrc_duration)
 t = time.perf_counter()
 
 calc = crcmod.predefined.mkPredefinedCrcFun('crc-32')
