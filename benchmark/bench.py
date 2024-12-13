@@ -82,8 +82,6 @@ t = time.perf_counter()
 for i in range(N):
     fastcrc.crc32.iso_hdlc(data)
 
-time_elapsed = time.perf_counter() - t
-
 benchmark.duration = time.perf_counter() - t
 benchmarks.append(benchmark)
 
@@ -97,8 +95,6 @@ t = time.perf_counter()
 calc = crcmod.predefined.mkPredefinedCrcFun('crc-32')
 for i in range(N):
     calc(data)
-
-time_elapsed = time.perf_counter() - t
 
 benchmark.duration = time.perf_counter() - t
 benchmarks.append(benchmark)
@@ -116,8 +112,6 @@ for i in range(N):
     crc_result = crcct.update(crc_model, data, len(data), crc_result)
     crcct.final(crc_model, crc_result)
 
-time_elapsed = time.perf_counter() - t
-
 benchmark.duration = time.perf_counter() - t
 benchmarks.append(benchmark)
 
@@ -131,8 +125,6 @@ try:
 
     for i in range(N):
         libscrc.crc32(data)
-
-    time_elapsed = time.perf_counter() - t
 
     benchmark.duration = time.perf_counter() - t
     benchmarks.append(benchmark)
@@ -151,8 +143,6 @@ crc_algorithm = crcengine.new('crc32')
 for i in range(N):
     crc_algorithm(data)
 
-time_elapsed = time.perf_counter() - t
-
 benchmark.duration = time.perf_counter() - t
 benchmarks.append(benchmark)
 
@@ -167,8 +157,6 @@ CRC = algorithms.Crc(width=32, poly=0x4c11db7, reflect_in=True, xor_in=0xfffffff
 for i in range(N):
     CRC.table_driven(data)
 
-time_elapsed = time.perf_counter() - t
-
 benchmark.duration = time.perf_counter() - t
 benchmarks.append(benchmark)
 
@@ -182,8 +170,6 @@ t = time.perf_counter()
 calculator = crc.Calculator(crc.Crc32.CRC32, optimized=True)
 for i in range(N):
     calculator.checksum(data)
-
-time_elapsed = time.perf_counter() - t
 
 benchmark.duration = time.perf_counter() - t
 benchmarks.append(benchmark)
