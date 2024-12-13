@@ -25,6 +25,9 @@ class Benchmark:
         self.duration = None
         self.relative_to = relative_to
 
+    def __repr__(self):
+        return f'{self.module}\nTime Elapsed: {self.duration:.2f}s\nSpeed: {self.get_speed():.2f} MiB/s\nRelative: {self.get_relative():.2f}'
+        
     def get_speed(self):
         return len(data) * N / (1024 ** 2) / self.duration
 
@@ -33,12 +36,6 @@ class Benchmark:
             return 1
         else:
             return self.duration / self.relative_to
-
-    def print(self):
-        print(self.module)
-        print(f'Time Elapsed: {self.duration:.2f}s')
-        print(f'Speed: {self.get_speed():.2f} MiB/s')
-        print(f'Relative: {self.get_relative():.2f}')
 
 benchmarks = []
 
@@ -59,7 +56,7 @@ anycrc_duration = time.perf_counter() - t
 benchmark.duration = anycrc_duration
 benchmarks.append(benchmark)
 
-benchmark.print()
+print(benchmark)
 print()
 
 #zlib
@@ -72,7 +69,7 @@ for i in range(N):
 benchmark.duration = time.perf_counter() - t
 benchmarks.append(benchmark)
 
-benchmark.print()
+print(benchmark)
 print()
 
 #fastcrc
@@ -85,7 +82,7 @@ for i in range(N):
 benchmark.duration = time.perf_counter() - t
 benchmarks.append(benchmark)
 
-benchmark.print()
+print(benchmark)
 print()
 
 #crcmod
@@ -99,7 +96,7 @@ for i in range(N):
 benchmark.duration = time.perf_counter() - t
 benchmarks.append(benchmark)
 
-benchmark.print()
+print(benchmark)
 print()
 
 #crc-ct
@@ -115,7 +112,7 @@ for i in range(N):
 benchmark.duration = time.perf_counter() - t
 benchmarks.append(benchmark)
 
-benchmark.print()
+print(benchmark)
 print()
 
 #libscrc
@@ -129,7 +126,7 @@ try:
     benchmark.duration = time.perf_counter() - t
     benchmarks.append(benchmark)
 
-    benchmark.print()
+    print(benchmark)
     print()
 
 except NameError:
@@ -146,7 +143,7 @@ for i in range(N):
 benchmark.duration = time.perf_counter() - t
 benchmarks.append(benchmark)
 
-benchmark.print()
+print(benchmark)
 print()
 
 #pycrc
@@ -160,7 +157,7 @@ for i in range(N):
 benchmark.duration = time.perf_counter() - t
 benchmarks.append(benchmark)
 
-benchmark.print()
+print(benchmark)
 print()
 
 #crc
@@ -174,7 +171,7 @@ for i in range(N):
 benchmark.duration = time.perf_counter() - t
 benchmarks.append(benchmark)
 
-benchmark.print()
+print(benchmark)
 print()
 
 benchmarks.sort(key=lambda banchmark: benchmark.duration)
