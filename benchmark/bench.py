@@ -1,6 +1,5 @@
 import random
 import time
-import zlib
 
 from pycrc import algorithms
 import anycrc
@@ -11,7 +10,7 @@ import crcengine
 import crc
 
 #requires a C compiler
-try:  
+try:
     import libscrc
 except ModuleNotFoundError:
     pass
@@ -26,10 +25,10 @@ class Benchmark:
         self.relative_to = relative_to
 
     def __repr__(self):
-        return f'{self.module}\nTime Elapsed: {self.duration:.2f}s\nSpeed: {self.get_speed():.2f} MiB/s\nRelative: {self.get_relative():.2f}'
-        
+        return f'{self.module}\nTime Elapsed: {self.duration:.2f}s\nSpeed: {self.get_speed():.2f} MB/s\nRelative: {self.get_relative():.2f}'
+
     def get_speed(self):
-        return len(data) * N / (1024 ** 2) / self.duration
+        return len(data) * N / (10 ** 6) / self.duration
 
     def get_relative(self):
         if self.relative_to is None:
@@ -54,19 +53,6 @@ for i in range(N):
 
 anycrc_duration = time.perf_counter() - t
 benchmark.duration = anycrc_duration
-benchmarks.append(benchmark)
-
-print(benchmark)
-print()
-
-#zlib
-benchmark = Benchmark('zlib', relative_to=anycrc_duration)
-t = time.perf_counter()
-
-for i in range(N):
-    zlib.crc32(data)
-
-benchmark.duration = time.perf_counter() - t
 benchmarks.append(benchmark)
 
 print(benchmark)
@@ -179,10 +165,10 @@ benchmarks.sort(key=lambda banchmark: benchmark.duration)
 file_name = 'benchmark_results.txt'
 
 with open(file_name, 'w') as file:
-    file.write("| Module | Time Elapsed (s) | Speed (MiB/s) | Relative |\n")
-    file.write("|---|:-:|:-:|:-:|\n")
+    file.write('| Module | Time (s) | Speed (MB/s) | Relative |\n')
+    file.write('|---|:-:|:-:|:-:|\n')
 
     for benchmark in benchmarks:
-        file.write(f'| {benchmark.module} | {benchmark.duration:.2f} | {benchmark.get_speed():.2f} | x{benchmark.get_relative():.2f} |\n')
-        
-print(f'Results saved to {file_name}')
+        file.write(f'| {benchmark.module} | {benchmark.duration:.2f} | {benchmark.get_speed():.2f} | {benchmark.get_relative():.2f} |\n')
+
+print(f'Results saved to "{file_name}"')
