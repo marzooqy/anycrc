@@ -169,6 +169,6 @@ with open(file_name, 'w') as file:
     file.write('|---|:-:|:-:|:-:|\n')
 
     for benchmark in benchmarks:
-        file.write(f'| {benchmark.module} | {benchmark.duration:.2f} | {benchmark.get_speed():.2f} | {benchmark.get_relative():.2f} |\n')
+        file.write(f'| {benchmark.module} | {benchmark.duration:.2f} | {benchmark.get_speed():.2f} | x{benchmark.get_relative():.2f} |\n')
 
 print(f'Results saved to "{file_name}"')
