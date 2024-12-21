@@ -7,6 +7,7 @@ import crcmod.predefined
 import fastcrc
 import crcct #renamed from crc
 import crcengine
+import crccheck
 import crc
 
 #requires a C compiler
@@ -146,6 +147,21 @@ benchmarks.append(benchmark)
 print(benchmark)
 print()
 
+#crccheck
+benchmark = Benchmark('crccheck', relative_to=anycrc_duration)
+t = time.perf_counter()
+
+for i in range(N):
+    crcinst = crccheck.crc.Crc32()
+    crcinst.process(data)
+    crcinst.final()
+
+benchmark.duration = time.perf_counter() - t
+benchmarks.append(benchmark)
+
+print(benchmark)
+print()
+
 #crc
 benchmark = Benchmark('crc', relative_to=anycrc_duration)
 t = time.perf_counter()
@@ -160,7 +176,7 @@ benchmarks.append(benchmark)
 print(benchmark)
 print()
 
-benchmarks.sort(key=lambda banchmark: benchmark.duration)
+benchmarks.sort(key=lambda benchmark: benchmark.duration)
 
 file_name = 'benchmark_results.txt'
 

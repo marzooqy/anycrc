@@ -88,13 +88,14 @@ The maximum supported CRC width is 64 bits.
 
 | Module | Time (s) | Speed (MB/s) | Relative |
 |---|:-:|:-:|:-:|
-| anycrc | 0.04 | 2376.93 | x1.00 |
-| fastcrc | 0.15 | 648.72 | x3.66 |
-| crcmod-plus | 0.16 | 637.94 | x3.73 |
-| crc-ct | 0.18 | 558.98 | x4.25 |
-| libscrc | 0.67 | 149.26 | x15.92 |
-| crcengine | 14.17 | 7.06 | x336.83 |
-| pycrc | 29.88 | 3.35 | x710.12 |
-| crc | 296.91 | 0.34 | x7057.44 |
+| anycrc | 0.04 | 2344.86 | x1.00 |
+| fastcrc | 0.15 | 649.89 | x3.61 |
+| crcmod-plus | 0.16 | 630.45 | x3.72 |
+| crc-ct | 0.18 | 555.68 | x4.22 |
+| libscrc | 0.67 | 148.48 | x15.79 |
+| crcengine | 14.82 | 6.75 | x347.54 |
+| pycrc | 29.34 | 3.41 | x688.07 |
+| crccheck | 99.75 | 1.00 | x2339.08 |
+| crc | 296.99 | 0.34 | x6964.11 |
 
 Tested on a 10th generation Intel i7 processor.
