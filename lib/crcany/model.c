@@ -39,6 +39,7 @@ char init_model(model_t *model) {
 // See model.h.
 void free_model(model_t *model) {
     free(model->table);
+	free(model->table_comb);
 }
 
 const unsigned char reverse_table[256] = {

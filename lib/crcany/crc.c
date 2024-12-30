@@ -250,9 +250,9 @@ void crc_table_combine(model_t *model) {
     model->back = -1;
 }
 
-// Return x^n modulo p(x), where p(x) is the CRC polynomial. model->cycle
+// Return x^2^n modulo p(x), where p(x) is the CRC polynomial. model->cycle
 // and model->table_comb[] must first be initialized by crc_table_combine().
-static word_t xnmodp(model_t *model, uintmax_t n) {
+static word_t x2nmodp(model_t *model, uintmax_t n) {
     word_t xp = model->ref ? (word_t)1 << (model->width - 1) : 1;   // x^0
     int k = 0;
     for (;;) {
@@ -275,7 +275,7 @@ word_t crc_combine(model_t *model, word_t crc1, word_t crc2, uintmax_t len2) {
         crc1 = reverse(crc1, model->width);
         crc2 = reverse(crc2, model->width);
     }
-    word_t crc = multmodp(model, xnmodp(model, len2), crc1) ^ crc2;
+    word_t crc = multmodp(model, x2nmodp(model, len2), crc1) ^ crc2;
     if (model->rev)
         crc = reverse(crc, model->width);
     return crc;
