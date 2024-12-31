@@ -43,9 +43,13 @@ for tag in tags:
         aliases[name] = current_crc
 
 with open('models.py', 'w') as file:
-    file.write("# Taken from Greg Cook's CRC catalogue: https://reveng.sourceforge.io/crc-catalogue/all.htm\n\n")
-    file.write("from collections import namedtuple\n\n")
-    file.write("model = namedtuple('model', ['width', 'poly', 'init', 'refin', 'refout', 'xorout', 'check'], defaults=(0,))\n\n")
+    file.write("""# Taken from Greg Cook's CRC catalogue: https://reveng.sourceforge.io/crc-catalogue/all.htm
+
+from collections import namedtuple
+
+model = namedtuple('model', ['width', 'poly', 'init', 'refin', 'refout', 'xorout', 'check'], defaults=(0,))
+
+""")
 
     file.write('models = {\n')
 
