@@ -35,7 +35,6 @@ The length of the data can be specified in bits by calling `calc_bits` and passi
 
 ```python
 >>> from bitarray import bitarray
->>> crc32 = anycrc.Model('CRC32-MPEG-2')
 >>> bits = bitarray()
 >>> bits.frombytes(b'Hello World!')
 >>> value = crc32.calc_bits(bits[:50])
@@ -48,7 +47,6 @@ To use bit lengths with reflected CRCs, create a little endian bitarray object: 
 To combine two CRCs, provide the CRC values along with the length of the second CRC's message in bytes:
 
 ```python
->>> crc32 = anycrc.Model('CRC32-MPEG-2')
 >>> value = crc32.calc(b'Hello ')
 >>> value2 = crc32.calc(b'World!')
 >>> crc32.combine(value, value2, len(b'World!'))
