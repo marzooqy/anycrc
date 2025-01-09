@@ -15,35 +15,6 @@ Use an existing model:
 2498069329
 ```
 
-Read the data in chunks:
-
-```python
->>> crc32.update(b'Hello ')
->>> crc32.update(b'World!')
-2498069329
-```
-
-The `update` method changes the internally stored CRC value, while `calc` doesn't. You can use `get` to retrieve the CRC value stored within the object:
-
-```python
->>> crc32.get()
-2498069329
-```
-
-To specify the starting CRC value:
-
-```python
->>> crc32.set(3788805874)
->>> crc32.calc('World!')
-2498069329
-```
-
-To go back to the initial value, use:
-
-```python
->>> crc32.reset()
-```
-
 Create a CRC with specific parameters:
 
 ```python
@@ -52,27 +23,35 @@ Create a CRC with specific parameters:
 2498069329
 ```
 
-The length of the data can be specified in bits by calling `calc_bits` or `update_bits` and passing a [bitarray](https://github.com/ilanschnell/bitarray) object:
+Read the data in chunks:
+
+```python
+>>> value = crc32.calc(b'Hello ')
+>>> crc32.calc(b'World!', value)
+2498069329
+```
+
+The length of the data can be specified in bits by calling `calc_bits` and passing a [bitarray](https://github.com/ilanschnell/bitarray) object:
 
 ```python
 >>> from bitarray import bitarray
 >>> crc32 = anycrc.Model('CRC32-MPEG-2')
 >>> bits = bitarray()
 >>> bits.frombytes(b'Hello World!')
->>> crc32.update_bits(bits[:50])
->>> crc32.update_bits(bits[50:])
+>>> value = crc32.calc_bits(bits[:50])
+>>> crc32.calc_bits(bits[50:], value)
 2498069329
 ```
 
 To use bit lengths with reflected CRCs, create a little endian bitarray object: `bitarray(endian='little')`
 
-To combine two CRCs, provide the second CRC value along with the length of the CRC's message in bytes:
+To combine two CRCs, provide the CRC values along with the length of the second CRC's message in bytes:
 
 ```python
 >>> crc32 = anycrc.Model('CRC32-MPEG-2')
->>> value = crc32.calc(b'World!')
->>> crc32.update(b'Hello ')
->>> crc32.combine(value, len(b'World!'))
+>>> value = crc32.calc(b'Hello ')
+>>> value2 = crc32.calc(b'World!')
+>>> crc32.combine(value, value2, len(b'World!'))
 2498069329
 ```
 

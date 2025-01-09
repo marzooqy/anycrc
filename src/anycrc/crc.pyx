@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Hussain Al Marzooq
+# Copyright (c) 2024-2025 Hussain Al Marzooq
 
 from libc.stdint cimport uintmax_t
 from .models import models, aliases
@@ -30,32 +30,12 @@ cdef extern from '../../lib/crcany/crc.h':
     cdef void crc_table_combine(model_t *model)
     word_t crc_combine(model_t *model, word_t crc1, word_t crc2, uintmax_t len2)
 
-cdef class CRC:
+cache = {}
+
+cdef class _Crc:
     cdef model_t model
-    cdef word_t register
 
-    def __cinit__(self, width=None, poly=None, init=None, refin=None, refout=None, xorout=None, check=None):
-        if width is None:
-            raise ValueError('width value is not provided')
-
-        if poly is None:
-            raise ValueError('poly value is not provided')
-
-        if init is None:
-            raise ValueError('init value is not provided')
-
-        if refin is None:
-            raise ValueError('refin value is not provided')
-
-        if refout is None:
-            raise ValueError('refout value is not provided')
-
-        if xorout is None:
-            raise ValueError('xorout value is not provided')
-
-        if width > WORDBITS:
-            raise ValueError(f'width is larger than {WORDBITS} bits')
-
+    def __cinit__(self, width, poly, init, refin, refout, xorout, check=None):
         self.model = get_model(width, poly, init, refin, refout, xorout)
         cdef char error_code = init_model(&self.model)
 
@@ -66,31 +46,23 @@ cdef class CRC:
         crc_table_slice16(&self.model)
         crc_table_combine(&self.model)
 
-        self.register = self.model.init
-
     def __dealloc__(self):
         free_model(&self.model);
 
-    def get(self):
-        return self.register
-
-    def set(self, crc):
-        self.register = crc
-
-    def reset(self):
-        self.register = self.model.init
-
-    cpdef word_t calc(self, data):
+    def calc(self, data, init=None):
         if 'bitarray' in sys.modules and (isinstance(data, sys.modules['bitarray'].bitarray) or isinstance(data, sys.modules['bitarray'].frozenbitarray)):
             raise TypeError('Bitarray objects are not allowed, use calc_bits() or update_bits() instead')
 
         if isinstance(data, str):
             data = (<unicode> data).encode('utf-8')
 
-        cdef const unsigned char[:] view = data
-        return crc_slice16(&self.model, self.register, &view[0], len(view) * 8)
+        if init is None:
+            init = self.model.init
 
-    cpdef word_t calc_bits(self, data):
+        cdef const unsigned char[:] view = data
+        return crc_slice16(&self.model, init, &view[0], len(view) * 8)
+
+    def calc_bits(self, data, init=None):
         if 'bitarray' not in sys.modules:
             raise ModuleNotFoundError('The bitarray module is required')
 
@@ -103,35 +75,40 @@ cdef class CRC:
         if not self.model.ref and data.endian() != 'big':
             raise ValueError('A big endian bitarray object is expected for non-reflected CRCs')
 
+        if init is None:
+            init = self.model.init
+
         cdef const unsigned char[:] view = data
-        return crc_slice16(&self.model, self.register, &view[0], len(data))
+        return crc_slice16(&self.model, init, &view[0], len(data))
 
-    def update(self, data):
-        self.register = self.calc(data)
-        return self.register
+    def combine(self, crc1, crc2, length):
+        return crc_combine(&self.model, crc1, crc2, length * 8)
 
-    def update_bits(self, data):
-        self.register = self.calc_bits(data)
-        return self.register
-
-    def combine(self, crc, length):
-        return crc_combine(&self.model, self.register, crc, length * 8)
-
-    def combine_bits(self, crc, length):
-        return crc_combine(&self.model, self.register, crc, length)
-
-    def ucombine(self, crc, length):
-        self.register = crc_combine(&self.model, self.register, crc, length * 8)
-        return self.register
-
-    def ucombine_bits(self, crc, length):
-        self.register = crc_combine(&self.model, self.register, crc, length)
-        return self.register
+    def combine_bits(self, crc1, crc2, length):
+        return crc_combine(&self.model, crc1, crc2, length)
 
     #byte-by-byte (for testing)
     def _calc_b(self, data):
         cdef const unsigned char[:] view = data
-        return crc_bytewise(&self.model, self.register, &view[0], len(view) * 8)
+        return crc_bytewise(&self.model, self.model.init, &view[0], len(view) * 8)
+
+def CRC(width=None, poly=None, init=None, refin=None, refout=None, xorout=None, check=None):
+    names = ('width', 'poly', 'init', 'refin', 'refout', 'xorout')
+    values = (width, poly, init, refin, refout, xorout)
+
+    for name, value in zip(names, values):
+        if value is None:
+            raise ValueError(f'{name} value is not provided')
+
+    if width > WORDBITS:
+        raise ValueError(f'width is larger than {WORDBITS} bits')
+
+    if values in cache:
+        return cache[values]
+    else:
+        crc = _Crc(*values)
+        cache[values] = crc
+        return crc
 
 def Model(name):
     if name in models:

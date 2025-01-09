@@ -29,12 +29,12 @@ if len(sys.argv) > 1:
             assert value == value2
 
             #process the data one byte at a time
+            value = None
             for c in test_data:
-                value = crc.update(c.to_bytes(1, 'little'))
+                value = crc.calc(c.to_bytes(1, 'little'), value)
 
             print('update:        {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(check, model.width)))
             assert value == check
-            crc.reset()
 
             #with length in bits
             if model.refin:
@@ -43,22 +43,19 @@ if len(sys.argv) > 1:
                 bit_data = bitarray()
 
             bit_data.frombytes(test_data2)
-            crc.update_bits(bit_data[:100])
-            value = crc.update_bits(bit_data[100:])
+            value = crc.calc_bits(bit_data[:100])
+            value = crc.calc_bits(bit_data[100:], value)
             value2 = crc2._calc_b(test_data2)
 
             print('bits:          {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
             assert value == value2
-            crc.reset()
 
             #combine
             value = crc.calc(b'12345')
             value2 = crc.calc(b'6789')
-            crc.set(value)
-            value3 = crc.combine(value2, len(b'6789'))
+            value3 = crc.combine(value, value2, len(b'6789'))
             print('combine:       {} {}'.format(anycrc.get_hex(value3, model.width), anycrc.get_hex(check, model.width)))
             assert value3 == check
-            crc.reset()
 
             #combine bits
             if model.refin:
@@ -69,11 +66,9 @@ if len(sys.argv) > 1:
             bit_data.frombytes(test_data)
             value = crc.calc_bits(bit_data[:36])
             value2 = crc.calc_bits(bit_data[36:])
-            crc.set(value)
-            value3 = crc.combine_bits(value2, len(bit_data[36:]))
+            value3 = crc.combine_bits(value, value2, len(bit_data[36:]))
             print('combine bits:  {} {}'.format(anycrc.get_hex(value3, model.width), anycrc.get_hex(check, model.width)))
             assert value3 == check
-            crc.reset()
 
             print()
 

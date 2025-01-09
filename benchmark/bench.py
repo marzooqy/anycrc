@@ -1,4 +1,3 @@
-import random
 import time
 
 from pycrc import algorithms
@@ -24,12 +23,23 @@ class Benchmark:
         self.module = module
         self.duration = None
         self.relative_to = relative_to
+        self.start = time.perf_counter()
+        self.ran_once = False
 
     def __repr__(self):
-        return f'{self.module}\nTime Elapsed: {self.duration:.2f}s\nSpeed: {self.get_speed():.2f} MB/s\nRelative: {self.get_relative():.2f}'
+        if self.ran_once:
+            return f'{self.module}\nTime Elapsed: {self.duration:.2f}s\nSpeed: {self.get_speed():.2f} MB/s\nRelative: {self.get_relative():.2f}'
+        else:
+            raise Exception("Benchmark was not completed")
+
+    def stop(self):
+        t = time.perf_counter()
+        self.duration = t - self.start
+        self.ran_once = True
+        self.start = t
 
     def get_speed(self):
-        return len(data) * N / (10 ** 6) / self.duration
+        return LENGTH * N / self.duration / (10 ** 6)
 
     def get_relative(self):
         if self.relative_to is None:
@@ -39,34 +49,32 @@ class Benchmark:
 
 benchmarks = []
 
-data = bytes(random.randint(0, 255) for i in range(LENGTH))
+data = bytes(i & 0xff for i in range(LENGTH))
 
 print()
 
 #anycrc
 benchmark = Benchmark('anycrc')
-t = time.perf_counter()
 
 model = anycrc.Model('CRC32')
-
 for i in range(N):
     model.calc(data)
 
-anycrc_duration = time.perf_counter() - t
-benchmark.duration = anycrc_duration
+benchmark.stop()
 benchmarks.append(benchmark)
+
+anycrc_duration = benchmark.duration
 
 print(benchmark)
 print()
 
 #fastcrc
 benchmark = Benchmark('fastcrc', relative_to=anycrc_duration)
-t = time.perf_counter()
 
 for i in range(N):
     fastcrc.crc32.iso_hdlc(data)
 
-benchmark.duration = time.perf_counter() - t
+benchmark.stop()
 benchmarks.append(benchmark)
 
 print(benchmark)
@@ -74,13 +82,12 @@ print()
 
 #crcmod
 benchmark = Benchmark('crcmod-plus', relative_to=anycrc_duration)
-t = time.perf_counter()
 
 calc = crcmod.predefined.mkPredefinedCrcFun('crc-32')
 for i in range(N):
     calc(data)
 
-benchmark.duration = time.perf_counter() - t
+benchmark.stop()
 benchmarks.append(benchmark)
 
 print(benchmark)
@@ -88,7 +95,6 @@ print()
 
 #crc-ct
 benchmark = Benchmark('crc-ct', relative_to=anycrc_duration)
-t = time.perf_counter()
 
 crc_model = crcct.predefined_model_by_name(b'CRC-32')
 for i in range(N):
@@ -96,7 +102,7 @@ for i in range(N):
     crc_result = crcct.update(crc_model, data, len(data), crc_result)
     crcct.final(crc_model, crc_result)
 
-benchmark.duration = time.perf_counter() - t
+benchmark.stop()
 benchmarks.append(benchmark)
 
 print(benchmark)
@@ -105,12 +111,11 @@ print()
 #libscrc
 try:
     benchmark = Benchmark('libscrc', relative_to=anycrc_duration)
-    t = time.perf_counter()
 
     for i in range(N):
         libscrc.crc32(data)
 
-    benchmark.duration = time.perf_counter() - t
+    benchmark.stop()
     benchmarks.append(benchmark)
 
     print(benchmark)
@@ -121,13 +126,12 @@ except NameError:
 
 #crcengine
 benchmark = Benchmark('crcengine', relative_to=anycrc_duration)
-t = time.perf_counter()
 
 crc_algorithm = crcengine.new('crc32')
 for i in range(N):
     crc_algorithm(data)
 
-benchmark.duration = time.perf_counter() - t
+benchmark.stop()
 benchmarks.append(benchmark)
 
 print(benchmark)
@@ -135,13 +139,12 @@ print()
 
 #pycrc
 benchmark = Benchmark('pycrc', relative_to=anycrc_duration)
-t = time.perf_counter()
 
 CRC = algorithms.Crc(width=32, poly=0x4c11db7, reflect_in=True, xor_in=0xffffffff, reflect_out=True, xor_out=0xffffffff)
 for i in range(N):
     CRC.table_driven(data)
 
-benchmark.duration = time.perf_counter() - t
+benchmark.stop()
 benchmarks.append(benchmark)
 
 print(benchmark)
@@ -149,14 +152,13 @@ print()
 
 #crccheck
 benchmark = Benchmark('crccheck', relative_to=anycrc_duration)
-t = time.perf_counter()
 
 for i in range(N):
     crcinst = crccheck.crc.Crc32()
     crcinst.process(data)
     crcinst.final()
 
-benchmark.duration = time.perf_counter() - t
+benchmark.stop()
 benchmarks.append(benchmark)
 
 print(benchmark)
@@ -164,13 +166,12 @@ print()
 
 #crc
 benchmark = Benchmark('crc', relative_to=anycrc_duration)
-t = time.perf_counter()
 
 calculator = crc.Calculator(crc.Crc32.CRC32, optimized=True)
 for i in range(N):
     calculator.checksum(data)
 
-benchmark.duration = time.perf_counter() - t
+benchmark.stop()
 benchmarks.append(benchmark)
 
 print(benchmark)
