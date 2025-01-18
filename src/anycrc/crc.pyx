@@ -4,6 +4,12 @@ from libc.stdint cimport uintmax_t
 from .models import models, aliases
 import sys
 
+try:
+    from bitarray import bitarray, frozenbitarray
+    ba_imported = True
+except ModuleNotFoundError:
+    ba_imported = False
+
 cdef extern from '../../lib/crcany/model.h':
     ctypedef unsigned int word_t
     cdef const unsigned short WORDBITS
@@ -50,8 +56,8 @@ cdef class _Crc:
         free_model(&self.model);
 
     def calc(self, data, init=None):
-        if 'bitarray' in sys.modules and (isinstance(data, sys.modules['bitarray'].bitarray) or isinstance(data, sys.modules['bitarray'].frozenbitarray)):
-            raise TypeError('Bitarray objects are not allowed, use calc_bits() or update_bits() instead')
+        if ba_imported and (isinstance(data, bitarray) or isinstance(data, frozenbitarray)):
+            raise TypeError('Bitarray objects are not allowed, use calc_bits() instead')
 
         if isinstance(data, str):
             data = (<unicode> data).encode('utf-8')
@@ -59,14 +65,17 @@ cdef class _Crc:
         if init is None:
             init = self.model.init
 
+        if len(data) == 0:
+            return init
+
         cdef const unsigned char[:] view = data
         return crc_slice16(&self.model, init, &view[0], len(view) * 8)
 
     def calc_bits(self, data, init=None):
-        if 'bitarray' not in sys.modules:
+        if not ba_imported:
             raise ModuleNotFoundError('The bitarray module is required')
 
-        if not isinstance(data, sys.modules['bitarray'].bitarray) and not isinstance(data, sys.modules['bitarray'].frozenbitarray):
+        if not isinstance(data, bitarray) and not isinstance(data, frozenbitarray):
             raise TypeError('Expected a bitarray object')
 
         if self.model.ref and data.endian() != 'little':
@@ -77,6 +86,9 @@ cdef class _Crc:
 
         if init is None:
             init = self.model.init
+
+        if len(data) == 0:
+            return init
 
         cdef const unsigned char[:] view = data
         return crc_slice16(&self.model, init, &view[0], len(data))
