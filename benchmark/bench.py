@@ -23,8 +23,9 @@ N = 10000
 LENGTH = 10000
 
 class Benchmark:
-    def __init__(self, module, relative_to=None):
+    def __init__(self, module, note=None, relative_to=None):
         self.module = module
+        self.note = note
         self.duration = None
         self.relative_to = relative_to
         self.start = time.perf_counter()
@@ -71,7 +72,7 @@ print(anycrc_benchmark)
 print()
 
 #pycrc32
-benchmark = Benchmark('pycrc32 (CRC32 Only)', relative_to=anycrc_benchmark)
+benchmark = Benchmark('pycrc32', 'CRC32 Only', relative_to=anycrc_benchmark)
 
 for i in range(N):
     pycrc32.crc32(data)
@@ -83,7 +84,7 @@ print(benchmark)
 print()
 
 #crc32c
-benchmark = Benchmark('crc32c (CRC32C Only)', relative_to=anycrc_benchmark)
+benchmark = Benchmark('crc32c', 'CRC32C Only', relative_to=anycrc_benchmark)
 
 for i in range(N):
     crc32c.crc32c(data)
@@ -95,7 +96,7 @@ print(benchmark)
 print()
 
 #google-crc32c
-benchmark = Benchmark('google-crc32c (CRC32C Only)', relative_to=anycrc_benchmark)
+benchmark = Benchmark('google-crc32c', 'CRC32C Only', relative_to=anycrc_benchmark)
 
 for i in range(N):
     google_crc32c.Checksum(data)
@@ -107,7 +108,7 @@ print(benchmark)
 print()
 
 #zlib
-benchmark = Benchmark('zlib (CRC32 Only)', relative_to=anycrc_benchmark)
+benchmark = Benchmark('zlib', 'CRC32 Only', relative_to=anycrc_benchmark)
 
 for i in range(N):
     zlib.crc32(data)
@@ -232,10 +233,13 @@ benchmarks.sort(key=lambda benchmark: benchmark.duration)
 file_name = 'benchmark_results.txt'
 
 with open(file_name, 'w') as file:
-    file.write('| Module | Speed (MB/s) | Relative |\n')
-    file.write('|---|:-:|:-:|\n')
+    file.write('| Module | Speed (MB/s) | Relative | Notes |\n')
+    file.write('|---|:-:|:-:|:-:|\n')
 
     for benchmark in benchmarks:
-        file.write(f'| {benchmark.module} | {benchmark.get_speed():.2f} | x{benchmark.get_relative():.2f} |\n')
+        if benchmark.note is None:
+            file.write(f'| {benchmark.module} | {benchmark.get_speed():.2f} | x{benchmark.get_relative():.2f} ||\n')
+        else:
+            file.write(f'| {benchmark.module} | {benchmark.get_speed():.2f} | x{benchmark.get_relative():.2f} | {benchmark.note} |\n')
 
 print(f'Results saved to "{file_name}"')
