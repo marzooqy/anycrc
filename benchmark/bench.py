@@ -59,7 +59,7 @@ data = bytes(i & 0xff for i in range(LENGTH))
 print()
 
 #anycrc
-anycrc_benchmark = Benchmark('**anycrc**')
+anycrc_benchmark = Benchmark('anycrc')
 
 model = anycrc.Model('CRC32')
 for i in range(N):
