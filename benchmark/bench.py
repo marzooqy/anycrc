@@ -1,10 +1,14 @@
 import time
+import zlib
 
 from pycrc import algorithms
+import pycrc32
+import crc32c
+import google_crc32c
 import anycrc
 import crcmod.predefined
 import fastcrc
-import crcct #renamed from crc
+import crc_ct #renamed from crc
 import crcengine
 import crccheck
 import crc
@@ -28,7 +32,7 @@ class Benchmark:
 
     def __repr__(self):
         if self.ran_once:
-            return f'{self.module}\nTime Elapsed: {self.duration:.2f}s\nSpeed: {self.get_speed():.2f} MB/s\nRelative: {self.get_relative():.2f}'
+            return f'{self.module}\nSpeed: {self.get_speed():.2f} MB/s\nRelative: {self.get_relative():.2f}'
         else:
             raise Exception("Benchmark was not completed")
 
@@ -45,7 +49,7 @@ class Benchmark:
         if self.relative_to is None:
             return 1
         else:
-            return self.duration / self.relative_to
+            return self.duration / self.relative_to.duration
 
 benchmarks = []
 
@@ -54,22 +58,68 @@ data = bytes(i & 0xff for i in range(LENGTH))
 print()
 
 #anycrc
-benchmark = Benchmark('anycrc')
+anycrc_benchmark = Benchmark('**anycrc**')
 
 model = anycrc.Model('CRC32')
 for i in range(N):
     model.calc(data)
 
+anycrc_benchmark.stop()
+benchmarks.append(anycrc_benchmark)
+
+print(anycrc_benchmark)
+print()
+
+#pycrc32
+benchmark = Benchmark('pycrc32 (CRC32 Only)', relative_to=anycrc_benchmark)
+
+for i in range(N):
+    pycrc32.crc32(data)
+
 benchmark.stop()
 benchmarks.append(benchmark)
 
-anycrc_duration = benchmark.duration
+print(benchmark)
+print()
+
+#crc32c
+benchmark = Benchmark('crc32c (CRC32C Only)', relative_to=anycrc_benchmark)
+
+for i in range(N):
+    crc32c.crc32c(data)
+
+benchmark.stop()
+benchmarks.append(benchmark)
+
+print(benchmark)
+print()
+
+#google-crc32c
+benchmark = Benchmark('google-crc32c (CRC32C Only)', relative_to=anycrc_benchmark)
+
+for i in range(N):
+    google_crc32c.Checksum(data)
+
+benchmark.stop()
+benchmarks.append(benchmark)
+
+print(benchmark)
+print()
+
+#zlib
+benchmark = Benchmark('zlib (CRC32 Only)', relative_to=anycrc_benchmark)
+
+for i in range(N):
+    zlib.crc32(data)
+
+benchmark.stop()
+benchmarks.append(benchmark)
 
 print(benchmark)
 print()
 
 #fastcrc
-benchmark = Benchmark('fastcrc', relative_to=anycrc_duration)
+benchmark = Benchmark('fastcrc', relative_to=anycrc_benchmark)
 
 for i in range(N):
     fastcrc.crc32.iso_hdlc(data)
@@ -81,7 +131,7 @@ print(benchmark)
 print()
 
 #crcmod
-benchmark = Benchmark('crcmod-plus', relative_to=anycrc_duration)
+benchmark = Benchmark('crcmod-plus', relative_to=anycrc_benchmark)
 
 calc = crcmod.predefined.mkPredefinedCrcFun('crc-32')
 for i in range(N):
@@ -94,13 +144,13 @@ print(benchmark)
 print()
 
 #crc-ct
-benchmark = Benchmark('crc-ct', relative_to=anycrc_duration)
+benchmark = Benchmark('crc-ct', relative_to=anycrc_benchmark)
 
-crc_model = crcct.predefined_model_by_name(b'CRC-32')
+crc_model = crc_ct.predefined_model_by_name(b'CRC-32')
 for i in range(N):
-    crc_result = crcct.init(crc_model)
-    crc_result = crcct.update(crc_model, data, len(data), crc_result)
-    crcct.final(crc_model, crc_result)
+    crc_result = crc_ct.init(crc_model)
+    crc_result = crc_ct.update(crc_model, data, len(data), crc_result)
+    crc_ct.final(crc_model, crc_result)
 
 benchmark.stop()
 benchmarks.append(benchmark)
@@ -110,7 +160,7 @@ print()
 
 #libscrc
 try:
-    benchmark = Benchmark('libscrc', relative_to=anycrc_duration)
+    benchmark = Benchmark('libscrc', relative_to=anycrc_benchmark)
 
     for i in range(N):
         libscrc.crc32(data)
@@ -125,7 +175,7 @@ except NameError:
     pass
 
 #crcengine
-benchmark = Benchmark('crcengine', relative_to=anycrc_duration)
+benchmark = Benchmark('crcengine', relative_to=anycrc_benchmark)
 
 crc_algorithm = crcengine.new('crc32')
 for i in range(N):
@@ -138,7 +188,7 @@ print(benchmark)
 print()
 
 #pycrc
-benchmark = Benchmark('pycrc', relative_to=anycrc_duration)
+benchmark = Benchmark('pycrc', relative_to=anycrc_benchmark)
 
 CRC = algorithms.Crc(width=32, poly=0x4c11db7, reflect_in=True, xor_in=0xffffffff, reflect_out=True, xor_out=0xffffffff)
 for i in range(N):
@@ -151,7 +201,7 @@ print(benchmark)
 print()
 
 #crccheck
-benchmark = Benchmark('crccheck', relative_to=anycrc_duration)
+benchmark = Benchmark('crccheck', relative_to=anycrc_benchmark)
 
 for i in range(N):
     crcinst = crccheck.crc.Crc32()
@@ -165,7 +215,7 @@ print(benchmark)
 print()
 
 #crc
-benchmark = Benchmark('crc', relative_to=anycrc_duration)
+benchmark = Benchmark('crc', relative_to=anycrc_benchmark)
 
 calculator = crc.Calculator(crc.Crc32.CRC32, optimized=True)
 for i in range(N):
@@ -182,10 +232,10 @@ benchmarks.sort(key=lambda benchmark: benchmark.duration)
 file_name = 'benchmark_results.txt'
 
 with open(file_name, 'w') as file:
-    file.write('| Module | Time (s) | Speed (MB/s) | Relative |\n')
-    file.write('|---|:-:|:-:|:-:|\n')
+    file.write('| Module | Speed (MB/s) | Relative |\n')
+    file.write('|---|:-:|:-:|\n')
 
     for benchmark in benchmarks:
-        file.write(f'| {benchmark.module} | {benchmark.duration:.2f} | {benchmark.get_speed():.2f} | x{benchmark.get_relative():.2f} |\n')
+        file.write(f'| {benchmark.module} | {benchmark.get_speed():.2f} | x{benchmark.get_relative():.2f} |\n')
 
 print(f'Results saved to "{file_name}"')
