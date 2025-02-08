@@ -3,6 +3,7 @@
 from .models import models, aliases
 import ctypes
 import os
+import sys
 
 #renaming things to make the code less ugly
 unsigned_char = ctypes.c_ubyte
@@ -26,7 +27,8 @@ class model_t(ctypes.Structure):
                 ('table', pointer(word_t)),
                 ('table_comb', pointer(word_t))]
 
-crcany = ctypes.CDLL(os.path.join(os.path.dirname(__file__), 'crcany.dll'))
+ext = '.dll' if sys.platform == 'win32' else '.so'
+crcany = ctypes.CDLL(os.path.join(os.path.dirname(__file__), 'crcany' + ext))
 
 #model.h
 crcany.get_model.argtypes = [unsigned_short, word_t, word_t, char, char, word_t]
