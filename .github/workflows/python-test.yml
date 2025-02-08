@@ -2,7 +2,7 @@ name: Test Module
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "ctypes" ]
   pull_request:
     branches: [ "main" ]
 
