@@ -18,12 +18,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#ifdef WINDOWS_EXPORT 
-    #define EXPORT __declspec(dllexport)
-#else
-    #define EXPORT
-#endif
-
 /* Type to use for CRC calculations.  This should be the largest unsigned
    integer type available, to maximize the cases that can be computed.
    All of the algorithms here can process CRCs up to the size of a word_t. */
@@ -97,17 +91,17 @@ typedef struct {
 
    width=16 poly=0x1021 init=0x0000 refin=true refout=true xorout=0x0000
 */
-EXPORT model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout);
+model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout);
 
 /* Processs values for use in crc routines -- note that this reflects the
    polynomial and init values for ready use in the crc routines if necessary,
    changes the meaning of init, and replaces refin and refout with the
    different meanings reflect and reverse (reverse is very rarely used).
    Returns 1 if the allocation of the model's table fails. */
-EXPORT char init_model(model_t *model);
+char init_model(model_t *model);
 
 /* Deallocate the model's tables */
-EXPORT void free_model(model_t *model);
+void free_model(model_t *model);
 
 /* Return the reversal of the low n-bits of x. 1 <= n <= WORDBITS. The high
    WORDBITS - n bits in x are ignored, and are set to zero in the returned
