@@ -3,7 +3,7 @@ from setuptools import setup, Extension
 import sys
 
 if sys.platform == 'win32':
-    compile_args = ['/O2']
+    compile_args = ['-DWINDOWS_EXPORT', '/O2']
 else:
     compile_args = ['-O2']
 
