@@ -91,17 +91,17 @@ typedef struct {
 
    width=16 poly=0x1021 init=0x0000 refin=true refout=true xorout=0x0000
 */
-model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout);
+__declspec(dllexport) model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout);
 
 /* Processs values for use in crc routines -- note that this reflects the
    polynomial and init values for ready use in the crc routines if necessary,
    changes the meaning of init, and replaces refin and refout with the
    different meanings reflect and reverse (reverse is very rarely used).
    Returns 1 if the allocation of the model's table fails. */
-char init_model(model_t *model);
+__declspec(dllexport) char init_model(model_t *model);
 
 /* Deallocate the model's tables */
-void free_model(model_t *model);
+__declspec(dllexport) void free_model(model_t *model);
 
 /* Return the reversal of the low n-bits of x. 1 <= n <= WORDBITS. The high
    WORDBITS - n bits in x are ignored, and are set to zero in the returned
