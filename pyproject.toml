@@ -7,7 +7,7 @@ name = "anycrc"
 version = "1.4.0b"
 description = "The fastest Python CRC Library"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.4"
 
 [project.urls]
 Homepage = "https://github.com/marzooqy/anycrc"
