@@ -1,11 +1,18 @@
 from setuptools.command.build_ext import build_ext
+from wheel.bdist_wheel import bdist_wheel
 from setuptools import setup, Extension
 import sys
 
 if sys.platform == 'win32':
-    compile_args = ['-DWINDOWS_EXPORT', '/O2']
+    compile_args = ['-DWINDOWS_EXPORT']
 else:
-    compile_args = ['-O2']
+    compile_args = []
+
+#Rename the resulting wheel file
+class custom_bdist_wheel(bdist_wheel):
+    def get_tag(self):
+        _, _, platform = super().get_tag()
+        return 'py3', 'none', platform
 
 #This is a hack to make the build system treat the shared library as a Python C extension
 #so we can then use cibuildwheel to build the C library in different operating systems
@@ -30,5 +37,6 @@ setup(
                      'lib/crcany/crc.c']
         )
     ],
-    cmdclass={'build_ext': custom_build_ext}
+    cmdclass={'build_ext': custom_build_ext,
+              'bdist_wheel': custom_bdist_wheel}
 )
