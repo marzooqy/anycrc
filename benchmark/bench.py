@@ -24,7 +24,7 @@ try:
     LENGTH = 10000
 
     class Benchmark:
-        def __init__(self, module, note=None, relative_to=None):
+        def __init__(self, module, note='', relative_to=None):
             self.module = module
             self.note = note
             self.duration = None
@@ -238,10 +238,7 @@ try:
         file.write('|---|:-:|:-:|:-:|\n')
 
         for benchmark in benchmarks:
-            if benchmark.note is None:
-                file.write(f'| {benchmark.module} | {benchmark.get_speed():.2f} | x{benchmark.get_relative():.2f} ||\n')
-            else:
-                file.write(f'| {benchmark.module} | {benchmark.get_speed():.2f} | x{benchmark.get_relative():.2f} | {benchmark.note} |\n')
+            file.write(f'| {benchmark.module} | {benchmark.get_speed():.2f} | x{benchmark.get_relative():.2f} | {benchmark.note} |\n')
 
     print(f'Results saved to "{file_name}"')
 
