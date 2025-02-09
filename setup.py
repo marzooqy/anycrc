@@ -1,5 +1,5 @@
 from setuptools.command.build_ext import build_ext
-from setuptools.command.bdist_wheel import bdist_wheel
+from wheel.bdist_wheel import bdist_wheel
 from setuptools import setup, Extension
 import sys
 
