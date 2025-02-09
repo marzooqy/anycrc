@@ -65,11 +65,11 @@ The maximum supported CRC width is 64 bits.
 
 | Module | Speed (MB/s) | Relative | Notes |
 |---|:-:|:-:|:-:|
-| pycrc32 | 22549.44 | x0.11 | CRC32 Only |
-| crc32c | 20990.32 | x0.12 | CRC32C Only |
-| google-crc32c | 17046.81 | x0.15 | CRC32C Only |
+| pycrc32 | 22549.44 | x0.11 | CRC32 only |
+| crc32c | 20990.32 | x0.12 | CRC32C only |
+| google-crc32c | 17046.81 | x0.15 | CRC32C only |
 | anycrc | 2591.08 | x1.00 ||
-| zlib | 2028.04 | x1.28 | CRC32 Only |
+| zlib | 2028.04 | x1.28 | CRC32 only |
 | fastcrc | 652.01 | x3.97 ||
 | crcmod-plus | 647.36 | x4.00 ||
 | crc-ct | 570.82 | x4.54 ||
