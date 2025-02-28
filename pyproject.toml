@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "anycrc"
-version = "1.3.2"
+version = "1.3.3"
 description = "The fastest Python CRC Library"
 readme = "README.md"
 license = {text = "Zlib"}
