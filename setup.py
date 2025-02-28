@@ -10,6 +10,5 @@ setup(
                      'lib/crcany/model.c',
                      'lib/crcany/crc.c']
         )
-    ],
-    package_data={'': ['lib']}
+    ]
 )
