@@ -29,6 +29,7 @@ word_t crc_bitwise(model_t *model, word_t crc, void const *dat, size_t len) {
             len -= 8;
         }
 
+        // Clear the remaining bits so that they won't affect the CRC calculation.
         if (len > 0) {
             unsigned char off = (unsigned char)-1 >> (8 - len);
             crc ^= *buf & off;

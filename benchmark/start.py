@@ -17,14 +17,18 @@ try:
             if file == 'crc' or file.startswith('crc-') or file == 'crc_ct' or file.startswith('crc_ct-'):
                 shutil.rmtree(os.path.join(packages_path, file))
 
-    modules = ['..', 'pycrc32', 'crc32c', 'google-crc32c', 'fastcrc', 'crcmod-plus', 'crc-ct', 'libscrc', 'crcengine', 'pycrc', 'crccheck']
+    modules = ['pycrc32', 'crc32c', 'google-crc32c', 'fastcrc', 'crcmod-plus', 'crc-ct', 'libscrc', 'crcengine', 'pycrc', 'crccheck']
 
     subprocess.run(['py', '-3.12', '-m' 'venv', '.venv'])
+    subprocess.run(['.venv/Scripts/python', '-m', 'pip', 'install', '--upgrade', 'pip'])
+
     subprocess.run(['.venv/Scripts/pip', 'install'] + modules)
 
     # This is necessary due to a naming conflict between crc and crc-ct
     shutil.move(os.path.join(packages_path, 'crc'), os.path.join(packages_path, 'crc_ct'))
     subprocess.run(['.venv/Scripts/pip', 'install', 'crc'])
+    
+    subprocess.run(['.venv/Scripts/pip', 'install', '..'])
 
     subprocess.run(['.venv/Scripts/python', 'bench.py'])
 

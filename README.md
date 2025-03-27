@@ -65,18 +65,18 @@ The maximum supported CRC width is 64 bits.
 
 | Module | Speed (MB/s) | Relative | Notes |
 |---|:-:|:-:|:-:|
-| pycrc32 | 22549.44 | x0.11 | CRC32 only |
-| crc32c | 20990.32 | x0.12 | CRC32C only |
-| google-crc32c | 17046.81 | x0.15 | CRC32C only |
-| anycrc | 2591.08 | x1.00 ||
-| zlib | 2028.04 | x1.28 | CRC32 only |
-| fastcrc | 652.01 | x3.97 ||
-| crcmod-plus | 647.36 | x4.00 ||
-| crc-ct | 570.82 | x4.54 ||
-| libscrc | 149.21 | x17.37 ||
-| crcengine | 7.44 | x348.07 ||
-| pycrc | 3.63 | x714.01 ||
-| crccheck | 1.06 | x2449.24 ||
-| crc | 0.34 | x7583.33 ||
+| pycrc32 | 34559.57 | x0.08 | CRC32 only |
+| crc32c | 30209.55 | x0.09 | CRC32C only |
+| google-crc32c | 19348.59 | x0.15 | CRC32C only |
+| zlib | 3186.10 | x0.89 | CRC32 only |
+| anycrc | 2834.54 | x1.00 |  |
+| fastcrc | 656.97 | x4.31 |  |
+| crcmod-plus | 654.04 | x4.33 |  |
+| crc-ct | 646.11 | x4.39 |  |
+| libscrc | 215.91 | x13.13 |  |
+| crcengine | 9.47 | x299.29 |  |
+| pycrc | 7.55 | x375.39 |  |
+| crccheck | 1.48 | x1921.18 |  |
+| crc | 0.42 | x6670.14 |  |
 
-Tested on a 10th generation Intel i7 processor.
+Tested on a 12th generation Intel i7 processor.
