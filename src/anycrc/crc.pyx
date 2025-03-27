@@ -124,8 +124,8 @@ def CRC(width=None, poly=None, init=None, refin=None, refout=None, xorout=None, 
 
 def Model(name):
     if name in models:
-        return CRC(*models[name.upper()])
+        return CRC(*models[name])
     elif name in aliases:
-        return CRC(*models[aliases[name.upper()]])
+        return CRC(*models[aliases[name]])
     else:
         raise ValueError('CRC model not found')
