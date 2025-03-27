@@ -1,3 +1,4 @@
+src/anycrc/crc.c
 src/anycrc.egg-info
 build
 dist
