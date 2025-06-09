@@ -1,14 +1,9 @@
 # Copyright (c) 2024-2025 Hussain Al Marzooq
 
 from libc.stdint cimport uintmax_t
+from bitarray import bitarray, frozenbitarray
 from .models import models, aliases
 import sys
-
-try:
-    from bitarray import bitarray, frozenbitarray
-    ba_imported = True
-except ModuleNotFoundError:
-    ba_imported = False
 
 cdef extern from '../../lib/crcany/model.h':
     ctypedef unsigned int word_t
@@ -56,7 +51,7 @@ cdef class _Crc:
         free_model(&self.model);
 
     def calc(self, data, init=None):
-        if ba_imported and (isinstance(data, bitarray) or isinstance(data, frozenbitarray)):
+        if isinstance(data, bitarray) or isinstance(data, frozenbitarray):
             raise TypeError('Bitarray objects are not allowed, use calc_bits() instead')
 
         if isinstance(data, str):
@@ -72,16 +67,13 @@ cdef class _Crc:
         return crc_slice16(&self.model, init, &view[0], len(view) * 8)
 
     def calc_bits(self, data, init=None):
-        if not ba_imported:
-            raise ModuleNotFoundError('The bitarray module is required')
-
         if not isinstance(data, bitarray) and not isinstance(data, frozenbitarray):
             raise TypeError('Expected a bitarray object')
 
-        if self.model.ref and data.endian() != 'little':
+        if self.model.ref and data.endian != 'little':
             raise ValueError('A little endian bitarray object is expected for reflected CRCs')
 
-        if not self.model.ref and data.endian() != 'big':
+        if not self.model.ref and data.endian != 'big':
             raise ValueError('A big endian bitarray object is expected for non-reflected CRCs')
 
         if init is None:
