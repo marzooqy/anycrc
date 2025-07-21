@@ -68,6 +68,6 @@ void crc_table_combine(model_t *model);
    length of the second portion of the message in bits. (The length of the
    first portion is not needed.) This assumes that model->table_comb has been
    initialized by crc_table_combine(). */
-word_t crc_combine(model_t *model, word_t crc1, word_t crc2, uintmax_t len2);
+word_t crc_combine(model_t *model, word_t crc1, word_t crc2, size_t len2);
 
 #endif

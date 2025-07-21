@@ -221,56 +221,34 @@ static word_t multmodp(model_t *model, word_t a, word_t b) {
     return prod;
 }
 
-// Build table_comb[] for model. Stop when a cycle is detected, or the table is
-// full. On return, model->cycle is the number of entries in the table, which
-// is the index at which to cycle. model->back is the index to go to when
-// model->cycle is reached. If no cycle was detected, then model->back is -1.
+// Build table_comb[] for model.
 void crc_table_combine(model_t *model) {
     // Keep squaring x^1 modulo p(x), where p(x) is the CRC polynomial, to
     // generate x^2^n modulo p(x).
     word_t sq = model->ref ? (word_t)1 << (model->width - 2) : 2;   // x^1
     model->table_comb[0] = sq;
     int n = 1;
-    while (n < 67) {
+    while (n < 64) {
         sq = multmodp(model, sq, sq); // x^2^n
-
-        // If this value has already appeared, then done.
-        for (int j = 0; j < n; j++)
-            if (model->table_comb[j] == sq) {
-                model->cycle = n;
-                model->back = j;
-                return;
-            }
-
-        // New value -- append to table.
         model->table_comb[n++] = sq;
     }
-
-    // No cycle was found, up to the size of the table.
-    model->cycle = n;
-    model->back = -1;
 }
 
 // Return x^n modulo p(x), where p(x) is the CRC polynomial. model->cycle
 // and model->table_comb[] must first be initialized by crc_table_combine().
-static word_t xnmodp(model_t *model, uintmax_t n) {
+static word_t xnmodp(model_t *model, size_t n) {
     word_t xp = model->ref ? (word_t)1 << (model->width - 1) : 1;   // x^0
     int k = 0;
-    for (;;) {
+    while (n) {
         if (n & 1)
             xp = multmodp(model, model->table_comb[k], xp);
         n >>= 1;
-        if (n == 0)
-            break;
-        if (++k == model->cycle) {
-            assert(model->back != -1);
-            k = model->back;
-        }
+        k++;
     }
     return xp;
 }
 
-word_t crc_combine(model_t *model, word_t crc1, word_t crc2, uintmax_t len2) {
+word_t crc_combine(model_t *model, word_t crc1, word_t crc2, size_t len2) {
     crc1 ^= model->init;
     if (model->rev) {
         crc1 = reverse(crc1, model->width);

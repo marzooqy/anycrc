@@ -53,8 +53,6 @@ typedef uint64_t word_t;
 */
 typedef struct {
     unsigned short width;     /* number of bits in the CRC (the degree of the polynomial) */
-    short cycle;              /* length of the table_comb[] cycle */
-    short back;               /* index of table_comb[] to cycle back to */
     char ref;                 /* if true, reflect input and output */
     char rev;                 /* if true, reverse output */
     word_t poly;              /* polynomial representation (sans x^width) */

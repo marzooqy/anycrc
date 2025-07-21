@@ -1,6 +1,5 @@
 # Copyright (c) 2024-2025 Hussain Al Marzooq
 
-from libc.stdint cimport uintmax_t
 from bitarray import bitarray, frozenbitarray
 from .models import models, aliases
 import sys
@@ -29,7 +28,7 @@ cdef extern from '../../lib/crcany/crc.h':
     cdef word_t crc_slice16(model_t *model, word_t crc, const void *dat, size_t len)
 
     cdef void crc_table_combine(model_t *model)
-    word_t crc_combine(model_t *model, word_t crc1, word_t crc2, uintmax_t len2)
+    word_t crc_combine(model_t *model, word_t crc1, word_t crc2, size_t len2)
 
 cache = {}
 
