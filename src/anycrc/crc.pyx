@@ -2,10 +2,9 @@
 
 from bitarray import bitarray, frozenbitarray
 from .models import models, aliases
-import sys
 
 cdef extern from '../../lib/crcany/model.h':
-    ctypedef unsigned int word_t
+    ctypedef unsigned long long word_t
     cdef const unsigned short WORDBITS
 
     ctypedef struct model_t:
@@ -21,8 +20,11 @@ cdef extern from '../../lib/crcany/model.h':
     cdef void free_model(model_t *model)
 
 cdef extern from '../../lib/crcany/crc.h':
+    cdef word_t crc_preprocess(model_t* model, word_t crc)
+    cdef word_t crc_postprocess(model_t* model, word_t crc)
+
     cdef void crc_table_bytewise(model_t *model)
-    cdef word_t crc_bytewise(model_t *model, word_t crc, const void *dat, size_t len);
+    cdef word_t crc_bytewise(model_t *model, word_t crc, const void *dat, size_t len)
 
     cdef void crc_table_slice16(model_t *model)
     cdef word_t crc_slice16(model_t *model, word_t crc, const void *dat, size_t len)
@@ -63,7 +65,10 @@ cdef class _Crc:
             return init
 
         cdef const unsigned char[:] view = data
-        return crc_slice16(&self.model, init, &view[0], len(view) * 8)
+
+        cdef word_t crc = crc_preprocess(&self.model, init)
+        crc = crc_slice16(&self.model, crc, &view[0], len(view) * 8)
+        return crc_postprocess(&self.model, crc)
 
     def calc_bits(self, data, init=None):
         if not isinstance(data, bitarray) and not isinstance(data, frozenbitarray):
@@ -82,7 +87,10 @@ cdef class _Crc:
             return init
 
         cdef const unsigned char[:] view = data
-        return crc_slice16(&self.model, init, &view[0], len(data))
+
+        cdef word_t crc = crc_preprocess(&self.model, init)
+        crc = crc_slice16(&self.model, crc, &view[0], len(data))
+        return crc_postprocess(&self.model, crc)
 
     def combine(self, crc1, crc2, length):
         return crc_combine(&self.model, crc1, crc2, length * 8)
@@ -93,7 +101,10 @@ cdef class _Crc:
     #byte-by-byte (for testing)
     def _calc_b(self, data):
         cdef const unsigned char[:] view = data
-        return crc_bytewise(&self.model, self.model.init, &view[0], len(view) * 8)
+
+        cdef word_t crc = crc_preprocess(&self.model, self.model.init)
+        crc = crc_bytewise(&self.model, crc, &view[0], len(view) * 8)
+        return crc_postprocess(&self.model, crc)
 
 def CRC(width=None, poly=None, init=None, refin=None, refout=None, xorout=None, check=None):
     names = ('width', 'poly', 'init', 'refin', 'refout', 'xorout')
