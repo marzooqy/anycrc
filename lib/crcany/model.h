@@ -52,14 +52,14 @@ typedef uint64_t word_t;
    defined in the structure.
 */
 typedef struct {
-    unsigned short width;     /* number of bits in the CRC (the degree of the polynomial) */
-    char ref;                 /* if true, reflect input and output */
-    char rev;                 /* if true, reverse output */
-    word_t poly;              /* polynomial representation (sans x^width) */
-    word_t init;              /* CRC of a zero-length sequence */
-    word_t xorout;            /* final CRC is exclusive-or'ed with this */
-    word_t *table;            /* table for the CRC calculation */
-    word_t *table_comb;       /* table for CRC combination */
+    unsigned short width;  /* number of bits in the CRC (the degree of the polynomial) */
+    char ref;              /* if true, reflect input and output */
+    char rev;              /* if true, reverse output */
+    word_t poly;           /* polynomial representation (sans x^width) */
+    word_t init;           /* CRC of a zero-length sequence */
+    word_t xorout;         /* final CRC is exclusive-or'ed with this */
+    word_t *table;         /* table for the CRC calculation */
+    word_t *table_comb;    /* table for CRC combination */
 } model_t;
 
 /*
