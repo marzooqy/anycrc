@@ -13,6 +13,3 @@ dependencies = ["bitarray==3.5.2"]
 
 [project.urls]
 "Homepage" = "https://github.com/marzooqy/anycrc"
-
-[tool.cibuildwheel]
-skip = "pp*"
