@@ -91,7 +91,7 @@ cdef class _Crc:
     #byte-by-byte (for testing)
     def _calc_b(self, data):
         cdef const unsigned char[:] view = data
-        return crc_bytewise(&self.model, model.init, &view[0], len(view) * 8)
+        return crc_bytewise(&self.model, self.model.init, &view[0], len(view) * 8)
 
 def CRC(width=None, poly=None, init=None, refin=None, refout=None, xorout=None, check=None):
     names = ('width', 'poly', 'init', 'refin', 'refout', 'xorout')
