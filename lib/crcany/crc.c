@@ -118,7 +118,7 @@ word_t crc_bytewise(model_t *model, word_t crc, void const *dat, size_t len) {
         }
     }
 
-    crc_postprocess(model, crc);
+    crc = crc_postprocess(model, crc);
 
     // Process any remaining bits after the last byte
     if (len > 0)

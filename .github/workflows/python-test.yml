@@ -24,9 +24,7 @@ jobs:
             python -m pip install --upgrade pip
             python -m pip install .
     - name: Run test
-      run: |
-            python test.py models
-            python test.py aliases
+      run: python test.py
 
   os_test:
     name: Test on ${{ matrix.os }}
@@ -59,6 +57,4 @@ jobs:
             python -m pip install --upgrade pip
             python -m pip install .
     - name: Run test
-      run: |
-            python test.py models
-            python test.py aliases
+      run: python test.py
