@@ -61,7 +61,7 @@ cdef class _Crc:
             return init
 
         cdef const unsigned char[:] view = data
-        return crc_slice16(&self.model, crc, &view[0], len(view) * 8)
+        return crc_slice16(&self.model, init, &view[0], len(view) * 8)
 
     def calc_bits(self, data, init=None):
         if not isinstance(data, bitarray) and not isinstance(data, frozenbitarray):
@@ -80,7 +80,7 @@ cdef class _Crc:
             return init
 
         cdef const unsigned char[:] view = data
-        return crc_slice16(&self.model, crc, &view[0], len(data))
+        return crc_slice16(&self.model, init, &view[0], len(data))
 
     def combine(self, crc1, crc2, length):
         return crc_combine(&self.model, crc1, crc2, length * 8)
@@ -91,7 +91,7 @@ cdef class _Crc:
     #byte-by-byte (for testing)
     def _calc_b(self, data):
         cdef const unsigned char[:] view = data
-        return crc_bytewise(&self.model, crc, &view[0], len(view) * 8)
+        return crc_bytewise(&self.model, model.init, &view[0], len(view) * 8)
 
 def CRC(width=None, poly=None, init=None, refin=None, refout=None, xorout=None, check=None):
     names = ('width', 'poly', 'init', 'refin', 'refout', 'xorout')
