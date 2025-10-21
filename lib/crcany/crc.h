@@ -12,14 +12,6 @@
 
 #include "model.h"
 
-/* Pre-process the CRC. Remove the previously applied xorout and reverse
-   the CRC if rev is true. Shift the CRC to left if it's not reflected.*/
-word_t crc_preprocess(model_t* model, word_t crc);
-
-/* Post-process the CRC. Shift the CRC back to the right if it's not reflected.
-   Reverse the CRC if rev is true and XOR it with xorout. */
-word_t crc_postprocess(model_t* model, word_t crc);
-
 /* Apply the len bits at dat to crc using the CRC described in model. This allows
    for the calculation of a CRC in pieces, where the first call must be with crc equal
    to the initial value for this CRC model. crc_bitwise() must only be used for

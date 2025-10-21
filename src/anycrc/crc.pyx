@@ -9,7 +9,6 @@ cdef extern from '../../lib/crcany/model.h':
 
     ctypedef struct model_t:
         unsigned short width
-        short cycle, back
         char ref, rev
         word_t poly, init, xorout
         word_t *table
@@ -20,9 +19,6 @@ cdef extern from '../../lib/crcany/model.h':
     cdef void free_model(model_t *model)
 
 cdef extern from '../../lib/crcany/crc.h':
-    cdef word_t crc_preprocess(model_t* model, word_t crc)
-    cdef word_t crc_postprocess(model_t* model, word_t crc)
-
     cdef void crc_table_bytewise(model_t *model)
     cdef word_t crc_bytewise(model_t *model, word_t crc, const void *dat, size_t len)
 
@@ -65,10 +61,7 @@ cdef class _Crc:
             return init
 
         cdef const unsigned char[:] view = data
-
-        cdef word_t crc = crc_preprocess(&self.model, init)
-        crc = crc_slice16(&self.model, crc, &view[0], len(view) * 8)
-        return crc_postprocess(&self.model, crc)
+        return crc_slice16(&self.model, crc, &view[0], len(view) * 8)
 
     def calc_bits(self, data, init=None):
         if not isinstance(data, bitarray) and not isinstance(data, frozenbitarray):
@@ -87,10 +80,7 @@ cdef class _Crc:
             return init
 
         cdef const unsigned char[:] view = data
-
-        cdef word_t crc = crc_preprocess(&self.model, init)
-        crc = crc_slice16(&self.model, crc, &view[0], len(data))
-        return crc_postprocess(&self.model, crc)
+        return crc_slice16(&self.model, crc, &view[0], len(data))
 
     def combine(self, crc1, crc2, length):
         return crc_combine(&self.model, crc1, crc2, length * 8)
@@ -101,10 +91,7 @@ cdef class _Crc:
     #byte-by-byte (for testing)
     def _calc_b(self, data):
         cdef const unsigned char[:] view = data
-
-        cdef word_t crc = crc_preprocess(&self.model, self.model.init)
-        crc = crc_bytewise(&self.model, crc, &view[0], len(view) * 8)
-        return crc_postprocess(&self.model, crc)
+        return crc_bytewise(&self.model, crc, &view[0], len(view) * 8)
 
 def CRC(width=None, poly=None, init=None, refin=None, refout=None, xorout=None, check=None):
     names = ('width', 'poly', 'init', 'refin', 'refout', 'xorout')

@@ -35,6 +35,8 @@ word_t crc_bitwise(model_t *model, word_t crc, void const *dat, size_t len) {
     unsigned char const *buf = dat;
     word_t poly = model->poly;
 
+    crc = crc_preprocess(model, crc);
+
     // Process the input data a bit at a time.
     if (model->ref) {
         while (len >= 8) {
@@ -72,7 +74,7 @@ word_t crc_bitwise(model_t *model, word_t crc, void const *dat, size_t len) {
         }
     }
 
-    return crc;
+    return crc_postprocess(model, crc);
 }
 
 void crc_table_bytewise(model_t *model) {
@@ -99,6 +101,8 @@ void crc_table_bytewise(model_t *model) {
 word_t crc_bytewise(model_t *model, word_t crc, void const *dat, size_t len) {
     unsigned char const *buf = dat;
 
+    crc = crc_preprocess(model, crc);
+
     // Process the input data a byte at a time.
     if (model->ref) {
         while (len >= 8) {
@@ -113,6 +117,8 @@ word_t crc_bytewise(model_t *model, word_t crc, void const *dat, size_t len) {
             len -= 8;
         }
     }
+
+    crc_postprocess(model, crc);
 
     // Process any remaining bits after the last byte
     if (len > 0)
@@ -143,6 +149,8 @@ void crc_table_slice16(model_t *model) {
 word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
     unsigned char const *buf = dat;
 
+    crc = crc_preprocess(model, crc);
+
     // Process as many 16 byte blocks as are available
     if (model->ref) {
         while (len >= 16 * 8) {
@@ -166,6 +174,8 @@ word_t crc_slice16(model_t *model, word_t crc, void const *dat, size_t len) {
             len -= 16 * 8;
         }
     }
+
+    crc = crc_postprocess(model, crc);
 
     // Process any remaining bytes after the last 16 byte block
     if (len > 0)

@@ -14,9 +14,9 @@ jobs:
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -42,20 +42,17 @@ jobs:
             runner: windows-latest
             architecture: "x86"
 
-          - os: "MacOS (Apple M)"
+          - os: "MacOS"
             runner: macos-latest
-
-          - os: "MacOS (Intel)"
-            runner: macos-13
 
           - os: "Ubuntu"
             runner: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
-        python-version: "3.13"
+        python-version: "3.14"
         architecture: ${{ matrix.architecture }}
     - name: Install dependencies
       run: |
