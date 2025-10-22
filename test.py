@@ -16,14 +16,14 @@ for name, model in anycrc.models.items():
     value = crc._calc_b(test_data)
     check = model.check
     print('byte-by-byte:  {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(check, model.width)))
-    #assert value == check
+    assert value == check
 
     #check to see if the result from the slice-by-16 algorithm matches the byte-by-byte value
     value = crc.calc(test_data2)
     value2 = crc2._calc_b(test_data2)
 
     print('slice-by-16:   {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
-    #assert value == value2
+    assert value == value2
 
     #process the data one byte at a time
     value = None
@@ -31,7 +31,7 @@ for name, model in anycrc.models.items():
         value = crc.calc(c.to_bytes(1, 'little'), value)
 
     print('update:        {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(check, model.width)))
-    #assert value == check
+    assert value == check
 
     #with length in bits
     if model.refin:
@@ -45,14 +45,14 @@ for name, model in anycrc.models.items():
     value2 = crc2._calc_b(test_data2)
 
     print('bits:          {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
-    #assert value == value2
+    assert value == value2
 
     #combine
     value = crc.calc(b'12345')
     value2 = crc.calc(b'6789')
     value3 = crc.combine(value, value2, len(b'6789'))
     print('combine:       {} {}'.format(anycrc.get_hex(value3, model.width), anycrc.get_hex(check, model.width)))
-    #assert value3 == check
+    assert value3 == check
 
     #combine bits
     if model.refin:
@@ -65,14 +65,14 @@ for name, model in anycrc.models.items():
     value2 = crc.calc_bits(bit_data[36:])
     value3 = crc.combine_bits(value, value2, len(bit_data[36:]))
     print('combine bits:  {} {}'.format(anycrc.get_hex(value3, model.width), anycrc.get_hex(check, model.width)))
-    #assert value3 == check
+    assert value3 == check
 
     print()
 
 #check that all of the aliases are valid
 for alias, name in anycrc.aliases.items():
     print(alias, end=' ')
-    #assert name in anycrc.models
+    assert name in anycrc.models
     print('OK')
 
 print()
