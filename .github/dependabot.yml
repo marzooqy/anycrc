@@ -5,11 +5,6 @@
 
 version: 2
 updates:
-  - package-ecosystem: "pip" # See documentation for possible values
-    directory: "/" # Location of package manifests
-    schedule:
-      interval: "monthly"
-      
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
     # Workflow files stored in the default location of `.github/workflows`
@@ -17,3 +12,12 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    groups:
+       # Specify a name for the group, which will be used in pull request titles
+       # and branch names
+       dev-dependencies:
+          # Define patterns to include dependencies in the group (based on
+          # dependency name)
+          patterns:
+            - "*"       # A wildcard that matches all dependencies in the package
+                        # ecosystem. Note: using "*" may open a large pull request
