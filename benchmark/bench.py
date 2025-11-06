@@ -5,7 +5,6 @@ try:
     import anycrc
     import crcmod.predefined
     import fastcrc
-    import crc_ct #renamed from crc
     import libscrc
     import crcengine
     import crccheck
@@ -22,22 +21,17 @@ try:
             self.average = None
             self.relative_to = relative_to
             self.start = time.perf_counter()
-            self.ran_once = False
 
         def __repr__(self):
-            if self.ran_once:
-                return f'{self.module}\nTime: {self.average * self.n:.2f}s\nSpeed: {self.get_speed():.2f} MB/s\nRelative: {self.get_relative():.2f}'
-            else:
-                raise Exception("Benchmark was not completed")
+            return f'{self.module}\nTime: {self.average * self.n:.2f}s\nSpeed: {self.get_speed():.2f} MiB/s\nRelative: {self.get_relative():.2f}'
 
         def stop(self):
             t = time.perf_counter()
             self.average = (t - self.start) / self.n
-            self.ran_once = True
             self.start = t
 
         def get_speed(self):
-            return LENGTH / self.average / (10 ** 6)
+            return LENGTH / self.average / (1024 ** 2)
 
         def get_relative(self):
             if self.relative_to is None:
@@ -82,21 +76,6 @@ try:
     calc = crcmod.predefined.mkPredefinedCrcFun('crc-32')
     for i in range(benchmark.n):
         calc(data)
-
-    benchmark.stop()
-    benchmarks.append(benchmark)
-
-    print(benchmark)
-    print()
-
-    #crc-ct
-    benchmark = Benchmark('crc-ct', N_C_EXT, relative_to=anycrc_benchmark)
-
-    crc_model = crc_ct.predefined_model_by_name(b'CRC-32')
-    for i in range(benchmark.n):
-        crc_result = crc_ct.init(crc_model)
-        crc_result = crc_ct.update(crc_model, data, len(data), crc_result)
-        crc_ct.final(crc_model, crc_result)
 
     benchmark.stop()
     benchmarks.append(benchmark)
@@ -177,7 +156,7 @@ try:
     file_name = 'benchmark_results.txt'
 
     with open(file_name, 'w') as file:
-        file.write('| Module | Speed (MB/s) | Relative |\n')
+        file.write('| Module | Speed (MiB/s) | Relative |\n')
         file.write('|---|:-:|:-:|\n')
 
         for benchmark in benchmarks:
