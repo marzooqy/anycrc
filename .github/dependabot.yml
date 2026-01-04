@@ -15,9 +15,12 @@ updates:
     groups:
        # Specify a name for the group, which will be used in pull request titles
        # and branch names
-       dev-dependencies:
+       dependencies:
           # Define patterns to include dependencies in the group (based on
           # dependency name)
           patterns:
             - "*"       # A wildcard that matches all dependencies in the package
                         # ecosystem. Note: using "*" may open a large pull request
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
