@@ -2,6 +2,7 @@
 
 from bitarray import bitarray, frozenbitarray
 from .models import models, aliases
+import functools
 
 cdef extern from '../../lib/crcany/model.h':
     ctypedef unsigned long long word_t
@@ -26,9 +27,7 @@ cdef extern from '../../lib/crcany/crc.h':
     cdef word_t crc_slice16(model_t *model, word_t crc, const void *dat, size_t len)
 
     cdef void crc_table_combine(model_t *model)
-    word_t crc_combine(model_t *model, word_t crc1, word_t crc2, size_t len2)
-
-cache = {}
+    word_t crc_combine(model_t *model, word_t crc1, word_t crc2, size_t len2, char is_bits)
 
 cdef class _Crc:
     cdef model_t model
@@ -83,16 +82,17 @@ cdef class _Crc:
         return crc_slice16(&self.model, init, &view[0], len(data))
 
     def combine(self, crc1, crc2, length):
-        return crc_combine(&self.model, crc1, crc2, length * 8)
+        return crc_combine(&self.model, crc1, crc2, length, 0)
 
     def combine_bits(self, crc1, crc2, length):
-        return crc_combine(&self.model, crc1, crc2, length)
+        return crc_combine(&self.model, crc1, crc2, length, 1)
 
     #byte-by-byte (for testing)
     def _calc_b(self, data):
         cdef const unsigned char[:] view = data
         return crc_bytewise(&self.model, self.model.init, &view[0], len(view) * 8)
 
+@functools.lru_cache
 def CRC(width=None, poly=None, init=None, refin=None, refout=None, xorout=None, check=None):
     names = ('width', 'poly', 'init', 'refin', 'refout', 'xorout')
     values = (width, poly, init, refin, refout, xorout)
@@ -104,12 +104,7 @@ def CRC(width=None, poly=None, init=None, refin=None, refout=None, xorout=None, 
     if width > WORDBITS:
         raise ValueError(f'width is larger than {WORDBITS} bits')
 
-    if values in cache:
-        return cache[values]
-    else:
-        crc = _Crc(*values)
-        cache[values] = crc
-        return crc
+    return _Crc(*values)
 
 def Model(name):
     if name in models:
