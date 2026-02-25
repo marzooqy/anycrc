@@ -29,7 +29,7 @@ char init_model(model_t *model) {
     if (model->table == NULL)
         return 1;
 
-    model->table_comb = (word_t*) malloc(67 * sizeof(word_t));
+    model->table_comb = (word_t*) malloc(64 * sizeof(word_t));
     if (model->table_comb == NULL)
         return 1;
 

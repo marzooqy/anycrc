@@ -61,9 +61,9 @@ void crc_table_combine(model_t *model);
 
 /* Combine the CRC of the first portion of a message, crc1, with the CRC of the
    second portion, crc2, returning the CRC of the two concatenated. len2 is the
-   length of the second portion of the message in bits if is_bits is true, and
-   in bytes if it's false. (The length of the first portion is not needed.)
-   This assumes that model->table_comb has been initialized by crc_table_combine(). */
-word_t crc_combine(model_t *model, word_t crc1, word_t crc2, size_t len2, char is_bits);
+   length of the second portion of the message in bits. (The length of the
+   first portion is not needed.) This assumes that model->table_comb has been
+   initialized by crc_table_combine(). */
+word_t crc_combine(model_t *model, word_t crc1, word_t crc2, size_t len2);
 
 #endif
