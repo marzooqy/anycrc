@@ -1,4 +1,6 @@
-# Copyright (c) 2024-2025 Hussain Al Marzooq
+# Copyright (c) 2024-2026 Hussain Al Marzooq
+
+# cython: freethreading_compatible = True
 
 from bitarray import bitarray, frozenbitarray
 from .models import models, aliases
