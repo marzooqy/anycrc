@@ -11,7 +11,6 @@ for name, model in anycrc.models.items():
     print(anycrc.str_model(model))
 
     crc = anycrc.Model(name)
-    crc2 = anycrc.Model(name)
 
     #check to see if the result from the byte-by-byte algorithm matches the check value
     value = crc._calc_b(test_data)
@@ -20,11 +19,11 @@ for name, model in anycrc.models.items():
     if value != check:
         failed = True
 
-    #check to see if the result from the slice-by-16 algorithm matches the byte-by-byte value
+    #check to see if the result from the clmul algorithm matches the byte-by-byte value
     value = crc.calc(test_data2)
-    value2 = crc2._calc_b(test_data2)
+    value2 = crc._calc_b(test_data2)
 
-    print('slice-by-16:   {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
+    print('clmul:         {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
     if value != value2:
         failed = True
 
@@ -46,7 +45,7 @@ for name, model in anycrc.models.items():
     bit_data.frombytes(test_data2)
     value = crc.calc_bits(bit_data[:100])
     value = crc.calc_bits(bit_data[100:], value)
-    value2 = crc2._calc_b(test_data2)
+    value2 = crc._calc_b(test_data2)
 
     print('bits:          {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
     if value != value2:
