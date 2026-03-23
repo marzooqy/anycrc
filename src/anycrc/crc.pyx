@@ -2,51 +2,42 @@
 
 # cython: freethreading_compatible = True
 
+from libc.stdint cimport *
+from functools import lru_cache
 from bitarray import bitarray, frozenbitarray
 from .models import models, aliases
-import functools
 
-cdef extern from '../../lib/crcany/model.h':
-    ctypedef unsigned long long word_t
-    cdef const unsigned short WORDBITS
+cdef extern from '../../lib/crc-clmul/crc.h':
+    ctypedef struct params_t:
+        uint8_t width
+        uint64_t poly
+        bint refin, refout
+        uint64_t init, xorout, k1, k2
+        uint64_t table[256]
+        uint64_t combine_table[64]
 
-    ctypedef struct model_t:
-        unsigned short width
-        char ref, rev
-        word_t poly, init, xorout
-        word_t *table
-        word_t *table_comb
+    cdef params_t crc_params(uint8_t width, uint64_t poly, uint64_t init, bint refin, bint refout, uint64_t xorout, uint64_t check, uint8_t *error)
 
-    cdef model_t get_model(unsigned short width, word_t poly, word_t init, char refin, char refout, word_t xorout)
-    cdef char init_model(model_t *model)
-    cdef void free_model(model_t *model)
+    cdef uint64_t crc_table(params_t *params, uint64_t crc, const unsigned char *buf, uint64_t len)
+    cdef uint64_t crc_calc(params_t *params, uint64_t crc, const unsigned char *buf, uint64_t len)
+    cdef uint64_t crc_calc_bits(params_t *params, uint64_t crc, const unsigned char *buf, uint64_t len)
 
-cdef extern from '../../lib/crcany/crc.h':
-    cdef void crc_table_bytewise(model_t *model)
-    cdef word_t crc_bytewise(model_t *model, word_t crc, const void *dat, size_t len)
+    cdef uint64_t crc_combine_constant(params_t *params, uint64_t len)
+    cdef uint64_t crc_combine_constant_bits(params_t *params, uint64_t len)
+    cdef uint64_t crc_combine_fixed(params_t *params, uint64_t crc, uint64_t crc2, uint64_t xp)
 
-    cdef void crc_table_slice16(model_t *model)
-    cdef word_t crc_slice16(model_t *model, word_t crc, const void *dat, size_t len)
-
-    cdef void crc_table_combine(model_t *model)
-    word_t crc_combine(model_t *model, word_t crc1, word_t crc2, size_t len2)
-
-cdef class _Crc:
-    cdef model_t model
+cdef class _CRC:
+    cdef params_t params
 
     def __cinit__(self, width, poly, init, refin, refout, xorout, check=None):
-        self.model = get_model(width, poly, init, refin, refout, xorout)
-        cdef char error_code = init_model(&self.model)
+        cdef uint8_t error
+        self.params = crc_params(width, poly, init, refin, refout, xorout, check if check is not None else 0, &error)
 
-        if error_code == 1:
-            raise MemoryError('Out of memory error')
+        if error & 1:
+            raise ValueError('CRC width should be between 1 and 64 bits')
 
-        crc_table_bytewise(&self.model)
-        crc_table_slice16(&self.model)
-        crc_table_combine(&self.model)
-
-    def __dealloc__(self):
-        free_model(&self.model);
+        if check is not None and error & 0x20:
+            raise ValueError('Invalid paramaters. check mismatch')
 
     def calc(self, data, init=None):
         if isinstance(data, bitarray) or isinstance(data, frozenbitarray):
@@ -56,45 +47,53 @@ cdef class _Crc:
             data = (<unicode> data).encode('utf-8')
 
         if init is None:
-            init = self.model.init
+            init = self.params.init
 
         if len(data) == 0:
             return init
 
         cdef const unsigned char[:] view = data
-        return crc_slice16(&self.model, init, &view[0], len(view) * 8)
+        return crc_calc(&self.params, init, &view[0], len(view))
 
     def calc_bits(self, data, init=None):
         if not isinstance(data, bitarray) and not isinstance(data, frozenbitarray):
             raise TypeError('Expected a bitarray object')
 
-        if self.model.ref and data.endian != 'little':
+        if self.params.refin and data.endian != 'little':
             raise ValueError('A little endian bitarray object is expected for reflected CRCs')
 
-        if not self.model.ref and data.endian != 'big':
+        if not self.params.refin and data.endian != 'big':
             raise ValueError('A big endian bitarray object is expected for non-reflected CRCs')
 
         if init is None:
-            init = self.model.init
+            init = self.params.init
 
         if len(data) == 0:
             return init
 
         cdef const unsigned char[:] view = data
-        return crc_slice16(&self.model, init, &view[0], len(data))
+        return crc_calc_bits(&self.params, init, &view[0], len(data))
+
+    @lru_cache
+    def _combine_constant(self, length):
+        return crc_combine_constant(&self.params, length)
+
+    @lru_cache
+    def _combine_constant_bits(self, length):
+        return crc_combine_constant_bits(&self.params, length)
 
     def combine(self, crc1, crc2, length):
-        return crc_combine(&self.model, crc1, crc2, length * 8)
+        return crc_combine_fixed(&self.params, crc1, crc2, self._combine_constant(length))
 
     def combine_bits(self, crc1, crc2, length):
-        return crc_combine(&self.model, crc1, crc2, length)
+        return crc_combine_fixed(&self.params, crc1, crc2, self._combine_constant_bits(length))
 
     #byte-by-byte (for testing)
     def _calc_b(self, data):
         cdef const unsigned char[:] view = data
-        return crc_bytewise(&self.model, self.model.init, &view[0], len(view) * 8)
+        return crc_table(&self.params, self.params.init, &view[0], len(view))
 
-@functools.lru_cache
+@lru_cache
 def CRC(width=None, poly=None, init=None, refin=None, refout=None, xorout=None, check=None):
     names = ('width', 'poly', 'init', 'refin', 'refout', 'xorout')
     values = (width, poly, init, refin, refout, xorout)
@@ -103,10 +102,7 @@ def CRC(width=None, poly=None, init=None, refin=None, refout=None, xorout=None, 
         if value is None:
             raise ValueError(f'{name} value is not provided')
 
-    if width > WORDBITS:
-        raise ValueError(f'width is larger than {WORDBITS} bits')
-
-    return _Crc(*values)
+    return _CRC(*values)
 
 def Model(name):
     if name in models:

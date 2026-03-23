@@ -1,0 +1,3 @@
+[submodule "lib/crc-clmul"]
+	path = lib/crc-clmul
+	url = https://github.com/marzooqy/crc-clmul
