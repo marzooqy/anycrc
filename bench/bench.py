@@ -10,43 +10,41 @@ try:
     import crccheck
     import crc
 
+    N_SIMD = 1000000
     N_C_EXT = 10000
     N_PYTHON = 100
     LENGTH = 65536
 
     class Benchmark:
-        def __init__(self, module, n, relative_to=None):
+        def __init__(self, module, n):
             self.module = module
+            self.speed = 0
             self.n = n
-            self.average = None
-            self.relative_to = relative_to
-            self.start = time.perf_counter()
+            self.t = time.perf_counter()
 
         def __repr__(self):
-            return f'{self.module}\nTime: {self.average * self.n:.2f}s\nSpeed: {self.get_speed():.2f} MiB/s\nRelative: {self.get_relative():.2f}'
+            return f'{self.module}\nTime: {self.t:.2f}s\nSpeed: {self.get_speed()}'
 
         def stop(self):
-            t = time.perf_counter()
-            self.average = (t - self.start) / self.n
-            self.start = t
+            self.t = time.perf_counter() - self.t
 
         def get_speed(self):
-            return LENGTH / self.average / (1024 ** 2)
+            self.speed = LENGTH * self.n / self.t / (1024 ** 2)
 
-        def get_relative(self):
-            if self.relative_to is None:
-                return 1
+            if self.speed >= 1024:
+                speed = self.speed / 1024
+                return f'{speed:.2f} GiB/s'
             else:
-                return self.average / self.relative_to.average
+                return f'{self.speed:.2f} MiB/s'
 
     benchmarks = []
 
     data = bytes(i & 0xff for i in range(LENGTH))
 
-    print(f'\nN = {N_C_EXT}\n')
+    print(f'\nN = {N_SIMD}\n')
 
     #anycrc
-    anycrc_benchmark = Benchmark('anycrc', N_C_EXT)
+    anycrc_benchmark = Benchmark('anycrc', N_SIMD)
 
     model = anycrc.Model('CRC32')
     for i in range(anycrc_benchmark.n):
@@ -58,8 +56,10 @@ try:
     print(anycrc_benchmark)
     print()
 
+    print(f'\nN = {N_C_EXT}\n')
+
     #fastcrc
-    benchmark = Benchmark('fastcrc', N_C_EXT, relative_to=anycrc_benchmark)
+    benchmark = Benchmark('fastcrc', N_C_EXT)
 
     for i in range(benchmark.n):
         fastcrc.crc32.iso_hdlc(data)
@@ -71,7 +71,7 @@ try:
     print()
 
     #crcmod
-    benchmark = Benchmark('crcmod-plus', N_C_EXT, relative_to=anycrc_benchmark)
+    benchmark = Benchmark('crcmod-plus', N_C_EXT)
 
     calc = crcmod.predefined.mkPredefinedCrcFun('crc-32')
     for i in range(benchmark.n):
@@ -84,7 +84,7 @@ try:
     print()
 
     #libscrc
-    benchmark = Benchmark('libscrc', N_C_EXT, relative_to=anycrc_benchmark)
+    benchmark = Benchmark('libscrc', N_C_EXT)
 
     for i in range(benchmark.n):
         libscrc.crc32(data)
@@ -99,7 +99,7 @@ try:
     print(f'N = {N_PYTHON}\n')
 
     #crcengine
-    benchmark = Benchmark('crcengine', N_PYTHON, relative_to=anycrc_benchmark)
+    benchmark = Benchmark('crcengine', N_PYTHON)
 
     crc_algorithm = crcengine.new('crc32')
     for i in range(benchmark.n):
@@ -112,7 +112,7 @@ try:
     print()
 
     #pycrc
-    benchmark = Benchmark('pycrc', N_PYTHON, relative_to=anycrc_benchmark)
+    benchmark = Benchmark('pycrc', N_PYTHON)
 
     CRC = algorithms.Crc(width=32, poly=0x4c11db7, reflect_in=True, xor_in=0xffffffff, reflect_out=True, xor_out=0xffffffff)
     for i in range(benchmark.n):
@@ -125,7 +125,7 @@ try:
     print()
 
     #crccheck
-    benchmark = Benchmark('crccheck', N_PYTHON, relative_to=anycrc_benchmark)
+    benchmark = Benchmark('crccheck', N_PYTHON)
 
     for i in range(benchmark.n):
         crcinst = crccheck.crc.Crc32()
@@ -139,7 +139,7 @@ try:
     print()
 
     #crc
-    benchmark = Benchmark('crc', N_PYTHON, relative_to=anycrc_benchmark)
+    benchmark = Benchmark('crc', N_PYTHON)
 
     calculator = crc.Calculator(crc.Crc32.CRC32, optimized=True)
     for i in range(benchmark.n):
@@ -151,16 +151,19 @@ try:
     print(benchmark)
     print()
 
-    benchmarks.sort(key=lambda benchmark: benchmark.get_speed(), reverse=True)
+    benchmarks.sort(key=lambda benchmark: benchmark.speed, reverse=True)
 
     file_name = 'benchmark_results.txt'
 
     with open(file_name, 'w') as file:
-        file.write('| Module | Speed (MiB/s) | Relative |\n')
-        file.write('|---|:-:|:-:|\n')
+        file.write('| Module | Speed |\n')
+        file.write('|---|:-:|\n')
 
         for benchmark in benchmarks:
-            file.write(f'| {benchmark.module} | {benchmark.get_speed():.2f} | x{benchmark.get_relative():.2f} |\n')
+            if benchmark.module == 'anycrc':
+                file.write(f'| **{benchmark.module}** | **{benchmark.get_speed()}** |\n')
+            else:
+                file.write(f'| {benchmark.module} | {benchmark.get_speed()} |\n')
 
     print(f'Results saved to "{file_name}"')
 
