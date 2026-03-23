@@ -64,7 +64,7 @@ The maximum supported CRC width is 64 bits.
 ## Benchmark
 
 | Module | Speed |
-|---|:-:|
+|---|---|
 | **anycrc** | **26.65 GiB/s** |
 | crcmod-plus | 628.00 MiB/s |
 | fastcrc | 552.12 MiB/s |

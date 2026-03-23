@@ -1,5 +1,6 @@
 src/anycrc/crc.c
 src/anycrc.egg-info
+__pycache__
 build
 dist
 wheelhouse

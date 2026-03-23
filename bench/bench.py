@@ -18,7 +18,7 @@ try:
     class Benchmark:
         def __init__(self, module, n):
             self.module = module
-            self.speed = 0
+            self._speed = 0
             self.n = n
             self.t = time.perf_counter()
 
@@ -27,15 +27,13 @@ try:
 
         def stop(self):
             self.t = time.perf_counter() - self.t
+            self._speed = LENGTH * self.n / self.t / (1024 ** 2)
 
         def get_speed(self):
-            self.speed = LENGTH * self.n / self.t / (1024 ** 2)
-
-            if self.speed >= 1024:
-                speed = self.speed / 1024
-                return f'{speed:.2f} GiB/s'
+            if self._speed >= 1024:
+                return f'{self._speed / 1024:.2f} GiB/s'
             else:
-                return f'{self.speed:.2f} MiB/s'
+                return f'{self._speed:.2f} MiB/s'
 
     benchmarks = []
 
@@ -157,7 +155,7 @@ try:
 
     with open(file_name, 'w') as file:
         file.write('| Module | Speed |\n')
-        file.write('|---|:-:|\n')
+        file.write('|---|---|\n')
 
         for benchmark in benchmarks:
             if benchmark.module == 'anycrc':
