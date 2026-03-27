@@ -15,4 +15,4 @@ requires = ["setuptools", "cython"]
 build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
-skip = ["cp31[!01]-*"] #skip versions above 3.11
+build = ["cp38-*", "cp39-*", "cp310-*", "cp311-*", "cp314t-*"]
