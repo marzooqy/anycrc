@@ -33,7 +33,7 @@ cdef class _CRC:
         cdef uint8_t error
         self.params = crc_params(width, poly, init, refin, refout, xorout, check if check is not None else 0, &error)
 
-        if error & 1:
+        if error & 0x1:
             raise ValueError('CRC width should be between 1 and 64 bits')
 
         if check is not None and error & 0x20:
