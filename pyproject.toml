@@ -5,7 +5,7 @@ description = "The fastest general Python CRC Library"
 readme = "README.md"
 license = {text = "Zlib"}
 requires-python = ">=3.8"
-dependencies = ["bitarray==3.8.0"]
+dependencies = ["bitarray==3.8.1"]
 
 [project.urls]
 "Homepage" = "https://github.com/marzooqy/anycrc"
