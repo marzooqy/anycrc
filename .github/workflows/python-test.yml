@@ -29,11 +29,30 @@ jobs:
       run: python test.py
 
   bitarray_version_test:
-    name: Test with ${{ matrix.bitarray-spec }}
+    name: Test with ${{ matrix.bitarray-spec }} (py${{ matrix.python-version }})
     runs-on: windows-latest
     strategy:
       matrix:
-        bitarray-spec: ["bitarray==3.4.0", "bitarray==3.8.0", "bitarray"]
+        include:
+          - python-version: "3.8"
+            bitarray-spec: "bitarray==1.1.0"
+          - python-version: "3.9"
+            bitarray-spec: "bitarray==1.4.1"
+          - python-version: "3.10"
+            # bitarray changelog says py310 support was added in 1.6.2, but the sdist is broken
+            bitarray-spec: "bitarray==1.6.3"
+          - python-version: "3.11"
+            bitarray-spec: "bitarray==2.3.6"
+          - python-version: "3.12"
+            bitarray-spec: "bitarray==2.7.3"
+          - python-version: "3.13"
+            bitarray-spec: "bitarray==2.9.3"
+          - python-version: "3.14"
+            bitarray-spec: "bitarray==3.7.2"
+          - python-version: "3.8"
+            bitarray-spec: "bitarray"
+          - python-version: "3.14"
+            bitarray-spec: "bitarray"
     steps:
     - uses: actions/checkout@v6
       with:
@@ -41,7 +60,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v6
       with:
-        python-version: "3.14"
+        python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
             python -m pip install --upgrade pip

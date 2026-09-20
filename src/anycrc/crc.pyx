@@ -64,10 +64,14 @@ cdef class _CRC:
         if not isinstance(data, bitarray) and not isinstance(data, frozenbitarray):
             raise TypeError('Expected a bitarray object')
 
-        if self.params.refin and data.endian != 'little':
+        endian = data.endian
+        if callable(endian):
+            endian = endian()
+
+        if self.params.refin and endian != 'little':
             raise ValueError('A little endian bitarray object is expected for reflected CRCs')
 
-        if not self.params.refin and data.endian != 'big':
+        if not self.params.refin and endian != 'big':
             raise ValueError('A big endian bitarray object is expected for non-reflected CRCs')
 
         if init is None:

@@ -7,7 +7,7 @@ license = {text = "Zlib"}
 requires-python = ">=3.8"
 
 [project.optional-dependencies]
-calc-bits = ["bitarray>=3.4.0"]
+calc-bits = ["bitarray"]
 
 [project.urls]
 "Homepage" = "https://github.com/marzooqy/anycrc"
