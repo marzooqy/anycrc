@@ -18,7 +18,7 @@ try:
     class Benchmark:
         def __init__(self, module, n):
             self.module = module
-            self._speed = 0
+            self.speed = 0
             self.n = n
             self.t = time.perf_counter()
 
@@ -27,13 +27,13 @@ try:
 
         def stop(self):
             self.t = time.perf_counter() - self.t
-            self._speed = LENGTH * self.n / self.t / (1024 ** 2)
+            self.speed = LENGTH * self.n / self.t / (1024 ** 2)
 
         def get_speed(self):
-            if self._speed >= 1024:
-                return f'{self._speed / 1024:.2f} GiB/s'
+            if self.speed >= 1024:
+                return f'{self.speed / 1024:.2f} GiB/s'
             else:
-                return f'{self._speed:.2f} MiB/s'
+                return f'{self.speed:.2f} MiB/s'
 
     benchmarks = []
 
@@ -54,10 +54,8 @@ try:
     print(anycrc_benchmark)
     print()
 
-    print(f'\nN = {N_C_EXT}\n')
-
     #fastcrc
-    benchmark = Benchmark('fastcrc', N_C_EXT)
+    benchmark = Benchmark('fastcrc (SSE)', N_SIMD)
 
     for i in range(benchmark.n):
         fastcrc.crc32.iso_hdlc(data)
@@ -67,6 +65,8 @@ try:
 
     print(benchmark)
     print()
+
+    print(f'N = {N_C_EXT}\n')
 
     #crcmod
     benchmark = Benchmark('crcmod-plus', N_C_EXT)
