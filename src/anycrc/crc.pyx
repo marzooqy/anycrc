@@ -12,7 +12,8 @@ cdef extern from '../../lib/crc-clmul/crc.h':
         uint8_t width
         uint64_t poly
         bint refin, refout
-        uint64_t init, xorout, k1, k2
+        uint64_t init, xorout
+        uint64_t k1, k2, k3, k4, u
         uint64_t table[256]
         uint64_t combine_table[64]
 
@@ -20,11 +21,13 @@ cdef extern from '../../lib/crc-clmul/crc.h':
 
     cdef uint64_t crc_table(params_t *params, uint64_t crc, const unsigned char *buf, uint64_t len)
     cdef uint64_t crc_calc(params_t *params, uint64_t crc, const unsigned char *buf, uint64_t len)
-    cdef uint64_t crc_calc_bits(params_t *params, uint64_t crc, const unsigned char *buf, uint64_t len)
 
     cdef uint64_t crc_combine_constant(params_t *params, uint64_t len)
+    cdef uint64_t crc_combine(params_t *params, uint64_t crc, uint64_t crc2, uint64_t xp)
+
+cdef extern from '../../lib/bits.h':
+    cdef uint64_t crc_calc_bits(params_t *params, uint64_t crc, const unsigned char *buf, uint64_t len)
     cdef uint64_t crc_combine_constant_bits(params_t *params, uint64_t len)
-    cdef uint64_t crc_combine_fixed(params_t *params, uint64_t crc, uint64_t crc2, uint64_t xp)
 
 cdef class _CRC:
     cdef params_t params
@@ -83,10 +86,10 @@ cdef class _CRC:
         return crc_combine_constant_bits(&self.params, length)
 
     def combine(self, crc1, crc2, length):
-        return crc_combine_fixed(&self.params, crc1, crc2, self._combine_constant(length))
+        return crc_combine(&self.params, crc1, crc2, self._combine_constant(length))
 
     def combine_bits(self, crc1, crc2, length):
-        return crc_combine_fixed(&self.params, crc1, crc2, self._combine_constant_bits(length))
+        return crc_combine(&self.params, crc1, crc2, self._combine_constant_bits(length))
 
     #byte-by-byte (for testing)
     def _calc_b(self, data):

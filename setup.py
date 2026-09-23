@@ -3,8 +3,8 @@ import platform
 import sys
 import sysconfig
 
-macros = []
 use_limited_api = False
+macros = []
 options = {}
 
 #https://github.com/pypa/cibuildwheel/blob/main/cibuildwheel/architecture.py
@@ -22,7 +22,8 @@ setup(
             name='anycrc.crc',
             sources=['src/anycrc/crc.pyx',
                      'lib/crc-clmul/crc.c',
-                     'lib/crc-clmul/cpu.c'],
+                     'lib/crc-clmul/cpu.c',
+                     'lib/bits.c'],
             define_macros = macros,
             py_limited_api = use_limited_api
         )
