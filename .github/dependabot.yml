@@ -21,7 +21,3 @@ updates:
           patterns:
             - "*"       # A wildcard that matches all dependencies in the package
                         # ecosystem. Note: using "*" may open a large pull request
-  - package-ecosystem: "pip"
-    directory: "/"
-    schedule:
-      interval: "monthly"
