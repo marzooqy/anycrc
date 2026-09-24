@@ -22,7 +22,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
-      run: python -m pip install .
+      run: python -m pip install bitarray .
     - name: Run test
       run: python test.py
 
@@ -52,10 +52,9 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v7
       with:
-        python-version: "3.14"
         architecture: ${{ matrix.architecture }}
     - name: Install dependencies
-      run: python -m pip install .
+      run: python -m pip install bitarray .
     - name: Run test
       run: python test.py
 
@@ -80,6 +79,6 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
-      run: python -m pip install ${{ matrix.bitarray-spec }} .
+      run: python -m pip install ${{ matrix.bitarray-version }} .
     - name: Run test
       run: python test.py
