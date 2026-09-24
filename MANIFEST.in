@@ -1,0 +1,4 @@
+include src/anycrc/*.h
+include lib/crc-clmul/*.h
+include lib/crc-clmul/LICENSE
+include lib/crc-clmul/ATTRIBUTION

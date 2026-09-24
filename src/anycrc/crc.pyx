@@ -30,7 +30,7 @@ cdef extern from '../../lib/crc-clmul/crc.h':
     cdef uint64_t crc_combine_constant(params_t *params, uint64_t len)
     cdef uint64_t crc_combine(params_t *params, uint64_t crc, uint64_t crc2, uint64_t xp)
 
-cdef extern from '../../lib/bits.h':
+cdef extern from 'bits.h':
     cdef uint64_t crc_calc_bits(params_t *params, uint64_t crc, const unsigned char *buf, uint64_t len)
     cdef uint64_t crc_combine_constant_bits(params_t *params, uint64_t len)
 

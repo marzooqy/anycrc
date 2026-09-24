@@ -21,9 +21,9 @@ setup(
         Extension(
             name='anycrc.crc',
             sources=['src/anycrc/crc.pyx',
+                     'src/anycrc/bits.c',
                      'lib/crc-clmul/crc.c',
-                     'lib/crc-clmul/cpu.c',
-                     'lib/bits.c'],
+                     'lib/crc-clmul/cpu.c'],
             define_macros = macros,
             py_limited_api = use_limited_api
         )
