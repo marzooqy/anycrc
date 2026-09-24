@@ -2,6 +2,8 @@ try:
     from bitarray import bitarray
 except ImportError:
     bitarray = None
+    print('Testing without bitarray\n')
+
 import anycrc
 
 failed = False
@@ -39,10 +41,8 @@ for name, model in anycrc.models.items():
     if value != check:
         failed = True
 
-    if not bitarray:
-        print('bits:          <skipped; install bitarray>')
-    else:
-        #with length in bits
+    #with length in bits
+    if bitarray:
         if model.refin:
             bit_data = bitarray(endian='little')
         else:
@@ -65,10 +65,8 @@ for name, model in anycrc.models.items():
     if value3 != check:
         failed = True
 
-    if not bitarray:
-        print('bits:          <skipped; install bitarray>')
-    else:
-        #combine bits
+    #combine bits
+    if bitarray:
         if model.refin:
             bit_data = bitarray(endian='little')
         else:

@@ -31,7 +31,7 @@ Read the data in chunks:
 2498069329
 ```
 
-If [bitarray](https://github.com/ilanschnell/bitarray) is installed, the length of the data can be specified in bits by calling `calc_bits` and passing a bitarray object:
+The length of the data can be specified in bits by calling `calc_bits` and passing a [bitarray](https://github.com/ilanschnell/bitarray) object:
 
 ```python
 >>> from bitarray import bitarray

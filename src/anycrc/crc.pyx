@@ -4,10 +4,12 @@
 
 from libc.stdint cimport *
 from functools import lru_cache
+
 try:
     from bitarray import bitarray, frozenbitarray
 except ImportError:
     bitarray = frozenbitarray = None
+
 from .models import models, aliases
 
 cdef extern from '../../lib/crc-clmul/crc.h':
@@ -60,7 +62,8 @@ cdef class _CRC:
 
     def calc_bits(self, data, init=None):
         if not bitarray:
-            raise TypeError('calc_bits requires bitarray, which is not installed')
+            raise ModuleNotFoundError('The bitarray module is required to use calc_bits()')
+
         if not isinstance(data, bitarray) and not isinstance(data, frozenbitarray):
             raise TypeError('Expected a bitarray object')
 
