@@ -64,10 +64,13 @@ jobs:
         include:
           - test-desc: without bitarray
             bitarray-version: ""
+            python-version: "3.x"
           - test-desc: with bitarray 3.3.2
             bitarray-version: "bitarray==3.3.2"
+            python-version: "3.13"
           - test-desc: with bitarray
             bitarray-version: "bitarray"
+            python-version: "3.x"
     steps:
     - uses: actions/checkout@v6
       with:
@@ -75,7 +78,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v6
       with:
-        python-version: "3.x"
+        python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: python -m pip install ${{ matrix.bitarray-version }} .
     - name: Run test
