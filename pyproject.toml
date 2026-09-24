@@ -3,7 +3,7 @@ name = "anycrc"
 version = "2.0.0"
 description = "The fastest general Python CRC Library"
 readme = "README.md"
-license = {text = "Zlib"}
+license = "Zlib"
 requires-python = ">=3.9"
 dependencies = ["bitarray==3.8.0"]
 
