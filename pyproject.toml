@@ -4,7 +4,7 @@ version = "2.0.0"
 description = "The fastest general Python CRC Library"
 readme = "README.md"
 license = {text = "Zlib"}
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = ["bitarray==3.8.0"]
 
 [project.urls]
