@@ -5,9 +5,6 @@ description = "The fastest general Python CRC Library"
 readme = "README.md"
 license = "Zlib"
 requires-python = ">=3.9"
-dependencies = ["bitarray==3.8.0"]
-license = {text = "Zlib"}
-requires-python = ">=3.8"
 
 [project.optional-dependencies]
 bits = ["bitarray"]
