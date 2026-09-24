@@ -1,4 +1,9 @@
-from bitarray import bitarray
+try:
+    from bitarray import bitarray
+except ImportError:
+    bitarray = None
+    print('Testing without bitarray\n')
+
 import anycrc
 
 failed = False
@@ -37,19 +42,20 @@ for name, model in anycrc.models.items():
         failed = True
 
     #with length in bits
-    if model.refin:
-        bit_data = bitarray(endian='little')
-    else:
-        bit_data = bitarray()
+    if bitarray:
+        if model.refin:
+            bit_data = bitarray(endian='little')
+        else:
+            bit_data = bitarray()
 
-    bit_data.frombytes(test_data2)
-    value = crc.calc_bits(bit_data[:100])
-    value = crc.calc_bits(bit_data[100:], value)
-    value2 = crc._calc_b(test_data2)
+        bit_data.frombytes(test_data2)
+        value = crc.calc_bits(bit_data[:100])
+        value = crc.calc_bits(bit_data[100:], value)
+        value2 = crc._calc_b(test_data2)
 
-    print('bits:          {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
-    if value != value2:
-        failed = True
+        print('bits:          {} {}'.format(anycrc.get_hex(value, model.width), anycrc.get_hex(value2, model.width)))
+        if value != value2:
+            failed = True
 
     #combine
     value = crc.calc(b'12345')
@@ -60,18 +66,19 @@ for name, model in anycrc.models.items():
         failed = True
 
     #combine bits
-    if model.refin:
-        bit_data = bitarray(endian='little')
-    else:
-        bit_data = bitarray()
+    if bitarray:
+        if model.refin:
+            bit_data = bitarray(endian='little')
+        else:
+            bit_data = bitarray()
 
-    bit_data.frombytes(test_data)
-    value = crc.calc_bits(bit_data[:36])
-    value2 = crc.calc_bits(bit_data[36:])
-    value3 = crc.combine_bits(value, value2, len(bit_data[36:]))
-    print('combine bits:  {} {}'.format(anycrc.get_hex(value3, model.width), anycrc.get_hex(check, model.width)))
-    if value3 != check:
-        failed = True
+        bit_data.frombytes(test_data)
+        value = crc.calc_bits(bit_data[:36])
+        value2 = crc.calc_bits(bit_data[36:])
+        value3 = crc.combine_bits(value, value2, len(bit_data[36:]))
+        print('combine bits:  {} {}'.format(anycrc.get_hex(value3, model.width), anycrc.get_hex(check, model.width)))
+        if value3 != check:
+            failed = True
 
     print()
 
