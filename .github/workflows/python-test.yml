@@ -35,14 +35,11 @@ jobs:
           - os: "Windows (x64)"
             runner: windows-latest
             architecture: "x64"
-
           - os: "Windows (x86)"
             runner: windows-latest
             architecture: "x86"
-
           - os: "MacOS"
             runner: macos-latest
-
           - os: "Ubuntu"
             runner: ubuntu-latest
     steps:
@@ -52,6 +49,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v7
       with:
+        python-version: "3.x"
         architecture: ${{ matrix.architecture }}
     - name: Install dependencies
       run: python -m pip install bitarray .
@@ -77,7 +75,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v6
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: "3.x"
     - name: Install dependencies
       run: python -m pip install ${{ matrix.bitarray-version }} .
     - name: Run test
