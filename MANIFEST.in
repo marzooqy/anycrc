@@ -1,8 +1,0 @@
-include src/anycrc/crc.pyx
-include lib/crc-clmul/*.h
-include lib/crc-clmul/*.c
-include lib/*.h
-include lib/*.c
-include lib/crc-clmul/LICENSE
-include lib/crc-clmul/ATTRIBUTION
-include lib/crc-clmul/README.md
