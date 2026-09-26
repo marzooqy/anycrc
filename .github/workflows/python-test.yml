@@ -56,20 +56,20 @@ jobs:
       run: python test.py
 
   ba_test:
-    name: Test ${{ matrix.test-desc }}
+    name: Test ${{ matrix.test-description }}
     runs-on: windows-latest
     strategy:
       matrix:
         include:
-          - test-desc: without bitarray
+          - test-description: without bitarray
             bitarray-version: ""
             python-version: "3.x"
 
-          - test-desc: with bitarray 3.3.2
+          - test-description: with bitarray 3.3.2
             bitarray-version: "bitarray==3.3.2"
             python-version: "3.13"
 
-          - test-desc: with bitarray
+          - test-description: with bitarray
             bitarray-version: "bitarray"
             python-version: "3.x"
     steps:
