@@ -2,7 +2,7 @@
 try:
     import subprocess
 
-    modules = ['fastcrc', 'crcmod-plus', 'libscrc', 'crcengine', 'pycrc', 'crccheck', 'crc', '..']
+    modules = ['anycrc', 'fastcrc', 'crcmod-plus', 'crcengine', 'pycrc', 'crccheck', 'crc']
 
     subprocess.run(['python', '-m' 'venv', '.venv'])
     subprocess.run(['.venv/Scripts/pip', 'install'] + modules)

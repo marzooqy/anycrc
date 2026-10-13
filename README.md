@@ -68,7 +68,6 @@ The maximum supported CRC width is 64 bits.
 | fastcrc (SSE) | 30.04 GiB/s |
 | **anycrc** | **21.16 GiB/s** |
 | crcmod-plus | 623.84 MiB/s |
-| libscrc | 141.14 MiB/s |
 | crcengine | 6.48 MiB/s |
 | pycrc | 5.71 MiB/s |
 | crccheck | 0.95 MiB/s |

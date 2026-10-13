@@ -5,7 +5,6 @@ try:
     import anycrc
     import crcmod.predefined
     import fastcrc
-    import libscrc
     import crcengine
     import crccheck
     import crc
@@ -74,18 +73,6 @@ try:
     calc = crcmod.predefined.mkPredefinedCrcFun('crc-32')
     for i in range(benchmark.n):
         calc(data)
-
-    benchmark.stop()
-    benchmarks.append(benchmark)
-
-    print(benchmark)
-    print()
-
-    #libscrc
-    benchmark = Benchmark('libscrc', N_C_EXT)
-
-    for i in range(benchmark.n):
-        libscrc.crc32(data)
 
     benchmark.stop()
     benchmarks.append(benchmark)
